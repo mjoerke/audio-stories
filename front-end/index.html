@@ -1,0 +1,42 @@
+<!-- adapted from: https://github.com/abenjamin765/camera-app/tree/master/part-1/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AR Audio Tour</title>
+
+	<link rel="stylesheet" href="style.css"> 
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+	<div class='toolbar top-bar'>
+		<div id='swap-camera-button'>
+			<i class="material-icons">sync</i>
+		</div>
+	</div>
+
+	<div class='toolbar bottom-bar'>
+		<i class="material-icons">more_vert</i>
+
+		<div id='camera-button'>
+			<i class="material-icons">photo_camera</i>
+		</div>
+
+		<a href="#" class="button" download='image.png' id="download-button">
+			<i class="material-icons">save</i>
+		</a>
+		</div>
+	</div>
+	<div id="camera">
+	    <video id="camera-viewport" autoplay playsinline></video>
+	    <canvas id="camera-canvas"></canvas>
+	    <img src="//:0" alt="" id="camera-image" style='visibility: hidden'>
+	</div>
+</body>
+
+<script src="webcam.js"></script> 
+
+</html>
