@@ -1,0 +1,13 @@
+{
+  "input":{
+    "text":"It's certainly been a year full of changes."
+  },
+  "voice":{
+    "languageCode":"en-gb",
+    "name":"en-GB-Standard-A",
+    "ssmlGender":"FEMALE"
+  },
+  "audioConfig":{
+    "audioEncoding":"MP3"
+  }
+}
