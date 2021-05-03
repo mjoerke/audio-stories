@@ -1,0 +1,8 @@
+{
+    "nodes": {
+        "0": {"decision_type": "immediate", "labels": {"indoors": 1, "outdoors": 2}, "thresholds": {"indoors": 0.5,"outdoors":0.5}, "audio_file": "audio/dummy.mp3"},
+        "1": {"decision_type": "always", "next": 3, "threshold": null, "audio_file": "audio/indoors.mp3"},
+        "2": {"decision_type": "always", "next": 3, "threshold": null, "audio_file": "audio/outdoors.mp3"},
+        "3": {"decision_type": "end", "audio_file": "audio/changes.mp3"}
+    }
+}
