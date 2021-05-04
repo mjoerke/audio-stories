@@ -1,4 +1,5 @@
 import json
+import os
 
 import requests
 
@@ -13,10 +14,12 @@ def _check_request(r):
 
 
 def send_image():
+    this_file_dir = os.path.dirname(os.path.realpath(__file__))
+    image_path = os.path.join(this_file_dir, "pug.jpg")
     endpoint = URL + 'inference'
     labels = ['dog', 'cat']
     multipart_form_data = {
-        'image': ('image.jpg', open('pug.jpg', 'rb')),
+        'image': ('image.jpg', open(image_path, 'rb')),
         'labels': (None, json.dumps(labels))
     }
     r = requests.post(endpoint, files=multipart_form_data)
