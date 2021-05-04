@@ -1,9 +1,9 @@
 // global variables
 var timer;
 var audio;
-var story;
 var state;
 var spacebar;
+var story;
 
 function query_classifier() {
     // hack -- you can change what label is produced by pressing the spacebar
@@ -115,18 +115,18 @@ function advance_state() {
 }
 
 // uses wait decision with a very high threshold
-story = {"nodes": {"0": {"decision_type": "wait", "labels": {"indoors": 1}, "thresholds": {"indoors": 0.99}, "audio_file": "audio/dummy.mp3"},
+var story = {"nodes": {"0": {"decision_type": "wait", "labels": {"indoors": 1}, "thresholds": {"indoors": 0.99}, "audio_file": "audio/dummy.mp3"},
                    "1": {"decision_type": "end", "audio_file": "audio/indoors.mp3"}}
         }
 
 // uses immediate decision
 // at least one label will be above .5
-// story = {"nodes": {"0": {"decision_type": "immediate", "labels": {"indoors": 1, "outdoors": 2}, "thresholds": {"indoors": 0.5,"outdoors":0.5}, "audio_file": "audio/dummy.mp3"},
+// var story = {"nodes": {"0": {"decision_type": "immediate", "labels": {"indoors": 1, "outdoors": 2}, "thresholds": {"indoors": 0.5,"outdoors":0.5}, "audio_file": "audio/dummy.mp3"},
 //             "1": {"decision_type": "always", "next": 3, "threshold": null, "audio_file": "audio/indoors.mp3"},
 //             "2": {"decision_type": "always", "next": 3, "threshold": null, "audio_file": "audio/outdoors.mp3"},
 //             "3": {"decision_type": "end", "audio_file": "audio/changes.mp3"}}
 // }
-
+ 
 // hack - trigger story when spacebar pressed         
 document.body.onkeyup = function(e){
     if(e.keyCode == 32){
@@ -134,6 +134,12 @@ document.body.onkeyup = function(e){
     }
 }
 
-story = story["nodes"]
-state = story[0];
-advance_state();
+document.getElementById("play-button").addEventListener(
+    "click",
+    function () {
+        story = story["nodes"]
+        state = story[0];
+        advance_state();
+    }
+)
+
