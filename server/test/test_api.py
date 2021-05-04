@@ -27,5 +27,18 @@ def send_image():
     print("RESPONSE", r.json())
 
 
+def send_invalid():
+    this_file_dir = os.path.dirname(os.path.realpath(__file__))
+    image_path = os.path.join(this_file_dir, "pug.jpg")
+    endpoint = URL + 'inference'
+    multipart_form_data = {
+        'image': ('image.jpg', open(image_path, 'rb')),
+        'labels': (None, "blah")
+    }
+    r = requests.post(endpoint, files=multipart_form_data)
+    print(r.content)
+
+
 if __name__ == "__main__":
     send_image()
+    # send_invalid()
