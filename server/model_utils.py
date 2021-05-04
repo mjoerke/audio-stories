@@ -20,7 +20,9 @@ class CLIPModel:
         tokens = [clip.tokenize(label) for label in labels]
         text_input = torch.cat(tokens).to(self.device)
 
+        self.lock.acquire()
         output = self.model(image_input, text_input)
+        self.lock.release()
         sim_scores = output[0].detach().cpu().numpy()[0]
 
         if normalize_scores:
