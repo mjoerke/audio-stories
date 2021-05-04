@@ -13,7 +13,7 @@ def _check_request(r):
         r.status_code, r.content))
 
 
-def send_image():
+def send_image(output_request=True):
     this_file_dir = os.path.dirname(os.path.realpath(__file__))
     image_path = os.path.join(this_file_dir, "pug.jpg")
     endpoint = URL + 'inference'
@@ -23,6 +23,11 @@ def send_image():
         'labels': (None, json.dumps(labels))
     }
     r = requests.post(endpoint, files=multipart_form_data)
+
+    if output_request:
+        with open("request_body.txt", "wb") as outfile:
+            outfile.write(r.request.body)
+
     _check_request(r)
     print("RESPONSE", r.json())
 
