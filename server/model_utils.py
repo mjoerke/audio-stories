@@ -1,11 +1,12 @@
 import threading
 
 import clip
+import numpy as np
 import torch
 
 
 class CLIPModel:
-    def __init__(self, device, model_name="ViT-B/32"):
+    def __init__(self, device="cuda", model_name="ViT-B/32"):
         self.model_name = model_name
         self.device = device
 
@@ -14,7 +15,16 @@ class CLIPModel:
 
         self.lock = threading.Lock()
 
-    def inference(self, image, labels):
-        raise NotImplemented()
-        # image_input = self.transform(image).unsqueeze(0).to(self.device)
-        # text_input = torch.cat([])
+    def inference(self, image, labels, normalize_scores=True):
+        image_input = self.transform(image).unsqueeze(0).to(self.device)
+        tokens = [clip.tokenize(label) for label in labels]
+        text_input = torch.cat(tokens).to(self.device)
+
+        output = self.model(image_input, text_input)
+        sim_scores = output[0].detach().cpu().numpy()[0]
+
+        if normalize_scores:
+            total = np.sum(sim_scores)
+            sim_scores = sim_scores / total
+
+        return sim_scores
