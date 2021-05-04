@@ -1,0 +1,17 @@
+# custom 
+.mypy_cache/
+
+# swp files 
+*.sw[oap]
+.DS_Store
+
+# python
+__pycache__/
+*.py[cod]
+
+# environments
+.env
+.vent
+
+# jupyter
+.ipynb_checkpoints
