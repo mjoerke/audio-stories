@@ -3,6 +3,7 @@
 ### Example Stories
 
 ##### Format as provided by the design tool
+Story that starts with a classifier:
 ```
 {
     "nodes": {
