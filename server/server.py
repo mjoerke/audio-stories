@@ -62,8 +62,9 @@ def inference():
 
     scores = model.inference(image, labels).tolist()
 
-    return flask.jsonify(scores)
-
+    response = flask.jsonify(scores)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 def run_app(debug=True, port=5000, host="0.0.0.0", device="cuda"):
     global model
