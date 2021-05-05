@@ -34,15 +34,16 @@ i.material-icons {
     bottom: 20px;
 }
 
-#camera-button {
+#play-button {
     background-color: white;
     border-radius: 100%;
     color: black;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
 }
 
-#camera-button > i.material-icons {
+#play-button > i.material-icons {
     color: rgb(100, 100, 100);
+    font-size: 3em;
 }   
 
 .flipped {
@@ -66,7 +67,7 @@ i.material-icons {
     left: calc(50% - 100px);
 }*/
 
-.taken{
+/*.taken{
     visibility: visible!important;
     height: 100px!important;
     width: 100px!important;
@@ -76,4 +77,4 @@ i.material-icons {
     top: 20px;
     right: 20px;
     z-index: 2;
-}
+}*/

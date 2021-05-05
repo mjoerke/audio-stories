@@ -28,7 +28,7 @@ function cameraStart() {
 }
 
 // Take a picture when cameraTrigger is tapped
-cameraButton.onclick = function() {
+function get_image_data() {
     let w = cameraViewport.videoWidth;
     let h = cameraViewport.videoHeight;
 
@@ -40,12 +40,11 @@ cameraButton.onclick = function() {
 
     cameraCanvas.getContext("2d").drawImage(cameraViewport, 0, 0, w, h);
     cameraImage.src = cameraCanvas.toDataURL("image/webp");
-    cameraImage.classList.add("taken");
 
-    downloadButton.href = cameraCanvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-
+    let image_data = cameraCanvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
     cameraCanvas.getContext("2d").clearRect(0, 0, w, h)
-    // track.stop();
+    
+    return image_data
 };
 
 swapButton.onclick = function() {

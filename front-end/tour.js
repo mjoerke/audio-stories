@@ -5,27 +5,6 @@ var current_node;
 var spacebar;
 var story;
 
-async function query_classifier() {
-
-
-    // get image data
-    // get current labels
-    // query server
-    // check threshold logic
-    // return next node
-
-
-
-    // hack -- you can change what label is produced by pressing the spacebar
-    // to test the "wait" story condition
-    if (spacebar) {
-        return {"indoors": 1.00, "outdoors": 0.00}
-    }
-    return {"indoors": 0.1, "outdoors": 0.9}
-}
-
-// function read_image
-
 function check_threshold(label_transitions, thresholds, results) {
     // "label_transitions": {"indoors": 1,"outdoors": 2}
     // "thresholds": {"indoors": 0.5,"outdoors":0.5}
@@ -52,10 +31,6 @@ function check_threshold(label_transitions, thresholds, results) {
     }
     
     return next_node;
-}
-
-function get_image_data() {
-    return 0
 }
 
 async function loop() {
@@ -100,15 +75,25 @@ async function loop() {
         case "classifier":
             console.log('classifier')
             let image = get_image_data()
+
             // we want to timeout on the await (cancel after 500ms)
-            let results = await query_classifier()
+            let results;
+            try {
+                results = await query_classifier(300)
+                console.log('received frame')
+            } catch(e) {
+                // if the server doesn't respond in time, immediately trigger next frame
+                console.log("dropped frame", e)
+                setTimeout(()=>loop())
+                break
+            }
 
             // handle logic here 
             let next_state = check_threshold(current_node.labels, current_node.thresholds, results);
             current_node = story["nodes"][next_state];
 
             if (current_node != null) {
-                setTimeout(()=>loop(), 500)
+                setTimeout(()=>loop())
             }
             break;
     }
@@ -151,14 +136,21 @@ story = {
 //     }
 // }
 
+function dummy_spacebar_threshold() {
+    // hack -- you can change what label is produced by pressing the spacebar
+    // to test the "wait" story condition
+    if (spacebar) {
+        return {"indoors": 1.00, "outdoors": 0.00}
+    }
+    return {"indoors": 0.1, "outdoors": 0.9}
+}
+
 // hack - trigger story when spacebar pressed         
 document.body.onkeyup = function(e){
     if(e.keyCode == 32){
         spacebar = true;
     }
 }
-
-
 
 document.getElementById("play-button").addEventListener(
     "click",

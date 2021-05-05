@@ -13,19 +13,21 @@
 
 <body>
 	<div class='toolbar top-bar'>
-		<div id='play-button'>
+		<!-- <div id='play-button'>
 			<i class="material-icons">play_circle</i>
 		</div>
 		<div id='swap-camera-button'>
 			<i class="material-icons">sync</i>
-		</div>
+		</div> -->
 	</div>
 
 	<div class='toolbar bottom-bar'>
-		<i class="material-icons">more_vert</i>
+		<div id='swap-camera-button'>
+			<i class="material-icons">sync</i>
+		</div>
 
-		<div id='camera-button'>
-			<i class="material-icons">photo_camera</i>
+		<div id='play-button'>
+			<i class="material-icons">play_arrow</i>
 		</div>
 
 		<a href="#" class="button" download='image.png' id="download-button">
@@ -36,10 +38,11 @@
 	<div id="camera">
 	    <video id="camera-viewport" autoplay playsinline></video>
 	    <canvas id="camera-canvas"></canvas>
-	    <img src="//:0" alt="" id="camera-image" style='visibility: hidden'>
+	    <img src="//:0" alt="" id="camera-image" style='display: none'>
 	</div>
 </body>
 
 <script src="webcam.js"></script> 
 <script src="tour.js"></script> 
+<script src="network.js"></script> 
 </html>
