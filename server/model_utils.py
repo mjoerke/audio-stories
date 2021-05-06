@@ -6,7 +6,7 @@ import torch
 
 
 class CLIPModel:
-    def __init__(self, device="cuda", model_name="ViT-B/32"):
+    def __init__(self, device="cuda", model_name="RN50x4"):
         self.model_name = model_name
         self.device = device
 
