@@ -13,6 +13,12 @@ const cameraButton   = document.querySelector("#camera-button");
 const downloadButton = document.querySelector("#download-button");
 const swapButton     = document.querySelector("#swap-camera-button");
 
+canvasToBlob = function(canvas) {
+    return new Promise(function(resolve) {
+      canvas.toBlob(resolve);
+    });
+  };
+
 // Access the device camera and stream to cameraView
 function cameraStart() {
     navigator.mediaDevices
@@ -28,7 +34,7 @@ function cameraStart() {
 }
 
 // Take a picture when cameraTrigger is tapped
-function get_image_data() {
+async function get_image_data() {
     let w = cameraViewport.videoWidth;
     let h = cameraViewport.videoHeight;
 
@@ -41,7 +47,11 @@ function get_image_data() {
     cameraCanvas.getContext("2d").drawImage(cameraViewport, 0, 0, w, h);
     cameraImage.src = cameraCanvas.toDataURL("image/webp");
 
-    let image_data = cameraCanvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+    //let image_data = cameraCanvas.toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+  
+    let image_data = await canvasToBlob(cameraCanvas)
+   // await cameraCanvas.toBlob(blob => {image_data = blob});
+
     cameraCanvas.getContext("2d").clearRect(0, 0, w, h)
     
     return image_data
