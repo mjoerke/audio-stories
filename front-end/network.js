@@ -1,8 +1,7 @@
 // https://blog.bitsrc.io/introduction-to-promise-race-and-promise-any-with-real-life-examples-9d8d1b9f8ec9
 
 function timeout(delay) {
-    let cancel;
-    const wait = new Promise((resolve, reject) => {
+     const wait = new Promise((resolve, reject) => {
         setTimeout(() => reject(new Error("Request timed out")), delay);
 
     });
@@ -19,12 +18,25 @@ async function dummy_request(time) {
 async function query_classifier(time) {
     console.log("query")
     // get image data
-    let image_data = get_image_data()
-    // get current labels
-    let labels = current_node.labels
+    let image_data = await get_image_data();
 
-    // send request
-    // return response Promise
-    let fake_query = dummy_request(time)
-    return Promise.race([fake_query, timeout(time)])
+    //console.log(image_data)
+    // get current labels
+    let labels = JSON.stringify(Object.keys(current_node.labels))
+   // console.log(labels)
+
+    var form_data = new FormData();
+    form_data.append("labels", labels);
+    form_data.append("image", image_data)
+    //console.log(form_data)
+
+    let response = fetch('http://35.226.183.11:5000/inference', {
+        method: 'POST',
+        body: form_data
+    }).then((response) => response.json());
+        
+    //console.log("result: ", result);
+
+
+    return Promise.race([response, timeout(time)])
 }

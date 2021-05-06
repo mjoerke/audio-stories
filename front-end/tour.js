@@ -8,7 +8,7 @@ var story;
 function check_threshold(label_transitions, thresholds, results) {
     // "label_transitions": {"indoors": 1,"outdoors": 2}
     // "thresholds": {"indoors": 0.5,"outdoors":0.5}
-    // "results": {"indoors": 0.1, "outdoors": 0.9}
+    // "results": [0.1,0.9]
 
     // assumes at least one keys is present 
     // in all 3 of labels, thresholds and results 
@@ -16,14 +16,16 @@ function check_threshold(label_transitions, thresholds, results) {
     let next_node = undefined
     let max_confidence = -1
     
+    var i = 0;
     for (const label in thresholds) {
 
-        let conf = results[label];
+        let conf = results[i];
 
         if (conf >= thresholds[label] && conf >= max_confidence) {
             next_node = label_transitions[label];
             max_confidence = conf;
         } 
+        i++;
     }
 
     if (next_node == undefined) {
@@ -65,7 +67,7 @@ async function loop() {
                     setTimeout(()=>loop(), 500)
                 }
                 
-            };
+            };5
 
             document.body.appendChild(audio);
             break;
@@ -79,7 +81,8 @@ async function loop() {
             // we want to timeout on the await (cancel after 500ms)
             let results;
             try {
-                results = await query_classifier(300)
+                results = await query_classifier(5000)
+                console.log(results)
                 console.log('received frame')
             } catch(e) {
                 // if the server doesn't respond in time, immediately trigger next frame
