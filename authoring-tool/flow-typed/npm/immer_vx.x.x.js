@@ -1,4 +1,4 @@
-// flow-typed signature: 08a822290db4cbe55a917221f76d500f
+// flow-typed signature: 1055580c79c4f865e26b623c97b1ab39
 // flow-typed version: <<STUB>>/immer_v9.0.2/flow_v0.150.0
 
 /**
@@ -13,169 +13,58 @@
  * https://github.com/flowtype/flow-typed
  */
 
-declare module 'immer' {
-  import {
-    IProduce,
-    IProduceWithPatches,
-    Immer,
-    Draft,
-    Immutable
-  } from './internal';
-  declare export {
-    Draft,
-    Immutable,
-    Patch,
-    PatchListener,
-    original,
-    current,
-    isDraft,
-    isDraftable,
-    NOTHING as nothing,
-    DRAFTABLE as immerable,
-    freeze
-  } from './internal';
-
-  /**
-   * The `produce` function takes a value and a "recipe function" (whose
-   * return value often depends on the base state). The recipe function is
-   * free to mutate its first argument however it wants. All mutations are
-   * only ever applied to a __copy__ of the base state.
-   *
-   * Pass only a function to create a "curried producer" which relieves you
-   * from passing the recipe function every time.
-   *
-   * Only plain objects and arrays are made mutable. All other objects are
-   * considered uncopyable.
-   *
-   * Note: This function is __bound__ to its `Immer` instance.
-   * @param {any} base - the initial state
-   * @param {Function} producer - function that receives a proxy of the base state as first argument and which can be freely modified
-   * @param {Function} patchListener - optional function that will be called with all the patches produced here
-   * @returns {any} a new state, or the initial state if nothing was modified
-   */
-  declare export var produce: IProduce;
-  declare export default typeof produce;
-
-  /**
-   * Like `produce`, but `produceWithPatches` always returns a tuple
-   * [nextState, patches, inversePatches] (instead of just the next state)
-   */
-  declare export var produceWithPatches: IProduceWithPatches;
-  /**
-   * Pass true to automatically freeze all copies created by Immer.
-   *
-   * Always freeze by default, even in production mode
-   */
-  declare export var setAutoFreeze: (value: boolean) => void;
-  /**
-   * Pass true to use the ES2015 `Proxy` class when creating drafts, which is
-   * always faster than using ES5 proxies.
-   *
-   * By default, feature detection is used, so calling this is rarely necessary.
-   */
-  declare export var setUseProxies: (value: boolean) => void;
-  /**
-   * Apply an array of Immer patches to the first argument.
-   *
-   * This function is a producer, which means copy-on-write is in effect.
-   */
-  declare export var applyPatches: (
-    base: $PropertyType<$Exports<'./internal'>, 'Objectish'>,
-    patches: $PropertyType<$Exports<'./internal'>, 'Patch'>[]
-  ) => any;
-  /**
-   * Create an Immer draft from the given base state, which may be a draft itself.
-   * The draft can be modified until you finalize it with the `finishDraft` function.
-   */
-  declare export var createDraft: <
-    T: $PropertyType<$Exports<'./internal'>, 'Objectish'>
-  >(
-    base: T
-  ) => Draft<T>;
-  /**
-   * Finalize an Immer draft from a `createDraft` call, returning the base state
-   * (if no changes were made) or a modified copy. The draft must *not* be
-   * mutated afterwards.
-   *
-   * Pass a function as the 2nd argument to generate Immer patches based on the
-   * changes that were made.
-   */
-  declare export var finishDraft: <D: any>(
-    draft: D,
-    patchListener?: $PropertyType<
-      $Exports<'./internal'>,
-      'PatchListener'
-    > | void
-  ) => /* Flow doesn't support conditional types, use `$Call` utility type */ any;
-  /**
-   * This function is actually a no-op, but can be used to cast an immutable type
-   * to an draft type and make TypeScript happy
-   * @param value
-   */
-  declare export function castDraft<T>(value: T): Draft<T>;
-
-  /**
-   * This function is actually a no-op, but can be used to cast a mutable type
-   * to an immutable type and make TypeScript happy
-   * @param value
-   */
-  declare export function castImmutable<T>(value: T): Immutable<T>;
-  declare export { Immer };
-  declare export { enableES5 } from './plugins/es5';
-  declare export { enablePatches } from './plugins/patches';
-  declare export { enableMapSet } from './plugins/mapset';
-  declare export { enableAllPlugins } from './plugins/all';
+declare module "immer" {
+  declare module.exports: any;
 }
-
 
 /**
  * We include stubs for each file inside this npm package in case you need to
  * require those files directly. Feel free to delete any files that aren't
  * needed.
  */
-declare module 'immer/dist/immer.cjs.development' {
+declare module "immer/dist/immer.cjs.development" {
   declare module.exports: any;
 }
 
-declare module 'immer/dist/immer.cjs.production.min' {
+declare module "immer/dist/immer.cjs.production.min" {
   declare module.exports: any;
 }
 
-declare module 'immer/dist/immer.esm' {
+declare module "immer/dist/immer.esm" {
   declare module.exports: any;
 }
 
-declare module 'immer/dist/immer.umd.development' {
+declare module "immer/dist/immer.umd.development" {
   declare module.exports: any;
 }
 
-declare module 'immer/dist/immer.umd.production.min' {
+declare module "immer/dist/immer.umd.production.min" {
   declare module.exports: any;
 }
 
-declare module 'immer/dist' {
+declare module "immer/dist" {
   declare module.exports: any;
 }
 
 // Filename aliases
-declare module 'immer/dist/immer.cjs.development.js' {
-  declare module.exports: $Exports<'immer/dist/immer.cjs.development'>;
+declare module "immer/dist/immer.cjs.development.js" {
+  declare module.exports: $Exports<"immer/dist/immer.cjs.development">;
 }
-declare module 'immer/dist/immer.cjs.production.min.js' {
-  declare module.exports: $Exports<'immer/dist/immer.cjs.production.min'>;
+declare module "immer/dist/immer.cjs.production.min.js" {
+  declare module.exports: $Exports<"immer/dist/immer.cjs.production.min">;
 }
-declare module 'immer/dist/immer.esm.js' {
-  declare module.exports: $Exports<'immer/dist/immer.esm'>;
+declare module "immer/dist/immer.esm.js" {
+  declare module.exports: $Exports<"immer/dist/immer.esm">;
 }
-declare module 'immer/dist/immer.umd.development.js' {
-  declare module.exports: $Exports<'immer/dist/immer.umd.development'>;
+declare module "immer/dist/immer.umd.development.js" {
+  declare module.exports: $Exports<"immer/dist/immer.umd.development">;
 }
-declare module 'immer/dist/immer.umd.production.min.js' {
-  declare module.exports: $Exports<'immer/dist/immer.umd.production.min'>;
+declare module "immer/dist/immer.umd.production.min.js" {
+  declare module.exports: $Exports<"immer/dist/immer.umd.production.min">;
 }
-declare module 'immer/dist/index' {
-  declare module.exports: $Exports<'immer/dist'>;
+declare module "immer/dist/index" {
+  declare module.exports: $Exports<"immer/dist">;
 }
-declare module 'immer/dist/index.js' {
-  declare module.exports: $Exports<'immer/dist'>;
+declare module "immer/dist/index.js" {
+  declare module.exports: $Exports<"immer/dist">;
 }

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useDrop } from "react-dnd";
 
-import type CardData from "../model/CardData";
+import type { CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import Card from "./Card";
 import Draggables from "../constants/Draggables";
@@ -21,14 +21,24 @@ function Canvas({ addCard, cards }: Props): React.MixedElement {
     accept: Draggables.CARD,
     drop: (_item, monitor) => {
       const {
+        // $FlowExpectedError[incompatible-use] skip null check bc we know item is dragged
         x: xNodeStart,
+        // $FlowExpectedError[incompatible-use] skip null check bc we know item is dragged
         y: yNodeStart,
       } = monitor.getInitialSourceClientOffset();
       const {
+        // $FlowExpectedError[incompatible-use] skip null check bc we know item is dragged
         x: xPointerStart,
+        // $FlowExpectedError[incompatible-use] skip null check bc we know item is dragged
         y: yPointerStart,
       } = monitor.getInitialClientOffset();
-      const { x: xPointerEnd, y: yPointerEnd } = monitor.getClientOffset();
+      // $FlowExpectedError[incompatible-use] skip null check bc we know item is dragged
+      const {
+        // $FlowExpectedError[incompatible-use] skip null check bc we know item is dragged
+        x: xPointerEnd,
+        // $FlowExpectedError[incompatible-use] skip null check bc we know item is dragged
+        y: yPointerEnd,
+      } = monitor.getClientOffset();
 
       addCard({
         id: makeUniqueId(),
