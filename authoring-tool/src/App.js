@@ -21,7 +21,6 @@ function App(): React.MixedElement {
     );
   };
   const moveCard = (editedCard: CardData) => {
-    console.log(editedCard);
     setCards((baseState) => {
       const foundCard = baseState.get(editedCard.id);
       if (foundCard == null) {
