@@ -20,12 +20,28 @@ function App(): React.MixedElement {
       })
     );
   };
+  const moveCard = (editedCard: CardData) => {
+    console.log(editedCard);
+    setCards((baseState) => {
+      const foundCard = baseState.get(editedCard.id);
+      if (foundCard == null) {
+        console.error(
+          // $FlowExpectedError coerce id for the sake of logging
+          `moveCard called with unrecognized card id: ${editedCard.id}`
+        );
+        return baseState;
+      }
+      return produce(baseState, (draftState) => {
+        draftState.set(editedCard.id, editedCard);
+      });
+    });
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="App-container">
         <SidePanel />
-        <Canvas addCard={addCard} cards={cards} />
+        <Canvas addCard={addCard} cards={cards} moveCard={moveCard} />
       </div>
     </DndProvider>
   );

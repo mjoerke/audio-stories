@@ -2,7 +2,7 @@
   "extends": [
     // "react-app",
     "airbnb",
-    // "plugin:flowtype-errors/recommended",
+    "plugin:flowtype-errors/recommended",
     "plugin:flowtype/recommended",
     "plugin:jsx-a11y/recommended",
     "prettier"
@@ -20,10 +20,12 @@
     "prettier"
   ],
   "rules": {
+    "no-console": ["warn", { "allow": ["error"]}],
     "no-unused-vars": ["error", {
       "argsIgnorePattern": "^_",
       "varsIgnorePattern": "^_"
     }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/require-default-props": [2, { "ignoreFunctionalComponents": true}]
   }
 }

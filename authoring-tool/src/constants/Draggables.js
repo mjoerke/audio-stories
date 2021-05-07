@@ -2,9 +2,9 @@
 
 const Draggables = Object.freeze({
   CARD: "card",
+  NEW_CARD: "new_card",
 });
 
-// eslint-disable-next-line no-undef
-export opaque type DraggableType = $Values<typeof Draggables>;
+export type DraggableType = "card" | "new_card";
 
 export default Draggables;
