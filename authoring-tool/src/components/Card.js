@@ -11,17 +11,19 @@ import "./Card.css";
 
 type Props = {
   id?: UniqueId,
+  size?: number,
   type?: DraggableType,
 };
 
 export default function Card({
   id,
+  size = 200,
   type = Draggables.CARD,
 }: Props): React.MixedElement {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type,
-      item: { id, type },
+      item: { id, size, type },
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
@@ -33,7 +35,14 @@ export default function Card({
     isDragging ? " Card-containerBeingDragged" : ""
   }`;
   return (
-    <div ref={drag} className={containerClass}>
+    <div
+      ref={drag}
+      className={containerClass}
+      style={{
+        height: size,
+        width: size,
+      }}
+    >
       Card
     </div>
   );
