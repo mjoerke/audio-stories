@@ -1,15 +1,20 @@
 import http
 import json
+import os
 
 import fire
 import flask
 from PIL import Image
 from werkzeug.exceptions import HTTPException
 
-import model_utils
+from server import model_utils
 
 app = flask.Flask(__name__)
 model = None
+
+AUDIO_FILES_ENDPOINT = "/audio-files/"
+AUDIO_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                               "server_data", "audio")
 
 
 class InvalidLabelException(Exception):
@@ -64,7 +69,14 @@ def inference():
 
     response = flask.jsonify(scores)
     response.headers.add('Access-Control-Allow-Origin', '*')
+
     return response
+
+
+@app.route('{}<path:path>'.format(AUDIO_FILES_ENDPOINT))
+def serve_audio_file(path):
+    return flask.send_from_directory(AUDIO_FILES_DIR, path)
+
 
 def run_app(debug=True, port=5000, host="0.0.0.0", device="cuda"):
     global model

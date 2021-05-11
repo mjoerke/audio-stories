@@ -3,11 +3,12 @@ import json
 import os
 from typing import Dict
 
+from server.speech_generator import SpeechGenerator
+
 
 class AudioStoryGraph():
     def __init__(self, graph):
         self._graph = graph
-        pass
 
     @staticmethod
     def from_file(file_path: str) -> 'AudioStoryGraph':
@@ -20,9 +21,32 @@ class AudioStoryGraph():
     def from_json(json_graph: Dict) -> 'AudioStoryGraph':
         return AudioStoryGraph(copy.deepcopy(json_graph))
 
+    @property
+    def graph(self):
+        return self._graph
+
     def save(self, path: str) -> None:
-        with open(path) as outfile:
+        with open(path, 'w') as outfile:
             json.dump(self._graph, outfile)
+
+    def get_transcripts(self) -> Dict[str, str]:
+        transcripts = {}
+
+        for node_id, node in self._graph["nodes"]:
+            if node["type"] == "audio":
+                transcripts[node_id] = node["audio_text"]
+
+        return transcripts
+
+    def generate_audio(self, speech_generator: SpeechGenerator) -> None:
+        transcripts = self.get_transcripts()
+
+        for node_id, transcript in transcripts.items():
+            fname = ""
+            savepath = None
+            speech_generator.to_speech(transcript, savepath)
+
+            self._graph["nodes"][node_id]["audio_file"] = fname
 
 
 class AudioStoryLoader():
