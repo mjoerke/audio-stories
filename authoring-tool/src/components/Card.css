@@ -6,3 +6,8 @@
 .Card-containerBeingDragged {
   opacity: 0.5;
 }
+
+.Card-linkHandle {
+  position: absolute;
+  right: 0;
+}

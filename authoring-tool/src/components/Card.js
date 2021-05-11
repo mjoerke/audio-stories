@@ -12,12 +12,18 @@ import "./Card.css";
 
 type Props = {
   id?: UniqueId,
+  isUserCreatingLink?: boolean,
+  onCreateLink?: (UniqueId) => void,
+  onFinishLink?: (UniqueId) => void,
   size?: number,
   type?: DraggableType,
 };
 
 export default function Card({
   id,
+  isUserCreatingLink,
+  onCreateLink,
+  onFinishLink,
   size = DEFAULT_CARD_SIZE,
   type = Draggables.CARD,
 }: Props): React.MixedElement {
@@ -46,6 +52,22 @@ export default function Card({
       }}
     >
       Card
+      {onCreateLink && onFinishLink && id != null ? (
+        <button
+          className="Card-linkHandle"
+          onClick={(_e) => {
+            if (isUserCreatingLink) {
+              onFinishLink(id);
+            } else {
+              onCreateLink(id);
+            }
+          }}
+          style={{ top: size / 2 }}
+          type="button"
+        >
+          ▶
+        </button>
+      ) : null}
     </div>
   );
 }

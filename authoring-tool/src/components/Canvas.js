@@ -15,11 +15,19 @@ import "./Canvas.css";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
+  addLink: (UniqueId, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
+  links: Map<UniqueId, UniqueId>,
   moveCard: (CardData) => void,
 }>;
 
-function Canvas({ addCard, cards, moveCard }: Props): React.MixedElement {
+function Canvas({
+  addCard,
+  addLink,
+  cards,
+  links,
+  moveCard,
+}: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: [Draggables.NEW_CARD, Draggables.CARD],
@@ -76,11 +84,120 @@ function Canvas({ addCard, cards, moveCard }: Props): React.MixedElement {
     [addCard, cards, moveCard]
   );
 
+  const [
+    isDrawingNewLinkFrom,
+    setisDrawingNewLinkFrom,
+  ] = React.useState<?UniqueId>(null);
+
+  const canvasRef = React.useRef<?HTMLCanvasElement>(null);
+  const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
+  const mouseCoords = React.useRef<?{ x: number, y: number }>(null);
+
+  const draw = (ctx, _frameCount) => {
+    ctx.clearRect(0, 0, 10000, 5000);
+    Array.from(links).forEach(([from, to]) => {
+      ctx.beginPath();
+      const fromCard = cards.get(from);
+      const toCard = cards.get(to);
+      if (fromCard == null) {
+        console.error(
+          // $FlowExpectedError coerce to string for error logging
+          `No card found with id ${from} when trying to draw link from card!`
+        );
+      } else if (toCard == null) {
+        console.error(
+          // $FlowExpectedError coerce to string for error logging
+          `No card found with id ${to} when trying to draw link to card!`
+        );
+      } else {
+        /* Card coords are absolute relative to window, so we need to
+         * offset by the size of the side panel */
+        ctx.moveTo(
+          fromCard.x + fromCard.size - 200,
+          fromCard.y + fromCard.size / 2
+        );
+        ctx.lineTo(toCard.x - 200, toCard.y + toCard.size / 2);
+        ctx.stroke();
+      }
+    });
+
+    if (isDrawingNewLinkFrom != null) {
+      ctx.beginPath();
+      if (cardLinkStartCoords.current == null) {
+        return;
+      }
+      ctx.moveTo(cardLinkStartCoords.current.x, cardLinkStartCoords.current.y);
+      if (mouseCoords.current == null) {
+        return;
+      }
+      ctx.lineTo(mouseCoords.current.x, mouseCoords.current.y);
+      ctx.stroke();
+    }
+  };
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas == null) {
+      return () => {};
+    }
+    const context = canvas.getContext("2d");
+    let frameCount = 0;
+    let animationFrameId;
+
+    const render = () => {
+      frameCount += 1;
+      draw(context, frameCount);
+      // eslint-disable-next-line
+      animationFrameId = window.requestAnimationFrame(render);
+    };
+    render();
+
+    return () => {
+      // eslint-disable-next-line
+      window.cancelAnimationFrame(animationFrameId);
+    };
+  }, [draw, isDrawingNewLinkFrom]);
+
+  const saveMousePosition = (e) => {
+    const canvas = canvasRef.current;
+    if (canvas == null) {
+      mouseCoords.current = null;
+      return;
+    }
+    mouseCoords.current = {
+      x: e.clientX - canvas.offsetLeft,
+      y: e.clientY - canvas.offsetTop,
+    };
+  };
+
+  const startLinkFromCard = (id) => {
+    if (id != null) {
+      setisDrawingNewLinkFrom((_) => id);
+      const card = cards.get(id);
+
+      if (card != null) {
+        /* Card coords are absolute relative to window, so we need to
+         * offset by the size of the side panel */
+        cardLinkStartCoords.current = {
+          x: card.x + card.size - /* panel size */ 200,
+          y: card.y + card.size / 2,
+        };
+      }
+    }
+  };
+
   const containerClass = `Canvas-container${
     isOver ? " Canvas-containerDropping" : ""
   }`;
   return (
     <div ref={drop} className={containerClass}>
+      <canvas
+        ref={canvasRef}
+        id="Canvas-canvas"
+        height={5000}
+        width={10000}
+        onMouseMove={saveMousePosition}
+      />
       {Array.from(cards).map(([id, card]) => (
         <div
           style={{
@@ -89,7 +206,17 @@ function Canvas({ addCard, cards, moveCard }: Props): React.MixedElement {
             top: card.y,
           }}
         >
-          <Card id={id} />
+          <Card
+            id={id}
+            isUserCreatingLink={!!isDrawingNewLinkFrom}
+            onCreateLink={startLinkFromCard}
+            onFinishLink={(to) => {
+              if (isDrawingNewLinkFrom != null) {
+                addLink(isDrawingNewLinkFrom, to);
+                setisDrawingNewLinkFrom((_) => null);
+              }
+            }}
+          />
         </div>
       ))}
     </div>

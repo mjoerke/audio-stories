@@ -6,13 +6,15 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import type { CardData } from "./model/CardData";
+import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
 import SidePanel from "./components/SidePanel";
 
 import "./App.css";
 
 function App(): React.MixedElement {
-  const [cards, setCards] = React.useState(() => new Map());
+  const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
+  const [links, setLinks] = React.useState(() => new Map<UniqueId, UniqueId>());
   const addCard = (newCard: CardData) => {
     setCards((baseState) =>
       produce(baseState, (draftState) => {
@@ -35,12 +37,25 @@ function App(): React.MixedElement {
       });
     });
   };
+  const addLink = (from: UniqueId, to: UniqueId) => {
+    setLinks((baseState) =>
+      produce(baseState, (draftState) => {
+        draftState.set(from, to);
+      })
+    );
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="App-container">
         <SidePanel />
-        <Canvas addCard={addCard} cards={cards} moveCard={moveCard} />
+        <Canvas
+          addCard={addCard}
+          addLink={addLink}
+          cards={cards}
+          links={links}
+          moveCard={moveCard}
+        />
       </div>
     </DndProvider>
   );
