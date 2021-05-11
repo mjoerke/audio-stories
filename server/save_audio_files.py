@@ -53,7 +53,7 @@ class AudioStoryGraph():
     def get_transcripts(self) -> Dict[str, str]:
         transcripts = {}
 
-        for node_id, node in self._graph["nodes"]:
+        for node_id, node in self._graph["nodes"].items():
             if node["type"] == "audio":
                 transcripts[node_id] = node["audio_text"]
 

@@ -1,0 +1,9 @@
+{
+    "nodes": {
+        "0": {
+            "type": "audio",
+            "next": 1,
+            "audio_text": "It's certainly been a year full of changes."
+        }
+    }
+}
