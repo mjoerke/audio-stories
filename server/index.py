@@ -6,7 +6,7 @@ import flask
 from PIL import Image
 from werkzeug.exceptions import HTTPException
 
-import model_utils
+from server import model_utils
 
 app = flask.Flask(__name__)
 model = None
@@ -64,7 +64,9 @@ def inference():
 
     response = flask.jsonify(scores)
     response.headers.add('Access-Control-Allow-Origin', '*')
+
     return response
+
 
 def run_app(debug=True, port=5000, host="0.0.0.0", device="cuda"):
     global model

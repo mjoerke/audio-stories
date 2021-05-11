@@ -1,7 +1,6 @@
 import threading
 
 import clip
-import numpy as np
 import torch
 
 
@@ -23,4 +22,5 @@ class CLIPModel:
         output = self.model(image_input, text_input)
         self.lock.release()
         image_probs = output[0].softmax(dim=-1).detach().cpu().numpy()[0]
+
         return image_probs

@@ -7,7 +7,6 @@ from typing import Dict
 class AudioStoryGraph():
     def __init__(self, graph):
         self._graph = graph
-        pass
 
     @staticmethod
     def from_file(file_path: str) -> 'AudioStoryGraph':
@@ -20,8 +19,12 @@ class AudioStoryGraph():
     def from_json(json_graph: Dict) -> 'AudioStoryGraph':
         return AudioStoryGraph(copy.deepcopy(json_graph))
 
+    @property
+    def graph(self):
+        return self._graph
+
     def save(self, path: str) -> None:
-        with open(path) as outfile:
+        with open(path, 'w') as outfile:
             json.dump(self._graph, outfile)
 
 
