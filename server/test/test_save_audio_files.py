@@ -185,18 +185,18 @@ class TestAudioStoryLoader(unittest.TestCase):
     def test_save_with_audio(self):
         story_id = "my_story"
 
-        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
-                                              audio_save_dir=self.audio_dir)
-
         speech_generator = DummySpeechGenerator()
+        audio_story_loader = AudioStoryLoader(
+            save_dir=self.test_dir,
+            audio_save_dir=self.audio_dir,
+            speech_generator=speech_generator)
 
         filepath = get_test_filepath("one_audio_node.json")
         audio_story = AudioStoryGraph.from_file(filepath)
 
         audio_story_loader.save(audio_file_graph=audio_story.graph,
                                 story_id=story_id,
-                                generate_audio=True,
-                                speech_generator=speech_generator)
+                                generate_audio=True)
 
         tmp_files = os.listdir(self.test_dir)
         assert len(tmp_files) == 1
@@ -210,18 +210,18 @@ class TestAudioStoryLoader(unittest.TestCase):
     def test_save_with_audio_multiple(self):
         story_id = "my_story"
 
-        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
-                                              audio_save_dir=self.audio_dir)
-
         speech_generator = DummySpeechGenerator()
+        audio_story_loader = AudioStoryLoader(
+            save_dir=self.test_dir,
+            audio_save_dir=self.audio_dir,
+            speech_generator=speech_generator)
 
         filepath = get_test_filepath("two_audio_one_classifier.json")
         audio_story = AudioStoryGraph.from_file(filepath)
 
         audio_story_loader.save(audio_file_graph=audio_story.graph,
                                 story_id=story_id,
-                                generate_audio=True,
-                                speech_generator=speech_generator)
+                                generate_audio=True)
 
         tmp_files = os.listdir(self.test_dir)
         assert len(tmp_files) == 1
@@ -239,18 +239,18 @@ class TestAudioStoryLoader(unittest.TestCase):
     def test_load_with_audio(self):
         story_id = "my_story"
 
-        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
-                                              audio_save_dir=self.audio_dir)
-
         speech_generator = DummySpeechGenerator()
+        audio_story_loader = AudioStoryLoader(
+            save_dir=self.test_dir,
+            audio_save_dir=self.audio_dir,
+            speech_generator=speech_generator)
 
         filepath = get_test_filepath("one_audio_node.json")
         audio_story = AudioStoryGraph.from_file(filepath)
 
         audio_story_loader.save(audio_file_graph=audio_story.graph,
                                 story_id=story_id,
-                                generate_audio=True,
-                                speech_generator=speech_generator)
+                                generate_audio=True)
 
         # this should not err
         audio_story_loader.load(story_id, must_have_audio=True)
@@ -274,18 +274,18 @@ class TestAudioStoryLoader(unittest.TestCase):
     def test_load_with_audio_relpath(self):
         story_id = "my_story"
 
-        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
-                                              audio_save_dir=self.audio_dir)
-
         speech_generator = DummySpeechGenerator()
+        audio_story_loader = AudioStoryLoader(
+            save_dir=self.test_dir,
+            audio_save_dir=self.audio_dir,
+            speech_generator=speech_generator)
 
         filepath = get_test_filepath("one_audio_node.json")
         audio_story = AudioStoryGraph.from_file(filepath)
 
         audio_story_loader.save(audio_file_graph=audio_story.graph,
                                 story_id=story_id,
-                                generate_audio=True,
-                                speech_generator=speech_generator)
+                                generate_audio=True)
 
         # this should not err
         graph = audio_story_loader.load(story_id,

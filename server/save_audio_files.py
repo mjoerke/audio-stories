@@ -94,9 +94,13 @@ class AudioStoryGraph():
 
 
 class AudioStoryLoader():
-    def __init__(self, save_dir, audio_save_dir):
+    def __init__(self,
+                 save_dir: str,
+                 audio_save_dir: str,
+                 speech_generator: Optional[SpeechGenerator] = None):
         self.save_dir = save_dir
         self.audio_save_dir = audio_save_dir
+        self.speech_generator = speech_generator
 
     def _get_savepath(self, story_id: str) -> str:
         return os.path.join(self.save_dir, story_id + ".json")
@@ -105,8 +109,7 @@ class AudioStoryLoader():
              audio_file_graph: Dict,
              story_id: str,
              check_exists: bool = False,
-             generate_audio: bool = True,
-             speech_generator: Optional[SpeechGenerator] = None) -> None:
+             generate_audio: bool = True) -> None:
         savepath = self._get_savepath(story_id)
 
         if check_exists:
@@ -117,14 +120,15 @@ class AudioStoryLoader():
         audio_story = AudioStoryGraph.from_json(audio_file_graph)
 
         if generate_audio:
-            assert speech_generator, "Must provide speech_generator"
+            assert self.speech_generator, "Must provide speech_generator"
 
             if not audio_story.has_audio_files():
                 audio_savepath = os.path.join(
                     self.audio_save_dir,
                     "{story_id}_{node_id}.mp3".format(story_id=story_id,
                                                       node_id="{node_id}"))
-                audio_story.generate_audio(speech_generator, audio_savepath)
+                audio_story.generate_audio(self.speech_generator,
+                                           audio_savepath)
 
         audio_story.save(savepath)
 
