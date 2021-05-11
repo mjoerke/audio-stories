@@ -22,7 +22,7 @@ class AudioStoryGraph():
         return AudioStoryGraph(copy.deepcopy(json_graph))
 
     @property
-    def graph(self):
+    def graph(self) -> Dict:
         return self._graph
 
     def save(self, path: str) -> None:
@@ -81,6 +81,17 @@ class AudioStoryGraph():
 
             self._graph["nodes"][node_id]["audio_file"] = node_savepath
 
+    def relative_to(self, root_path: str = "/") -> Dict:
+        new_graph = copy.deepcopy(self._graph)
+
+        for node_id, node in self._graph["nodes"].items():
+            if node["type"] == "audio" and "audio_file" in node:
+                abspath = node["audio_file"]
+                rel_path = os.path.relpath(abspath, root_path)
+                new_graph["nodes"][node_id]["audio_file"] = rel_path
+
+        return new_graph
+
 
 class AudioStoryLoader():
     def __init__(self, save_dir, audio_save_dir):
@@ -119,11 +130,14 @@ class AudioStoryLoader():
 
     def load(self,
              story_id: str,
-             must_have_audio: bool = True) -> AudioStoryGraph:
+             must_have_audio: bool = True,
+             audio_relative_to: str = "/") -> Dict:
         savepath = self._get_savepath(story_id)
         audio_story = AudioStoryGraph.from_file(savepath)
 
         if must_have_audio:
             assert audio_story.has_audio_files()
 
-        return audio_story
+        graph = audio_story.relative_to(audio_relative_to)
+
+        return graph

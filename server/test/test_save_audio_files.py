@@ -107,6 +107,32 @@ class TestAudioStoryGraph(unittest.TestCase):
         audio_path = os.path.join(self.audio_dir, "2.json")
         assert not os.path.exists(audio_path)
 
+    def test_relative_to(self):
+        filepath = get_test_filepath("two_audio_nodes.json")
+        audio_story_graph = AudioStoryGraph.from_file(filepath)
+        savepath = os.path.join(self.audio_dir, "{node_id}.json")
+
+        speech_generator = DummySpeechGenerator()
+        audio_story_graph.generate_audio(speech_generator, savepath)
+
+        graph = audio_story_graph.relative_to(self.audio_dir)
+        assert graph["nodes"]["0"]["audio_file"] == "0.json"
+        assert graph["nodes"]["1"]["audio_file"] == "1.json"
+
+    def test_relative_to_root(self):
+        filepath = get_test_filepath("two_audio_nodes.json")
+        audio_story_graph = AudioStoryGraph.from_file(filepath)
+        savepath = os.path.join(self.audio_dir, "{node_id}.json")
+
+        speech_generator = DummySpeechGenerator()
+        audio_story_graph.generate_audio(speech_generator, savepath)
+
+        graph = audio_story_graph.relative_to()
+        assert "/" + graph["nodes"]["0"]["audio_file"] == os.path.abspath(
+            os.path.join(self.audio_dir, "0.json"))
+        assert "/" + graph["nodes"]["1"]["audio_file"] == os.path.abspath(
+            os.path.join(self.audio_dir, "1.json"))
+
 
 class TestAudioStoryLoader(unittest.TestCase):
     def setUp(self):
@@ -153,8 +179,8 @@ class TestAudioStoryLoader(unittest.TestCase):
         assert len(tmp_files) == 1
         assert any([story_id in fname for fname in tmp_files])
 
-        audio_story = audio_story_loader.load(story_id, must_have_audio=False)
-        assert audio_story.graph == graph_dict
+        graph = audio_story_loader.load(story_id, must_have_audio=False)
+        assert graph == graph_dict
 
     def test_save_with_audio(self):
         story_id = "my_story"
@@ -242,9 +268,31 @@ class TestAudioStoryLoader(unittest.TestCase):
                                 story_id=story_id,
                                 generate_audio=False)
 
-        # this should not err
         with self.assertRaises(AssertionError):
             audio_story_loader.load(story_id, must_have_audio=True)
+
+    def test_load_with_audio_relpath(self):
+        story_id = "my_story"
+
+        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
+                                              audio_save_dir=self.audio_dir)
+
+        speech_generator = DummySpeechGenerator()
+
+        filepath = get_test_filepath("one_audio_node.json")
+        audio_story = AudioStoryGraph.from_file(filepath)
+
+        audio_story_loader.save(audio_file_graph=audio_story.graph,
+                                story_id=story_id,
+                                generate_audio=True,
+                                speech_generator=speech_generator)
+
+        # this should not err
+        graph = audio_story_loader.load(story_id,
+                                        must_have_audio=True,
+                                        audio_relative_to=self.audio_dir)
+
+        assert graph["nodes"]["0"]["audio_file"] == "{}_0.mp3".format(story_id)
 
 
 if __name__ == "__main__":
