@@ -109,10 +109,11 @@ class AudioStoryLoader():
             assert speech_generator, "Must provide speech_generator"
 
             if not audio_story.has_audio_files():
-                savepath = os.path.join(
+                audio_savepath = os.path.join(
                     self.audio_save_dir,
-                    "{story_id}_{node_id}.mp3".format(story_id=story_id))
-                audio_story.generate_audio(speech_generator, savepath)
+                    "{story_id}_{node_id}.mp3".format(story_id=story_id,
+                                                      node_id="{node_id}"))
+                audio_story.generate_audio(speech_generator, audio_savepath)
 
         audio_story.save(savepath)
 

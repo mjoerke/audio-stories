@@ -156,6 +156,96 @@ class TestAudioStoryLoader(unittest.TestCase):
         audio_story = audio_story_loader.load(story_id, must_have_audio=False)
         assert audio_story.graph == graph_dict
 
+    def test_save_with_audio(self):
+        story_id = "my_story"
+
+        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
+                                              audio_save_dir=self.audio_dir)
+
+        speech_generator = DummySpeechGenerator()
+
+        filepath = get_test_filepath("one_audio_node.json")
+        audio_story = AudioStoryGraph.from_file(filepath)
+
+        audio_story_loader.save(audio_file_graph=audio_story.graph,
+                                story_id=story_id,
+                                generate_audio=True,
+                                speech_generator=speech_generator)
+
+        tmp_files = os.listdir(self.test_dir)
+        assert len(tmp_files) == 1
+        assert any([story_id in fname for fname in tmp_files])
+
+        audio_files = os.listdir(self.audio_dir)
+        assert len(audio_files) == 1
+        audio_file = os.path.join(self.audio_dir, "{}_0.mp3".format(story_id))
+        assert os.path.exists(audio_file)
+
+    def test_save_with_audio_multiple(self):
+        story_id = "my_story"
+
+        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
+                                              audio_save_dir=self.audio_dir)
+
+        speech_generator = DummySpeechGenerator()
+
+        filepath = get_test_filepath("two_audio_one_classifier.json")
+        audio_story = AudioStoryGraph.from_file(filepath)
+
+        audio_story_loader.save(audio_file_graph=audio_story.graph,
+                                story_id=story_id,
+                                generate_audio=True,
+                                speech_generator=speech_generator)
+
+        tmp_files = os.listdir(self.test_dir)
+        assert len(tmp_files) == 1
+        assert any([story_id in fname for fname in tmp_files])
+
+        audio_files = os.listdir(self.audio_dir)
+        assert len(audio_files) == 2
+        audio_file = os.path.join(self.audio_dir, "{}_0.mp3".format(story_id))
+        assert os.path.exists(audio_file)
+        audio_file = os.path.join(self.audio_dir, "{}_1.mp3".format(story_id))
+        assert os.path.exists(audio_file)
+        audio_file = os.path.join(self.audio_dir, "{}_2.mp3".format(story_id))
+        assert not os.path.exists(audio_file)
+
+    def test_load_with_audio(self):
+        story_id = "my_story"
+
+        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
+                                              audio_save_dir=self.audio_dir)
+
+        speech_generator = DummySpeechGenerator()
+
+        filepath = get_test_filepath("one_audio_node.json")
+        audio_story = AudioStoryGraph.from_file(filepath)
+
+        audio_story_loader.save(audio_file_graph=audio_story.graph,
+                                story_id=story_id,
+                                generate_audio=True,
+                                speech_generator=speech_generator)
+
+        # this should not err
+        audio_story_loader.load(story_id, must_have_audio=True)
+
+    def test_load_missing_audio(self):
+        story_id = "my_story"
+
+        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
+                                              audio_save_dir=self.audio_dir)
+
+        filepath = get_test_filepath("one_audio_node.json")
+        audio_story = AudioStoryGraph.from_file(filepath)
+
+        audio_story_loader.save(audio_file_graph=audio_story.graph,
+                                story_id=story_id,
+                                generate_audio=False)
+
+        # this should not err
+        with self.assertRaises(AssertionError):
+            audio_story_loader.load(story_id, must_have_audio=True)
+
 
 if __name__ == "__main__":
     unittest.main()
