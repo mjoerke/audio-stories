@@ -1,14 +1,18 @@
 import os
 import shutil
+from abc import ABC, abstractmethod
 
 
-class SpeechGenerator:
+class SpeechGenerator(ABC):
+    @abstractmethod
+    def to_speech(self, transcript: str, savepath: str) -> None:
+        raise NotImplementedError()
+
+
+class DummySpeechGenerator(SpeechGenerator):
     """
-    This is currently a dummy class! Will add in actual functionality later.
+    Dummy class for testing.
     """
-    def __init__(self):
-        pass
-
     def to_speech(self, transcript: str, savepath: str) -> None:
         # for now, just load a sample file
         this_dir = os.path.dirname(os.path.realpath(__file__))

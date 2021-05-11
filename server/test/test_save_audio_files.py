@@ -48,39 +48,49 @@ class TestAudioStoryGraph(unittest.TestCase):
 class TestAudioStoryLoader(unittest.TestCase):
     def setUp(self):
         self.test_dir = os.path.join(_this_dir(), "tmp")
+        self.audio_dir = os.path.join(_this_dir(), "tmp_audio")
 
         if not os.path.exists(self.test_dir):
             os.makedirs(self.test_dir)
 
+        if not os.path.exists(self.audio_dir):
+            os.makedirs(self.audio_dir)
+
         assert os.path.exists(self.test_dir)
+        assert os.path.exists(self.audio_dir)
 
     def tearDown(self):
         shutil.rmtree(self.test_dir)
+        shutil.rmtree(self.audio_dir)
 
-    def test_save(self):
+    def test_save_no_audio(self):
         story_id = "my_story"
 
-        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir)
-        audio_story_loader.save(audio_file_graph={}, story_id=story_id)
+        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
+                                              audio_save_dir=self.audio_dir)
+        audio_story_loader.save(audio_file_graph={},
+                                story_id=story_id,
+                                generate_audio=False)
 
         tmp_files = os.listdir(self.test_dir)
         assert len(tmp_files) == 1
         assert any([story_id in fname for fname in tmp_files])
 
-    def test_load(self):
+    def test_load_no_audio(self):
         story_id = "test_load_story"
         filepath = get_test_filepath()
         with open(filepath) as infile:
             graph_dict = json.load(infile)
 
-        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir)
-        audio_story_loader.save(graph_dict, story_id)
+        audio_story_loader = AudioStoryLoader(save_dir=self.test_dir,
+                                              audio_save_dir=self.audio_dir)
+        audio_story_loader.save(graph_dict, story_id, generate_audio=False)
 
         tmp_files = os.listdir(self.test_dir)
         assert len(tmp_files) == 1
         assert any([story_id in fname for fname in tmp_files])
 
-        audio_story = audio_story_loader.load(story_id)
+        audio_story = audio_story_loader.load(story_id, must_have_audio=False)
         assert audio_story.graph == graph_dict
 
 
