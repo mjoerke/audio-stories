@@ -4,6 +4,7 @@ import * as React from "react";
 import { useDrag } from "react-dnd";
 
 import type { DraggableType } from "../constants/Draggables";
+import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import Draggables from "../constants/Draggables";
 
@@ -17,7 +18,7 @@ type Props = {
 
 export default function Card({
   id,
-  size = 200,
+  size = DEFAULT_CARD_SIZE,
   type = Draggables.CARD,
 }: Props): React.MixedElement {
   const [{ isDragging }, drag] = useDrag(
@@ -31,9 +32,10 @@ export default function Card({
     [type]
   );
 
-  const containerClass = `Card-container${
-    isDragging ? " Card-containerBeingDragged" : ""
-  }`;
+  let containerClass = "Card-container";
+  if (isDragging) {
+    containerClass += " Card-containerBeingDragged";
+  }
   return (
     <div
       ref={drag}

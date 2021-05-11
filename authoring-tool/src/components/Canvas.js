@@ -7,6 +7,7 @@ import type { CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import Card from "./Card";
 import Draggables from "../constants/Draggables";
+import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
 import makeUniqueId from "../util/UniqueId";
 
@@ -29,6 +30,7 @@ function Canvas({ addCard, cards, moveCard }: Props): React.MixedElement {
         } else if (item.type === Draggables.NEW_CARD) {
           addCard({
             id: makeUniqueId(),
+            size: DEFAULT_CARD_SIZE,
             x: dropPos.x,
             y: dropPos.y,
           });
@@ -44,6 +46,28 @@ function Canvas({ addCard, cards, moveCard }: Props): React.MixedElement {
             });
           }
         }
+      },
+      canDrop: (item, monitor) => {
+        let collision = false;
+        const xy = calculateDropPosition(monitor);
+        if (xy == null) {
+          return false;
+        }
+        const { x, y } = xy;
+        cards.forEach((card) => {
+          if (card.id !== item.id) {
+            // AABB collision detection
+            if (
+              x < card.x + card.size &&
+              x + item.size > card.x &&
+              y < card.y + card.size &&
+              y + item.size > card.y
+            ) {
+              collision = true;
+            }
+          }
+        });
+        return !collision;
       },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
