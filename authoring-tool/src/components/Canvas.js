@@ -94,7 +94,11 @@ function Canvas({
   const mouseCoords = React.useRef<?{ x: number, y: number }>(null);
 
   const draw = (ctx, _frameCount) => {
-    ctx.clearRect(0, 0, 10000, 5000);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    // eslint-disable-next-line no-undef
+    ctx.canvas.width = window.innerWidth;
+    // eslint-disable-next-line no-undef
+    ctx.canvas.height = window.innerHeight;
     Array.from(links).forEach(([from, to]) => {
       ctx.beginPath();
       const fromCard = cards.get(from);
@@ -194,8 +198,6 @@ function Canvas({
       <canvas
         ref={canvasRef}
         id="Canvas-canvas"
-        height={5000}
-        width={10000}
         onMouseMove={saveMousePosition}
       />
       {Array.from(cards).map(([id, card]) => (
