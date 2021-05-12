@@ -1,0 +1,25 @@
+{
+    "nodes": {
+        "0": {
+            "type": "audio",
+            "next": 1,
+            "audio_text": "It's certainly been a year full of changes."
+        },
+        "1": {
+            "type": "audio",
+            "next": 2,
+            "audio_text": "It's certainly been a year full of changes."
+        },
+        "2": {
+            "type": "classifier",
+            "labels": {
+                "indoors": 2,
+                "outdoors": 3
+            },
+            "thresholds": {
+                "indoors": 0.5,
+                "outdoors": 0.5
+            }
+        }
+    }
+}
