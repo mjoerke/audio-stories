@@ -53,14 +53,23 @@ pip install -r server/requirements.txt
 Here is the command to run the Flask server: 
 
 ```
-python3 server/server.py
+python3 server/index.py
 ```
 
-Run `python3 server/server.py --help` to see optional args.
+Run `python3 server/index.py --help` to see optional args.
+
+### Running the server tests 
+
+There are unit tests for the audio saving/loading functionality and integration tests for the API. Run them like this: 
+
+`python3 -m pytest server/test`
 
 ### Files
 
-- `server/server.py`: code to run the server, contains API endpoints
+- `server/index.py`: code to run the server, very bare-bones
+- `server/create_app.py`: sets up the app, includes API endpoints
 - `server/model_utils.py`: code for using the CLIP model 
-- `server/test`: some informal files used for testing. See `server/test/test_api.py` for an example of how to send an inference request to the server.
+- `server/save_audio_files.py`: code for storing and loading audio stories on the server
+- `server/speech_generator.py`: code for doing text-to-speech
+- `server/test`: tests
 
