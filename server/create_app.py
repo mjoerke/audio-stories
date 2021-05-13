@@ -40,7 +40,7 @@ def create_app(device, save_dir, audio_save_dir):
             "description": e.description
         })
         response.content_type = "application/json"
-
+        response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
     @app.errorhandler(InvalidLabelException)
@@ -86,14 +86,16 @@ def create_app(device, save_dir, audio_save_dir):
 
     @app.route('/save-audio-story', methods=['POST'])
     def save_audio_story():
-        audio_story = flask.request.json
+        audio_story = flask.request.get_json(force=True)
         audio_story_id = audio_story["story_id"]
         audio_story_loader.save(audio_story,
                                 audio_story_id,
                                 check_exists=True,
                                 generate_audio=True)
 
-        return "ok"
+        response = flask.jsonify("ok")
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
     @app.route('/load-audio-story/<string:story_id>')
     def load_audio_story(story_id):
@@ -102,6 +104,8 @@ def create_app(device, save_dir, audio_save_dir):
                                         must_have_audio=True,
                                         audio_relative_to=audio_save_dir)
 
-        return flask.jsonify(graph)
+        response = flask.jsonify(graph)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
     return app
