@@ -1,9 +1,10 @@
 // global variables
-var audio;
-var state;
-var current_node;
-var spacebar;
-var story;
+var audio; // audio DOM element for playing mp3s
+var story; // story tree object
+var current_node; // current node in story tree
+var paused = true; // whether story is playing or paused
+var debug = false; // whether interface is in debug mode
+
 
 function check_threshold(label_transitions, thresholds, results) {
     // "label_transitions": {"indoors": 1,"outdoors": 2}
@@ -37,8 +38,18 @@ function check_threshold(label_transitions, thresholds, results) {
 
 async function loop() {
 
-    console.log('loop')
-    state = current_node.type
+    console.log("main loop")
+
+    if (paused) {
+        return
+    }
+
+    if (debug) {
+        setTimeout(()=>debug_loop())
+        return
+    }
+
+    let state = current_node.type
 
     switch (state) {
 
@@ -67,7 +78,7 @@ async function loop() {
                     setTimeout(()=>loop(), 500)
                 }
                 
-            };5
+            };
 
             document.body.appendChild(audio);
             break;
@@ -76,14 +87,13 @@ async function loop() {
         // e.g. wait until you see a cat
         case "classifier":
             console.log('classifier')
-            let image = get_image_data()
+            
 
-            // we want to timeout on the await (cancel after 500ms)
+            // we want to timeout on the await (cancel after MAX_TIMEOUT ms)
             let results;
             try {
-                results = await query_classifier(5000)
-                console.log(results)
-                console.log('received frame')
+                let labels = JSON.stringify(Object.keys(current_node.labels))
+                results = await query_classifier(MAX_TIMEOUT, labels)
             } catch(e) {
                 // if the server doesn't respond in time, immediately trigger next frame
                 console.log("dropped frame", e)
@@ -139,27 +149,22 @@ story = {
 //     }
 // }
 
-function dummy_spacebar_threshold() {
-    // hack -- you can change what label is produced by pressing the spacebar
-    // to test the "wait" story condition
-    if (spacebar) {
-        return {"indoors": 1.00, "outdoors": 0.00}
-    }
-    return {"indoors": 0.1, "outdoors": 0.9}
-}
+var play_button = document.getElementById("play-button");
 
-// hack - trigger story when spacebar pressed         
-document.body.onkeyup = function(e){
-    if(e.keyCode == 32){
-        spacebar = true;
-    }
-}
+function toggle_play_button() {
+    if (paused) {
+        paused = false;
+        play_button.children[0].innerHTML = "pause";
 
-document.getElementById("play-button").addEventListener(
-    "click",
-    function () {
-        current_node = story['nodes'][0]
+        if (!current_node) {
+            current_node = story['nodes'][0];
+        }
+
         loop();
-    }
-)
+    } else {
+        paused = true;
+        play_button.children[0].innerHTML = "play_arrow";
+    }   
+}
 
+play_button.onclick = toggle_play_button;
