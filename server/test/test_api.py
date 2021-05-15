@@ -22,7 +22,8 @@ class TestApi(unittest.TestCase):
         cls.client = create_app(
             device="cuda",
             save_dir=cls.save_dir,
-            audio_save_dir=cls.audio_save_dir).test_client()
+            audio_save_dir=cls.audio_save_dir,
+            speech_gen_class=DummySpeechGenerator).test_client()
 
     def setUp(self):
         if not os.path.exists(self.save_dir):

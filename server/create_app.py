@@ -8,7 +8,7 @@ from werkzeug.exceptions import HTTPException
 
 from server.model_utils import CLIPModel
 from server.save_audio_files import AudioStoryLoader
-from server.speech_generator import DummySpeechGenerator
+from server.speech_generator import GoogleSpeechGenerator
 
 AUDIO_FILES_ENDPOINT = "/audio-files/"
 AUDIO_STORY_FILES_DIR = os.path.join(
@@ -20,12 +20,15 @@ class InvalidLabelException(Exception):
     pass
 
 
-def create_app(device, save_dir, audio_save_dir):
+def create_app(device,
+               save_dir,
+               audio_save_dir,
+               speech_gen_class=GoogleSpeechGenerator):
     app = flask.Flask(__name__)
 
     model = CLIPModel(device)
 
-    speech_generator = DummySpeechGenerator()
+    speech_generator = speech_gen_class()
     audio_story_loader = AudioStoryLoader(save_dir=save_dir,
                                           audio_save_dir=audio_save_dir,
                                           speech_generator=speech_generator)
@@ -41,6 +44,7 @@ def create_app(device, save_dir, audio_save_dir):
         })
         response.content_type = "application/json"
         response.headers.add('Access-Control-Allow-Origin', '*')
+
         return response
 
     @app.errorhandler(InvalidLabelException)
@@ -95,6 +99,7 @@ def create_app(device, save_dir, audio_save_dir):
 
         response = flask.jsonify("ok")
         response.headers.add('Access-Control-Allow-Origin', '*')
+
         return response
 
     @app.route('/load-audio-story/<string:story_id>')
@@ -106,6 +111,7 @@ def create_app(device, save_dir, audio_save_dir):
 
         response = flask.jsonify(graph)
         response.headers.add('Access-Control-Allow-Origin', '*')
+
         return response
 
     return app
