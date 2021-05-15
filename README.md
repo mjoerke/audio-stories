@@ -53,10 +53,12 @@ pip install -r server/requirements.txt
 Here is the command to run the Flask server: 
 
 ```
-python3 server/index.py
+./server/run.sh
 ```
 
-Run `python3 server/index.py --help` to see optional args.
+This script automatically attempts to set Google TTS credentials, then starts the server.
+
+Run `./server/run.sh --help` to see optional args.
 
 ### Running the server tests 
 

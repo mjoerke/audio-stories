@@ -1,6 +1,7 @@
 # custom 
 .mypy_cache/
 .cache/
+server/audio-project-google-creds.json
 
 # swp files 
 *.sw[oap]
