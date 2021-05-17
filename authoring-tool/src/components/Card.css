@@ -1,6 +1,8 @@
 .Card-container {
   border-style: solid;
   border-width: 1px;
+  display: flex;
+  flex-direction: column;
 }
 
 .Card-containerBeingDragged {
@@ -9,5 +11,5 @@
 
 .Card-linkHandle {
   position: absolute;
-  right: 0;
+  right: -30px;
 }

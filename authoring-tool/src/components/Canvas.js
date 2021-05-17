@@ -38,7 +38,8 @@ function Canvas({
         } else if (item.type === Draggables.NEW_CARD) {
           addCard({
             id: makeUniqueId(),
-            size: DEFAULT_CARD_SIZE,
+            height: DEFAULT_CARD_SIZE,
+            width: DEFAULT_CARD_SIZE,
             x: dropPos.x,
             y: dropPos.y,
           });
@@ -66,10 +67,10 @@ function Canvas({
           if (card.id !== item.id) {
             // AABB collision detection
             if (
-              x < card.x + card.size &&
-              x + item.size > card.x &&
-              y < card.y + card.size &&
-              y + item.size > card.y
+              x < card.x + card.width &&
+              x + item.width > card.x &&
+              y < card.y + card.height &&
+              y + item.height > card.y
             ) {
               collision = true;
             }
@@ -117,10 +118,10 @@ function Canvas({
         /* Card coords are absolute relative to window, so we need to
          * offset by the size of the side panel */
         ctx.moveTo(
-          fromCard.x + fromCard.size - 200,
-          fromCard.y + fromCard.size / 2
+          fromCard.x + fromCard.width - 200,
+          fromCard.y + fromCard.height / 2
         );
-        ctx.lineTo(toCard.x - 200, toCard.y + toCard.size / 2);
+        ctx.lineTo(toCard.x - 200, toCard.y + toCard.height / 2);
         ctx.stroke();
       }
     });
@@ -183,8 +184,8 @@ function Canvas({
         /* Card coords are absolute relative to window, so we need to
          * offset by the size of the side panel */
         cardLinkStartCoords.current = {
-          x: card.x + card.size - /* panel size */ 200,
-          y: card.y + card.size / 2,
+          x: card.x + card.width - /* panel size */ 200,
+          y: card.y + card.height / 2,
         };
       }
     }
@@ -210,11 +211,13 @@ function Canvas({
         >
           <Card
             id={id}
-            isUserCreatingLink={!!isDrawingNewLinkFrom}
+            isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             onCreateLink={startLinkFromCard}
             onFinishLink={(to) => {
               if (isDrawingNewLinkFrom != null) {
-                addLink(isDrawingNewLinkFrom, to);
+                if (isDrawingNewLinkFrom !== to) {
+                  addLink(isDrawingNewLinkFrom, to);
+                }
                 setisDrawingNewLinkFrom((_) => null);
               }
             }}

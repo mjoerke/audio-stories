@@ -12,25 +12,27 @@ import "./Card.css";
 
 type Props = {
   id?: UniqueId,
-  isUserCreatingLink?: boolean,
+  isDrawingNewLinkFrom: ?UniqueId,
   onCreateLink?: (UniqueId) => void,
   onFinishLink?: (UniqueId) => void,
-  size?: number,
+  height?: number,
   type?: DraggableType,
+  width?: number,
 };
 
 export default function Card({
   id,
-  isUserCreatingLink,
+  isDrawingNewLinkFrom,
   onCreateLink,
   onFinishLink,
-  size = DEFAULT_CARD_SIZE,
+  height = DEFAULT_CARD_SIZE,
+  width = DEFAULT_CARD_SIZE,
   type = Draggables.CARD,
 }: Props): React.MixedElement {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type,
-      item: { id, size, type },
+      item: { id, height, width, type },
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
@@ -47,8 +49,8 @@ export default function Card({
       ref={drag}
       className={containerClass}
       style={{
-        height: size,
-        width: size,
+        height,
+        width,
       }}
     >
       Card
@@ -56,16 +58,16 @@ export default function Card({
         <button
           className="Card-linkHandle"
           onClick={(_e) => {
-            if (isUserCreatingLink) {
+            if (isDrawingNewLinkFrom != null) {
               onFinishLink(id);
             } else {
               onCreateLink(id);
             }
           }}
-          style={{ top: size / 2 }}
+          style={{ top: height / 2 }}
           type="button"
         >
-          ▶
+          {isDrawingNewLinkFrom === id ? "■" : "▶"}
         </button>
       ) : null}
     </div>
