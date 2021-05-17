@@ -40,7 +40,8 @@ async function debug_loop() {
                 return s.descriptor
             }
         })
-        results = await query_classifier_(MAX_TIMEOUT, debug_labels)
+        
+        results = await query_classifier(MAX_TIMEOUT, JSON.stringify(labels))
         console.log(results)
         update_barchart_UI(results)
 

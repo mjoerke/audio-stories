@@ -1,6 +1,6 @@
 // https://blog.bitsrc.io/introduction-to-promise-race-and-promise-any-with-real-life-examples-9d8d1b9f8ec9
 
-const SERVER_IP = "http://35.226.183.11:5000";
+const SERVER_IP = "http://anelise-lambda.csail.mit.edu:5000";
 const MAX_TIMEOUT = 5000;
 
 function timeout(delay) {
