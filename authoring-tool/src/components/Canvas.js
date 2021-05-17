@@ -8,6 +8,7 @@ import type {
   AudioCardData,
   CardData,
   ClassifierCardData,
+  ClassifierLink,
 } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
@@ -22,7 +23,8 @@ import getAdjacentCardIds from "../util/CardDataUtils";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
-  addSimpleLink: (AudioCardData | ClassifierCardData, UniqueId) => void,
+  addClassifierLink: (ClassifierCardData, ClassifierLink) => void,
+  addSimpleLink: (AudioCardData, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
   updateCard: (CardData) => void,
   removeLink: (UniqueId, UniqueId) => void,
@@ -30,6 +32,7 @@ type Props = $ReadOnly<{
 
 function Canvas({
   addCard,
+  addClassifierLink,
   addSimpleLink,
   cards,
   updateCard,
@@ -66,8 +69,8 @@ function Canvas({
             id: makeUniqueId(),
             height: DEFAULT_CARD_SIZE,
             links: {
-              next: null,
-              type: "simple_link",
+              links: [],
+              type: "classifier_links",
             },
             type: "classifier_card",
             width: DEFAULT_CARD_SIZE,
@@ -126,6 +129,10 @@ function Canvas({
     isDrawingNewLinkFrom,
     setisDrawingNewLinkFrom,
   ] = React.useState<?UniqueId>(null);
+  const [
+    newClassifierLinkInProgressData,
+    setNewClassifierLinkInProgressData,
+  ] = React.useState<?{ label: string, threshold: number }>(null);
 
   const canvasRef = React.useRef<?HTMLCanvasElement>(null);
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
@@ -255,13 +262,29 @@ function Canvas({
               );
               return;
             }
-            switch (fromCard.links.type) {
-              case "simple_link":
+            switch (fromCard.type) {
+              case "audio_card":
                 addSimpleLink(fromCard, to);
+                break;
+              case "classifier_card":
+                if (newClassifierLinkInProgressData == null) {
+                  console.error(
+                    // $FlowExpectedError coerce id for the sake of logging
+                    `onFinishLink: cannot add new classifier link if labels and threshold haven't been assigned for card id: ${isDrawingNewLinkFrom}`
+                  );
+                  setisDrawingNewLinkFrom((_) => null);
+                  return;
+                }
+                addClassifierLink(fromCard, {
+                  next: to,
+                  label: newClassifierLinkInProgressData.label,
+                  threshold: newClassifierLinkInProgressData.threshold,
+                });
+                setNewClassifierLinkInProgressData((_) => null);
                 break;
               default:
                 throw new Error(
-                  `onFinishLink: unrecognized link type: ${fromCard.links.type}`
+                  `onFinishLink: unrecognized card type: ${fromCard.type}`
                 );
             }
           }
@@ -298,9 +321,14 @@ function Canvas({
           <ClassifierCard
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+            links={card.links.links}
             linkButtonText={linkButtonText}
+            newClassifierLinkInProgressData={newClassifierLinkInProgressData}
             onCreateLink={startLinkFromCard}
             onFinishLink={onFinishLink}
+            setNewClassifierLinkInProgressData={
+              setNewClassifierLinkInProgressData
+            }
           />
         );
         break;

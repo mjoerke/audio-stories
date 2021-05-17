@@ -43,7 +43,7 @@ export type AudioCardData = $ReadOnly<{
 
 export type ClassifierCardData = $ReadOnly<{
   ...BaseCardData,
-  links: SimpleLink, // ClassifierLinks,
+  links: ClassifierLinks,
   type: "classifier_card",
 }>;
 

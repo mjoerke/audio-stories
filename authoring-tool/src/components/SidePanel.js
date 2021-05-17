@@ -14,6 +14,7 @@ function SidePanel(): React.MixedElement {
       <AudioCard isDrawingNewLinkFrom={null} type={Draggables.NEW_AUDIO_CARD} />
       <ClassifierCard
         isDrawingNewLinkFrom={null}
+        links={[]}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
     </div>

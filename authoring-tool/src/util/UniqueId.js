@@ -8,3 +8,7 @@ export default function makeUniqueId(): UniqueId {
   counter += 1;
   return counter;
 }
+
+export function uniqueIdAsString(id: UniqueId): string {
+  return String(id);
+}

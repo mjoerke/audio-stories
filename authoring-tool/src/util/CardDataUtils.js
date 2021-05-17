@@ -23,6 +23,9 @@ export default function getAdjacentCardIds(
       }
       return [to];
     }
+    case "classifier_links": {
+      return fromCard.links.links.map((link) => link.next);
+    }
     default:
       throw new Error(
         `getAdjacentCardIds: unrecognized link type: ${fromCard.links.type}`

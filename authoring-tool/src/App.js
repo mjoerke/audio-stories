@@ -9,6 +9,7 @@ import type {
   AudioCardData,
   CardData,
   ClassifierCardData,
+  ClassifierLink,
 } from "./model/CardData";
 import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
@@ -51,6 +52,18 @@ function App(): React.MixedElement {
           next: to,
           type: "simple_link",
         };
+      })
+    );
+  };
+
+  const addClassifierLink = (
+    fromCard: ClassifierCardData,
+    link: ClassifierLink
+  ) => {
+    updateCard(
+      produce(fromCard, (draftState) => {
+        // eslint-disable-next-line no-param-reassign
+        draftState.links.links.push(link);
       })
     );
   };
@@ -127,6 +140,7 @@ function App(): React.MixedElement {
         <SidePanel />
         <Canvas
           addCard={addCard}
+          addClassifierLink={addClassifierLink}
           addSimpleLink={addSimpleLink}
           cards={cards}
           updateCard={updateCard}

@@ -6,6 +6,7 @@ import { useDrag } from "react-dnd";
 import type { DraggableType } from "../constants/Draggables";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
+import { uniqueIdAsString } from "../util/UniqueId";
 
 import "./BaseCard.css";
 
@@ -64,7 +65,10 @@ export default function BaseCard({
         width,
       }}
     >
-      <div>{title}</div>
+      <div>
+        {title}{" "}
+        {id != null ? <span>{`(id: ${uniqueIdAsString(id)})`}</span> : null}
+      </div>
       {children}
       {onCreateLink && onFinishLink && id != null ? (
         <button
