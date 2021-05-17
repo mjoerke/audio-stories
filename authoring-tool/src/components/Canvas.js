@@ -222,6 +222,81 @@ function Canvas({
   const existingEndsForNewLink =
     isDrawingNewLinkFrom != null ? links.get(isDrawingNewLinkFrom) : null;
 
+  const renderCard = (id, card) => {
+    /* Render stop button if clicking the button represents a cancellation
+     * or deletion */
+    const linkButtonText =
+      isDrawingNewLinkFrom === id ||
+      (existingEndsForNewLink != null && existingEndsForNewLink.has(id))
+        ? "■"
+        : "▶";
+    const onFinishLink = (to) => {
+      if (isDrawingNewLinkFrom != null) {
+        if (isDrawingNewLinkFrom !== to) {
+          if (
+            existingEndsForNewLink != null &&
+            existingEndsForNewLink.has(to)
+          ) {
+            removeLink(isDrawingNewLinkFrom, to);
+          } else {
+            addLink(isDrawingNewLinkFrom, to);
+          }
+        }
+        setisDrawingNewLinkFrom((_) => null);
+      }
+    };
+
+    let cardComponent = null;
+    switch (card.type) {
+      case "card":
+        cardComponent = (
+          <Card
+            id={id}
+            isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+            linkButtonText={linkButtonText}
+            onCreateLink={startLinkFromCard}
+            onFinishLink={onFinishLink}
+          />
+        );
+        break;
+      case "audio_card":
+        cardComponent = (
+          <AudioCard
+            id={id}
+            isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+            linkButtonText={linkButtonText}
+            onCreateLink={startLinkFromCard}
+            onFinishLink={onFinishLink}
+            onTextChange={(text) => {
+              const audioCard: AudioCardData = card;
+              updateCard(
+                produce(audioCard, (draftState) => {
+                  // eslint-disable-next-line no-param-reassign
+                  draftState.text = text;
+                })
+              );
+            }}
+            text={card.text}
+          />
+        );
+        break;
+      default:
+        throw new Error(`Unrecognized card type: ${card.type}`);
+    }
+
+    return (
+      <div
+        style={{
+          position: "absolute",
+          left: card.x,
+          top: card.y,
+        }}
+      >
+        {cardComponent}
+      </div>
+    );
+  };
+
   const containerClass = `Canvas-container${
     isOver ? " Canvas-containerDropping" : ""
   }`;
@@ -232,80 +307,7 @@ function Canvas({
         id="Canvas-canvas"
         onMouseMove={saveMousePosition}
       />
-      {Array.from(cards).map(([id, card]) => {
-        let CardComponent = Card;
-        if (card.type === "audio_card") {
-          CardComponent = AudioCard;
-        }
-        return (
-          <div
-            style={{
-              position: "absolute",
-              left: card.x,
-              top: card.y,
-            }}
-          >
-            {/* TODO: clean up this hot mess */}
-            <CardComponent
-              id={id}
-              isDrawingNewLinkFrom={isDrawingNewLinkFrom}
-              /* Render stop button if clicking the button represents a cancellation
-               * or deletion */
-              linkButtonText={
-                isDrawingNewLinkFrom === id ||
-                (existingEndsForNewLink != null &&
-                  existingEndsForNewLink.has(id))
-                  ? "■"
-                  : "▶"
-              }
-              onCreateLink={startLinkFromCard}
-              onFinishLink={(to) => {
-                if (isDrawingNewLinkFrom != null) {
-                  if (isDrawingNewLinkFrom !== to) {
-                    if (
-                      existingEndsForNewLink != null &&
-                      existingEndsForNewLink.has(to)
-                    ) {
-                      removeLink(isDrawingNewLinkFrom, to);
-                    } else {
-                      addLink(isDrawingNewLinkFrom, to);
-                    }
-                  }
-                  setisDrawingNewLinkFrom((_) => null);
-                }
-              }}
-              onTextChange={
-                CardComponent === AudioCard
-                  ? (text) => {
-                      if (
-                        card.type !== "audio_card" ||
-                        card.text === undefined
-                      ) {
-                        console.error(
-                          // $FlowExpectedError coerce id for the sake of logging
-                          `onTextChange called with non-AudioCard id: ${card.id}`
-                        );
-                        return;
-                      }
-                      const audioCard: AudioCardData = card;
-                      updateCard(
-                        produce(audioCard, (draftState) => {
-                          // eslint-disable-next-line no-param-reassign
-                          draftState.text = text;
-                        })
-                      );
-                    }
-                  : undefined
-              }
-              text={
-                CardComponent === AudioCard && card.type === "audio_card"
-                  ? card.text
-                  : undefined
-              }
-            />
-          </div>
-        );
-      })}
+      {Array.from(cards).map(([id, card]) => renderCard(id, card))}
     </div>
   );
 }
