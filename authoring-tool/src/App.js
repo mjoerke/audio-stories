@@ -14,11 +14,15 @@ import type {
 import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
 import SidePanel from "./components/SidePanel";
+import { exportAsObject, validate } from "./util/Serializer";
 
 import "./App.css";
 
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
+  console.log(JSON.stringify(exportAsObject(cards), null, 2));
+  console.log(validate(exportAsObject(cards)));
+
   const addCard = (newCard: CardData) => {
     setCards((baseState) =>
       produce(baseState, (draftState) => {
