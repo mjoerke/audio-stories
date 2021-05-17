@@ -17,7 +17,7 @@ export type ExposedProps = {
   height?: number,
   linkButtonText?: string,
   title?: string,
-  type: DraggableType,
+  type?: DraggableType,
   width?: number,
   children?: React.Node,
 };

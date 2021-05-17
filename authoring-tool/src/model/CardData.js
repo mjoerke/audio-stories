@@ -5,8 +5,8 @@ import type { UniqueId } from "../util/UniqueId";
 export const DEFAULT_CARD_SIZE = 200;
 
 export type SimpleLink = $ReadOnly<{
-  next: UniqueId,
-  type: "simple",
+  next: ?UniqueId,
+  type: "simple_link",
 }>;
 
 export type ClassifierLinks = $ReadOnly<{

@@ -14,12 +14,12 @@ import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
 import makeUniqueId from "../util/UniqueId";
 
 import "./Canvas.css";
+import getAdjacentCardIds from "../util/CardDataUtils";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
   addLink: (UniqueId, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
-  links: Map<UniqueId, Set<UniqueId>>,
   updateCard: (CardData) => void,
   removeLink: (UniqueId, UniqueId) => void,
 }>;
@@ -28,7 +28,6 @@ function Canvas({
   addCard,
   addLink,
   cards,
-  links,
   updateCard,
   removeLink,
 }: Props): React.MixedElement {
@@ -48,6 +47,10 @@ function Canvas({
           addCard({
             id: makeUniqueId(),
             height: DEFAULT_CARD_SIZE,
+            links: {
+              next: null,
+              type: "simple_link",
+            },
             text: "",
             type: "audio_card",
             width: DEFAULT_CARD_SIZE,
@@ -58,6 +61,10 @@ function Canvas({
           addCard({
             id: makeUniqueId(),
             height: DEFAULT_CARD_SIZE,
+            links: {
+              next: null,
+              type: "simple_link",
+            },
             type: "classifier_card",
             width: DEFAULT_CARD_SIZE,
             x: dropPos.x,
@@ -126,20 +133,15 @@ function Canvas({
     ctx.canvas.width = window.innerWidth;
     // eslint-disable-next-line no-undef
     ctx.canvas.height = window.innerHeight;
-    Array.from(links).forEach(([from, tos]) => {
+    Array.from(cards).forEach(([from, fromCard]) => {
       ctx.beginPath();
-      const fromCard = cards.get(from);
+      const tos = getAdjacentCardIds(cards, from);
       tos.forEach((to) => {
         const toCard = cards.get(to);
-        if (fromCard == null) {
+        if (toCard == null) {
           console.error(
             // $FlowExpectedError coerce to string for error logging
-            `No card found with id ${from} when trying to draw link from card!`
-          );
-        } else if (toCard == null) {
-          console.error(
-            // $FlowExpectedError coerce to string for error logging
-            `No card found with id ${to} when trying to draw link to card!`
+            `No card found with id ${toCard.id} when trying to draw link to card!`
           );
         } else {
           /* Card coords are absolute relative to window, so we need to
@@ -220,14 +222,16 @@ function Canvas({
   };
 
   const existingEndsForNewLink =
-    isDrawingNewLinkFrom != null ? links.get(isDrawingNewLinkFrom) : null;
+    isDrawingNewLinkFrom != null
+      ? getAdjacentCardIds(cards, isDrawingNewLinkFrom)
+      : null;
 
   const renderCard = (id, card) => {
     /* Render stop button if clicking the button represents a cancellation
      * or deletion */
     const linkButtonText =
       isDrawingNewLinkFrom === id ||
-      (existingEndsForNewLink != null && existingEndsForNewLink.has(id))
+      (existingEndsForNewLink != null && existingEndsForNewLink.includes(id))
         ? "■"
         : "▶";
     const onFinishLink = (to) => {
@@ -235,7 +239,7 @@ function Canvas({
         if (isDrawingNewLinkFrom !== to) {
           if (
             existingEndsForNewLink != null &&
-            existingEndsForNewLink.has(to)
+            existingEndsForNewLink.includes(to)
           ) {
             removeLink(isDrawingNewLinkFrom, to);
           } else {

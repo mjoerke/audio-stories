@@ -14,9 +14,6 @@ import "./App.css";
 
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
-  const [links, setLinks] = React.useState(
-    () => new Map<UniqueId, Set<UniqueId>>()
-  );
   const addCard = (newCard: CardData) => {
     setCards((baseState) =>
       produce(baseState, (draftState) => {
@@ -40,31 +37,58 @@ function App(): React.MixedElement {
     });
   };
   const addLink = (from: UniqueId, to: UniqueId) => {
-    setLinks((baseState) =>
-      produce(baseState, (draftState) => {
-        const ends = draftState.get(from);
-        if (ends == null) {
-          draftState.set(from, new Set([to]));
-        } else {
-          ends.add(to);
-        }
-      })
-    );
+    const fromCard = cards.get(from);
+    if (fromCard == null) {
+      console.error(
+        // $FlowExpectedError coerce id for the sake of logging
+        `addLink called with unrecognized card id: ${from}`
+      );
+      return;
+    }
+    switch (fromCard.links.type) {
+      case "simple_link":
+        updateCard(
+          produce(fromCard, (draftState) => {
+            // eslint-disable-next-line no-param-reassign
+            draftState.links = {
+              next: to,
+              type: "simple_link",
+            };
+          })
+        );
+        break;
+      default:
+        throw new Error(
+          `addLink: unrecognized link type: ${fromCard.links.type}`
+        );
+    }
   };
   const removeLink = (from: UniqueId, to: UniqueId) => {
-    setLinks((baseState) =>
-      produce(baseState, (draftState) => {
-        const ends = draftState.get(from);
-        if (ends == null) {
-          console.error(
-            // $FlowExpectedError coerce id for the sake of logging
-            `removeLink called but card ${from} has no outgoing links!`
-          );
-        } else {
-          ends.delete(to);
-        }
-      })
-    );
+    const fromCard = cards.get(from);
+    if (fromCard == null) {
+      console.error(
+        // $FlowExpectedError coerce id for the sake of logging
+        `removeLink called with unrecognized card id: ${from}`
+      );
+      return;
+    }
+    switch (fromCard.links.type) {
+      case "simple_link":
+        updateCard(
+          produce(fromCard, (draftState) => {
+            // eslint-disable-next-line no-param-reassign
+            draftState.links = {
+              next: null,
+              type: "simple_link",
+            };
+          })
+        );
+        break;
+      default:
+        throw new Error(
+          `removeLink: unrecognized link type: ${fromCard.links.type}`
+        );
+    }
   };
 
   return (
@@ -75,7 +99,6 @@ function App(): React.MixedElement {
           addCard={addCard}
           addLink={addLink}
           cards={cards}
-          links={links}
           updateCard={updateCard}
           removeLink={removeLink}
         />
