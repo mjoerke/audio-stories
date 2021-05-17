@@ -10,7 +10,7 @@ import "./SidePanel.css";
 function SidePanel(): React.MixedElement {
   return (
     <div className="SidePanel-container">
-      <Card type={Draggables.NEW_CARD} />
+      <Card isDrawingNewLinkFrom={null} type={Draggables.NEW_CARD} />
     </div>
   );
 }

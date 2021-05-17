@@ -17,7 +17,7 @@ type Props = $ReadOnly<{
   addCard: (CardData) => void,
   addLink: (UniqueId, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
-  links: Map<UniqueId, UniqueId>,
+  links: Map<UniqueId, Set<UniqueId>>,
   moveCard: (CardData) => void,
 }>;
 
@@ -100,30 +100,32 @@ function Canvas({
     ctx.canvas.width = window.innerWidth;
     // eslint-disable-next-line no-undef
     ctx.canvas.height = window.innerHeight;
-    Array.from(links).forEach(([from, to]) => {
+    Array.from(links).forEach(([from, tos]) => {
       ctx.beginPath();
       const fromCard = cards.get(from);
-      const toCard = cards.get(to);
-      if (fromCard == null) {
-        console.error(
-          // $FlowExpectedError coerce to string for error logging
-          `No card found with id ${from} when trying to draw link from card!`
-        );
-      } else if (toCard == null) {
-        console.error(
-          // $FlowExpectedError coerce to string for error logging
-          `No card found with id ${to} when trying to draw link to card!`
-        );
-      } else {
-        /* Card coords are absolute relative to window, so we need to
-         * offset by the size of the side panel */
-        ctx.moveTo(
-          fromCard.x + fromCard.width - 200,
-          fromCard.y + fromCard.height / 2
-        );
-        ctx.lineTo(toCard.x - 200, toCard.y + toCard.height / 2);
-        ctx.stroke();
-      }
+      tos.forEach((to) => {
+        const toCard = cards.get(to);
+        if (fromCard == null) {
+          console.error(
+            // $FlowExpectedError coerce to string for error logging
+            `No card found with id ${from} when trying to draw link from card!`
+          );
+        } else if (toCard == null) {
+          console.error(
+            // $FlowExpectedError coerce to string for error logging
+            `No card found with id ${to} when trying to draw link to card!`
+          );
+        } else {
+          /* Card coords are absolute relative to window, so we need to
+           * offset by the size of the side panel */
+          ctx.moveTo(
+            fromCard.x + fromCard.width - 200,
+            fromCard.y + fromCard.height / 2
+          );
+          ctx.lineTo(toCard.x - 200, toCard.y + toCard.height / 2);
+          ctx.stroke();
+        }
+      });
     });
 
     if (isDrawingNewLinkFrom != null) {

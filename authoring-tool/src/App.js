@@ -14,7 +14,9 @@ import "./App.css";
 
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
-  const [links, setLinks] = React.useState(() => new Map<UniqueId, UniqueId>());
+  const [links, setLinks] = React.useState(
+    () => new Map<UniqueId, Set<UniqueId>>()
+  );
   const addCard = (newCard: CardData) => {
     setCards((baseState) =>
       produce(baseState, (draftState) => {
@@ -40,7 +42,12 @@ function App(): React.MixedElement {
   const addLink = (from: UniqueId, to: UniqueId) => {
     setLinks((baseState) =>
       produce(baseState, (draftState) => {
-        draftState.set(from, to);
+        const ends = draftState.get(from);
+        if (ends == null) {
+          draftState.set(from, new Set([to]));
+        } else {
+          ends.add(to);
+        }
       })
     );
   };
