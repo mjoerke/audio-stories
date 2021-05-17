@@ -10,15 +10,17 @@ import Draggables from "../constants/Draggables";
 
 import "./Card.css";
 
-type Props = {
+export type Props = {
   id?: UniqueId,
   isDrawingNewLinkFrom: ?UniqueId,
   onCreateLink?: (UniqueId) => void,
   onFinishLink?: (UniqueId) => void,
   height?: number,
   linkButtonText?: string,
+  title?: string,
   type?: DraggableType,
   width?: number,
+  children?: React.Node,
 };
 
 export default function Card({
@@ -28,8 +30,10 @@ export default function Card({
   onFinishLink,
   height = DEFAULT_CARD_SIZE,
   linkButtonText = "▶",
+  title = "Card",
   width = DEFAULT_CARD_SIZE,
   type = Draggables.CARD,
+  children = null,
 }: Props): React.MixedElement {
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -55,7 +59,8 @@ export default function Card({
         width,
       }}
     >
-      Card
+      <div>{title}</div>
+      {children}
       {onCreateLink && onFinishLink && id != null ? (
         <button
           className="Card-linkHandle"

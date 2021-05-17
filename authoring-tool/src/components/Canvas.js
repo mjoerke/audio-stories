@@ -5,6 +5,7 @@ import { useDrop } from "react-dnd";
 
 import type { CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
+import AudioCard from "./AudioCard";
 import Card from "./Card";
 import Draggables from "../constants/Draggables";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
@@ -32,7 +33,12 @@ function Canvas({
 }: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
     () => ({
-      accept: [Draggables.NEW_CARD, Draggables.CARD],
+      accept: [
+        Draggables.NEW_CARD,
+        Draggables.NEW_AUDIO_CARD,
+        Draggables.CARD,
+        Draggables.AUDIO_CARD,
+      ],
       drop: (item, monitor) => {
         const dropPos = calculateDropPosition(monitor);
         if (dropPos == null) {
@@ -41,11 +47,24 @@ function Canvas({
           addCard({
             id: makeUniqueId(),
             height: DEFAULT_CARD_SIZE,
+            type: "card",
             width: DEFAULT_CARD_SIZE,
             x: dropPos.x,
             y: dropPos.y,
           });
-        } else if (item.type === Draggables.CARD) {
+        } else if (item.type === Draggables.NEW_AUDIO_CARD) {
+          addCard({
+            id: makeUniqueId(),
+            height: DEFAULT_CARD_SIZE,
+            type: "audio_card",
+            width: DEFAULT_CARD_SIZE,
+            x: dropPos.x,
+            y: dropPos.y,
+          });
+        } else if (
+          item.type === Draggables.CARD ||
+          item.type === Draggables.AUDIO_CARD
+        ) {
           const currentCard = cards.get(item.id);
           if (currentCard == null) {
             console.error(`Couldn't find card with id: ${item.id}!`);
@@ -208,44 +227,51 @@ function Canvas({
         id="Canvas-canvas"
         onMouseMove={saveMousePosition}
       />
-      {Array.from(cards).map(([id, card]) => (
-        <div
-          style={{
-            position: "absolute",
-            left: card.x,
-            top: card.y,
-          }}
-        >
-          <Card
-            id={id}
-            isDrawingNewLinkFrom={isDrawingNewLinkFrom}
-            /* Render stop button if clicking the button represents a cancellation
-             * or deletion */
-            linkButtonText={
-              isDrawingNewLinkFrom === id ||
-              (existingEndsForNewLink != null && existingEndsForNewLink.has(id))
-                ? "■"
-                : "▶"
-            }
-            onCreateLink={startLinkFromCard}
-            onFinishLink={(to) => {
-              if (isDrawingNewLinkFrom != null) {
-                if (isDrawingNewLinkFrom !== to) {
-                  if (
-                    existingEndsForNewLink != null &&
-                    existingEndsForNewLink.has(to)
-                  ) {
-                    removeLink(isDrawingNewLinkFrom, to);
-                  } else {
-                    addLink(isDrawingNewLinkFrom, to);
-                  }
-                }
-                setisDrawingNewLinkFrom((_) => null);
-              }
+      {Array.from(cards).map(([id, card]) => {
+        let CardComponent = Card;
+        if (card.type === "audio_card") {
+          CardComponent = AudioCard;
+        }
+        return (
+          <div
+            style={{
+              position: "absolute",
+              left: card.x,
+              top: card.y,
             }}
-          />
-        </div>
-      ))}
+          >
+            <CardComponent
+              id={id}
+              isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+              /* Render stop button if clicking the button represents a cancellation
+               * or deletion */
+              linkButtonText={
+                isDrawingNewLinkFrom === id ||
+                (existingEndsForNewLink != null &&
+                  existingEndsForNewLink.has(id))
+                  ? "■"
+                  : "▶"
+              }
+              onCreateLink={startLinkFromCard}
+              onFinishLink={(to) => {
+                if (isDrawingNewLinkFrom != null) {
+                  if (isDrawingNewLinkFrom !== to) {
+                    if (
+                      existingEndsForNewLink != null &&
+                      existingEndsForNewLink.has(to)
+                    ) {
+                      removeLink(isDrawingNewLinkFrom, to);
+                    } else {
+                      addLink(isDrawingNewLinkFrom, to);
+                    }
+                  }
+                  setisDrawingNewLinkFrom((_) => null);
+                }
+              }}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
