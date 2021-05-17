@@ -5,7 +5,7 @@ import * as React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import type { CardData, AudioCardData } from "./model/CardData";
+import type { CardData } from "./model/CardData";
 import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
 import SidePanel from "./components/SidePanel";
@@ -39,19 +39,6 @@ function App(): React.MixedElement {
       });
     });
   };
-  // const editAudioCardText = (editedCardUncasted: CardData) => {
-  //   if (
-  //     editedCardUncasted.type !== "audio_card" ||
-  //     editedCardUncasted.text === undefined
-  //   ) {
-  //     console.error(
-  //       // $FlowExpectedError coerce id for the sake of logging
-  //       `editAudioCardText called with non-AudioCard id: ${editedCardUncasted.id}`
-  //     );
-  //     return;
-  //   }
-  //   const editedCard: AudioCardData = editedCardUncasted;
-  // };
   const addLink = (from: UniqueId, to: UniqueId) => {
     setLinks((baseState) =>
       produce(baseState, (draftState) => {

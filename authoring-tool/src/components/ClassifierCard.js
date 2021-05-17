@@ -1,8 +1,9 @@
 // @flow
 
 import * as React from "react";
-import type { Props as CardProps } from "./Card";
-import Card from "./Card";
+import Draggables from "../constants/Draggables";
+import type { ExposedProps as CardProps } from "./BaseCard";
+import BaseCard from "./BaseCard";
 
 type Props = {
   ...CardProps,
@@ -12,9 +13,13 @@ export default function ClassifierCard({
   ...otherProps
 }: Props): React.MixedElement {
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <Card title="Classifier" {...otherProps}>
+    <BaseCard
+      title="Classifier"
+      type={Draggables.CLASSIFIER_CARD}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...otherProps}
+    >
       Test
-    </Card>
+    </BaseCard>
   );
 }

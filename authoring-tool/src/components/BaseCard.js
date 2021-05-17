@@ -7,9 +7,9 @@ import type { DraggableType } from "../constants/Draggables";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 
-import "./Card.css";
+import "./BaseCard.css";
 
-export type Props = {
+export type ExposedProps = {
   id?: UniqueId,
   isDrawingNewLinkFrom: ?UniqueId,
   onCreateLink?: (UniqueId) => void,
@@ -22,7 +22,13 @@ export type Props = {
   children?: React.Node,
 };
 
-export default function Card({
+type Props = {
+  ...ExposedProps,
+  // Provided by the rendering card
+  type: DraggableType,
+};
+
+export default function BaseCard({
   id,
   isDrawingNewLinkFrom,
   onCreateLink,
@@ -45,9 +51,9 @@ export default function Card({
     [type]
   );
 
-  let containerClass = "Card-container";
+  let containerClass = "BaseCard-container";
   if (isDragging) {
-    containerClass += " Card-containerBeingDragged";
+    containerClass += " BaseCard-containerBeingDragged";
   }
   return (
     <div
@@ -62,7 +68,7 @@ export default function Card({
       {children}
       {onCreateLink && onFinishLink && id != null ? (
         <button
-          className="Card-linkHandle"
+          className="BaseCard-linkHandle"
           onClick={(_e) => {
             if (isDrawingNewLinkFrom != null) {
               onFinishLink(id);

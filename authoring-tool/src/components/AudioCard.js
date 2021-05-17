@@ -1,8 +1,9 @@
 // @flow
 
 import * as React from "react";
-import type { Props as CardProps } from "./Card";
-import Card from "./Card";
+import Draggables from "../constants/Draggables";
+import type { ExposedProps as CardProps } from "./BaseCard";
+import BaseCard from "./BaseCard";
 
 type Props = {
   ...CardProps,
@@ -17,7 +18,7 @@ export default function AudioCard({
 }: Props): React.MixedElement {
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <Card title="Audio" {...otherProps}>
+    <BaseCard title="Audio" type={Draggables.AUDIO_CARD} {...otherProps}>
       <textarea
         onChange={
           onTextChange != null ? (e) => onTextChange(e.target.value) : undefined
@@ -25,6 +26,6 @@ export default function AudioCard({
         readOnly={text == null || onTextChange == null}
         value={text}
       />
-    </Card>
+    </BaseCard>
   );
 }
