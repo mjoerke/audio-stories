@@ -1,9 +1,10 @@
 // @flow
 
+import produce from "immer";
 import * as React from "react";
 import { useDrop } from "react-dnd";
 
-import type { CardData } from "../model/CardData";
+import type { AudioCardData, CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import Card from "./Card";
@@ -19,7 +20,7 @@ type Props = $ReadOnly<{
   addLink: (UniqueId, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
   links: Map<UniqueId, Set<UniqueId>>,
-  moveCard: (CardData) => void,
+  updateCard: (CardData) => void,
   removeLink: (UniqueId, UniqueId) => void,
 }>;
 
@@ -28,7 +29,7 @@ function Canvas({
   addLink,
   cards,
   links,
-  moveCard,
+  updateCard,
   removeLink,
 }: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
@@ -56,6 +57,7 @@ function Canvas({
           addCard({
             id: makeUniqueId(),
             height: DEFAULT_CARD_SIZE,
+            text: "",
             type: "audio_card",
             width: DEFAULT_CARD_SIZE,
             x: dropPos.x,
@@ -69,11 +71,14 @@ function Canvas({
           if (currentCard == null) {
             console.error(`Couldn't find card with id: ${item.id}!`);
           } else {
-            moveCard({
-              ...currentCard,
-              x: dropPos.x,
-              y: dropPos.y,
-            });
+            updateCard(
+              produce(currentCard, (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.x = dropPos.x;
+                // eslint-disable-next-line no-param-reassign
+                draftState.y = dropPos.y;
+              })
+            );
           }
         }
       },
@@ -103,7 +108,7 @@ function Canvas({
         isOver: !!monitor.isOver(),
       }),
     }),
-    [addCard, cards, moveCard]
+    [addCard, cards, updateCard]
   );
 
   const [
@@ -240,6 +245,7 @@ function Canvas({
               top: card.y,
             }}
           >
+            {/* TODO: clean up this hot mess */}
             <CardComponent
               id={id}
               isDrawingNewLinkFrom={isDrawingNewLinkFrom}
@@ -268,6 +274,34 @@ function Canvas({
                   setisDrawingNewLinkFrom((_) => null);
                 }
               }}
+              onTextChange={
+                CardComponent === AudioCard
+                  ? (text) => {
+                      if (
+                        card.type !== "audio_card" ||
+                        card.text === undefined
+                      ) {
+                        console.error(
+                          // $FlowExpectedError coerce id for the sake of logging
+                          `onTextChange called with non-AudioCard id: ${card.id}`
+                        );
+                        return;
+                      }
+                      const audioCard: AudioCardData = card;
+                      updateCard(
+                        produce(audioCard, (draftState) => {
+                          // eslint-disable-next-line no-param-reassign
+                          draftState.text = text;
+                        })
+                      );
+                    }
+                  : undefined
+              }
+              text={
+                CardComponent === AudioCard && card.type === "audio_card"
+                  ? card.text
+                  : undefined
+              }
             />
           </div>
         );

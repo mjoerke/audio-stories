@@ -6,13 +6,25 @@ import Card from "./Card";
 
 type Props = {
   ...CardProps,
+  onTextChange?: (string) => void,
+  text?: string,
 };
 
-export default function AudioCard({ ...props }: Props): React.MixedElement {
+export default function AudioCard({
+  onTextChange,
+  text,
+  ...otherProps
+}: Props): React.MixedElement {
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <Card title="Audio" {...props}>
-      <textarea />
+    <Card title="Audio" {...otherProps}>
+      <textarea
+        onChange={
+          onTextChange != null ? (e) => onTextChange(e.target.value) : undefined
+        }
+        readOnly={text == null || onTextChange == null}
+        value={text}
+      />
     </Card>
   );
 }
