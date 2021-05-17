@@ -12,6 +12,10 @@ type Props = {
 export default function ClassifierCard({
   ...otherProps
 }: Props): React.MixedElement {
+  const [newLinkInProgressData, setNewLinkInProgressData] = React.useState(
+    null
+  );
+
   return (
     <BaseCard
       title="Classifier"
@@ -19,7 +23,25 @@ export default function ClassifierCard({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...otherProps}
     >
-      Test
+      {/* <select multiple>
+        <option>Test</option>
+        <option>Test2</option>
+      </select> */}
+      <button
+        disabled={newLinkInProgressData != null}
+        onClick={(_e) => {
+          const label = prompt("Label?");
+          if (label != null) {
+            const threshold = parseFloat(prompt("Threshold?"));
+            if (threshold != null) {
+              setNewLinkInProgressData((_) => ({ label, threshold }));
+            }
+          }
+        }}
+        type="button"
+      >
+        Add transition
+      </button>
     </BaseCard>
   );
 }

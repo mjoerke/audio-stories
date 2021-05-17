@@ -4,7 +4,11 @@ import produce from "immer";
 import * as React from "react";
 import { useDrop } from "react-dnd";
 
-import type { AudioCardData, CardData } from "../model/CardData";
+import type {
+  AudioCardData,
+  CardData,
+  ClassifierCardData,
+} from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import ClassifierCard from "./ClassifierCard";
@@ -18,7 +22,7 @@ import getAdjacentCardIds from "../util/CardDataUtils";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
-  addLink: (UniqueId, UniqueId) => void,
+  addSimpleLink: (AudioCardData | ClassifierCardData, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
   updateCard: (CardData) => void,
   removeLink: (UniqueId, UniqueId) => void,
@@ -26,7 +30,7 @@ type Props = $ReadOnly<{
 
 function Canvas({
   addCard,
-  addLink,
+  addSimpleLink,
   cards,
   updateCard,
   removeLink,
@@ -243,7 +247,23 @@ function Canvas({
           ) {
             removeLink(isDrawingNewLinkFrom, to);
           } else {
-            addLink(isDrawingNewLinkFrom, to);
+            const fromCard = cards.get(isDrawingNewLinkFrom);
+            if (fromCard == null) {
+              console.error(
+                // $FlowExpectedError coerce id for the sake of logging
+                `onFinishLink: could not find card with id: ${isDrawingNewLinkFrom}`
+              );
+              return;
+            }
+            switch (fromCard.links.type) {
+              case "simple_link":
+                addSimpleLink(fromCard, to);
+                break;
+              default:
+                throw new Error(
+                  `onFinishLink: unrecognized link type: ${fromCard.links.type}`
+                );
+            }
           }
         }
         setisDrawingNewLinkFrom((_) => null);

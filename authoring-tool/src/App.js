@@ -5,7 +5,11 @@ import * as React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import type { CardData } from "./model/CardData";
+import type {
+  AudioCardData,
+  CardData,
+  ClassifierCardData,
+} from "./model/CardData";
 import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
 import SidePanel from "./components/SidePanel";
@@ -36,6 +40,21 @@ function App(): React.MixedElement {
       });
     });
   };
+  const addSimpleLink = (
+    fromCard: AudioCardData | ClassifierCardData,
+    to: UniqueId
+  ) => {
+    updateCard(
+      produce(fromCard, (draftState) => {
+        // eslint-disable-next-line no-param-reassign
+        draftState.links = {
+          next: to,
+          type: "simple_link",
+        };
+      })
+    );
+  };
+
   const addLink = (from: UniqueId, to: UniqueId) => {
     const fromCard = cards.get(from);
     if (fromCard == null) {
@@ -57,6 +76,17 @@ function App(): React.MixedElement {
           })
         );
         break;
+      // case "classifier_links":
+      //   updateCard(
+      //     produce(fromCard, (draftState) => {
+      //       // eslint-disable-next-line no-param-reassign
+      //       draftState.links = {
+      //         next: to,
+      //         type: "simple_link",
+      //       };
+      //     })
+      //   );
+      //   break;
       default:
         throw new Error(
           `addLink: unrecognized link type: ${fromCard.links.type}`
@@ -97,7 +127,7 @@ function App(): React.MixedElement {
         <SidePanel />
         <Canvas
           addCard={addCard}
-          addLink={addLink}
+          addSimpleLink={addSimpleLink}
           cards={cards}
           updateCard={updateCard}
           removeLink={removeLink}

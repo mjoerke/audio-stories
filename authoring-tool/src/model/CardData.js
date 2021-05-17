@@ -9,10 +9,18 @@ export type SimpleLink = $ReadOnly<{
   type: "simple_link",
 }>;
 
+export type ClassifierLink = $ReadOnly<{
+  next: UniqueId,
+  label: string,
+  threshold: number,
+}>;
+
 export type ClassifierLinks = $ReadOnly<{
-  // link destinations by label
-  labels: { [string]: UniqueId },
-  thresholds: { [string]: number },
+  // // link destinations by label
+  // labels: { [string]: UniqueId },
+  // thresholds: { [string]: number },
+  links: Array<ClassifierLink>,
+  type: "classifier_links",
 }>;
 
 type BaseCardData = $ReadOnly<{
@@ -35,8 +43,7 @@ export type AudioCardData = $ReadOnly<{
 
 export type ClassifierCardData = $ReadOnly<{
   ...BaseCardData,
-  // TODO: change to ClassifierLinks
-  links: SimpleLink,
+  links: SimpleLink, // ClassifierLinks,
   type: "classifier_card",
 }>;
 
