@@ -7,7 +7,7 @@ export const DEFAULT_CARD_SIZE = 200;
 type BaseCardData = $ReadOnly<{
   id: UniqueId,
   height: number,
-  type: "audio_card" | "classifier_card" | "card",
+  type: "audio_card" | "classifier_card",
   width: number,
   x: number,
   y: number,
@@ -25,9 +25,4 @@ export type ClassifierCardData = $ReadOnly<{
   type: "classifier_card",
 }>;
 
-export type GenericCardData = $ReadOnly<{
-  ...BaseCardData,
-  type: "card",
-}>;
-
-export type CardData = GenericCardData | AudioCardData | ClassifierCardData;
+export type CardData = AudioCardData | ClassifierCardData;

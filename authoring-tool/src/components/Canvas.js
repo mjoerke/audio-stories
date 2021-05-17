@@ -7,7 +7,6 @@ import { useDrop } from "react-dnd";
 import type { AudioCardData, CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
-import Card from "./Card";
 import ClassifierCard from "./ClassifierCard";
 import Draggables from "../constants/Draggables";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
@@ -36,10 +35,8 @@ function Canvas({
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: [
-        Draggables.NEW_CARD,
         Draggables.NEW_AUDIO_CARD,
         Draggables.NEW_CLASSIFIER_CARD,
-        Draggables.CARD,
         Draggables.AUDIO_CARD,
         Draggables.CLASSIFIER_CARD,
       ],
@@ -47,15 +44,6 @@ function Canvas({
         const dropPos = calculateDropPosition(monitor);
         if (dropPos == null) {
           console.error("Tried to drop a new card that wasn't being dragged!");
-        } else if (item.type === Draggables.NEW_CARD) {
-          addCard({
-            id: makeUniqueId(),
-            height: DEFAULT_CARD_SIZE,
-            type: "card",
-            width: DEFAULT_CARD_SIZE,
-            x: dropPos.x,
-            y: dropPos.y,
-          });
         } else if (item.type === Draggables.NEW_AUDIO_CARD) {
           addCard({
             id: makeUniqueId(),
@@ -76,7 +64,6 @@ function Canvas({
             y: dropPos.y,
           });
         } else if (
-          item.type === Draggables.CARD ||
           item.type === Draggables.AUDIO_CARD ||
           item.type === Draggables.CLASSIFIER_CARD
         ) {
@@ -261,17 +248,6 @@ function Canvas({
 
     let cardComponent = null;
     switch (card.type) {
-      case "card":
-        cardComponent = (
-          <Card
-            id={id}
-            isDrawingNewLinkFrom={isDrawingNewLinkFrom}
-            linkButtonText={linkButtonText}
-            onCreateLink={startLinkFromCard}
-            onFinishLink={onFinishLink}
-          />
-        );
-        break;
       case "audio_card":
         cardComponent = (
           <AudioCard

@@ -6,7 +6,6 @@ import { useDrag } from "react-dnd";
 import type { DraggableType } from "../constants/Draggables";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
-import Draggables from "../constants/Draggables";
 
 import "./Card.css";
 
@@ -18,7 +17,7 @@ export type Props = {
   height?: number,
   linkButtonText?: string,
   title?: string,
-  type?: DraggableType,
+  type: DraggableType,
   width?: number,
   children?: React.Node,
 };
@@ -32,7 +31,7 @@ export default function Card({
   linkButtonText = "▶",
   title = "Card",
   width = DEFAULT_CARD_SIZE,
-  type = Draggables.CARD,
+  type,
   children = null,
 }: Props): React.MixedElement {
   const [{ isDragging }, drag] = useDrag(

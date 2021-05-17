@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import AudioCard from "./AudioCard";
-import Card from "./Card";
 import ClassifierCard from "./ClassifierCard";
 import Draggables from "../constants/Draggables";
 
@@ -17,7 +16,6 @@ function SidePanel(): React.MixedElement {
         isDrawingNewLinkFrom={null}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
-      <Card isDrawingNewLinkFrom={null} type={Draggables.NEW_CARD} />
     </div>
   );
 }
