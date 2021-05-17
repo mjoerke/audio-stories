@@ -16,6 +16,7 @@ type Props = {
   onCreateLink?: (UniqueId) => void,
   onFinishLink?: (UniqueId) => void,
   height?: number,
+  linkButtonText?: string,
   type?: DraggableType,
   width?: number,
 };
@@ -26,6 +27,7 @@ export default function Card({
   onCreateLink,
   onFinishLink,
   height = DEFAULT_CARD_SIZE,
+  linkButtonText = "▶",
   width = DEFAULT_CARD_SIZE,
   type = Draggables.CARD,
 }: Props): React.MixedElement {
@@ -67,7 +69,7 @@ export default function Card({
           style={{ top: height / 2 }}
           type="button"
         >
-          {isDrawingNewLinkFrom === id ? "■" : "▶"}
+          {linkButtonText}
         </button>
       ) : null}
     </div>

@@ -21,7 +21,7 @@
   ],
   "rules": {
     "no-console": ["warn", { "allow": ["error"]}],
-    "no-unused-vars": ["error", {
+    "no-unused-vars": ["warn", {
       "argsIgnorePattern": "^_",
       "varsIgnorePattern": "^_"
     }],

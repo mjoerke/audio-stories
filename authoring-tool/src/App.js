@@ -51,6 +51,21 @@ function App(): React.MixedElement {
       })
     );
   };
+  const removeLink = (from: UniqueId, to: UniqueId) => {
+    setLinks((baseState) =>
+      produce(baseState, (draftState) => {
+        const ends = draftState.get(from);
+        if (ends == null) {
+          console.error(
+            // $FlowExpectedError coerce id for the sake of logging
+            `removeLink called but card ${from} has no outgoing links!`
+          );
+        } else {
+          ends.delete(to);
+        }
+      })
+    );
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -62,6 +77,7 @@ function App(): React.MixedElement {
           cards={cards}
           links={links}
           moveCard={moveCard}
+          removeLink={removeLink}
         />
       </div>
     </DndProvider>

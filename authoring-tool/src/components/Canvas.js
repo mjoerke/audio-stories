@@ -19,6 +19,7 @@ type Props = $ReadOnly<{
   cards: Map<UniqueId, CardData>,
   links: Map<UniqueId, Set<UniqueId>>,
   moveCard: (CardData) => void,
+  removeLink: (UniqueId, UniqueId) => void,
 }>;
 
 function Canvas({
@@ -27,6 +28,7 @@ function Canvas({
   cards,
   links,
   moveCard,
+  removeLink,
 }: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -193,6 +195,9 @@ function Canvas({
     }
   };
 
+  const existingEndsForNewLink =
+    isDrawingNewLinkFrom != null ? links.get(isDrawingNewLinkFrom) : null;
+
   const containerClass = `Canvas-container${
     isOver ? " Canvas-containerDropping" : ""
   }`;
@@ -214,11 +219,26 @@ function Canvas({
           <Card
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+            /* Render stop button if clicking the button represents a cancellation
+             * or deletion */
+            linkButtonText={
+              isDrawingNewLinkFrom === id ||
+              (existingEndsForNewLink != null && existingEndsForNewLink.has(id))
+                ? "■"
+                : "▶"
+            }
             onCreateLink={startLinkFromCard}
             onFinishLink={(to) => {
               if (isDrawingNewLinkFrom != null) {
                 if (isDrawingNewLinkFrom !== to) {
-                  addLink(isDrawingNewLinkFrom, to);
+                  if (
+                    existingEndsForNewLink != null &&
+                    existingEndsForNewLink.has(to)
+                  ) {
+                    removeLink(isDrawingNewLinkFrom, to);
+                  } else {
+                    addLink(isDrawingNewLinkFrom, to);
+                  }
                 }
                 setisDrawingNewLinkFrom((_) => null);
               }
