@@ -8,6 +8,7 @@ import type { AudioCardData, CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import Card from "./Card";
+import ClassifierCard from "./ClassifierCard";
 import Draggables from "../constants/Draggables";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
@@ -37,8 +38,10 @@ function Canvas({
       accept: [
         Draggables.NEW_CARD,
         Draggables.NEW_AUDIO_CARD,
+        Draggables.NEW_CLASSIFIER_CARD,
         Draggables.CARD,
         Draggables.AUDIO_CARD,
+        Draggables.CLASSIFIER_CARD,
       ],
       drop: (item, monitor) => {
         const dropPos = calculateDropPosition(monitor);
@@ -63,9 +66,19 @@ function Canvas({
             x: dropPos.x,
             y: dropPos.y,
           });
+        } else if (item.type === Draggables.NEW_CLASSIFIER_CARD) {
+          addCard({
+            id: makeUniqueId(),
+            height: DEFAULT_CARD_SIZE,
+            type: "classifier_card",
+            width: DEFAULT_CARD_SIZE,
+            x: dropPos.x,
+            y: dropPos.y,
+          });
         } else if (
           item.type === Draggables.CARD ||
-          item.type === Draggables.AUDIO_CARD
+          item.type === Draggables.AUDIO_CARD ||
+          item.type === Draggables.CLASSIFIER_CARD
         ) {
           const currentCard = cards.get(item.id);
           if (currentCard == null) {
@@ -280,6 +293,18 @@ function Canvas({
           />
         );
         break;
+      case "classifier_card":
+        cardComponent = (
+          <ClassifierCard
+            id={id}
+            isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+            linkButtonText={linkButtonText}
+            onCreateLink={startLinkFromCard}
+            onFinishLink={onFinishLink}
+          />
+        );
+        break;
+
       default:
         throw new Error(`Unrecognized card type: ${card.type}`);
     }
