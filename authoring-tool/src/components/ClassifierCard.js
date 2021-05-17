@@ -45,6 +45,7 @@ export default function ClassifierCard({
         }
         onClick={(_e) => {
           if (setNewClassifierLinkInProgressData != null) {
+            /* TODO: replace prompts with better dialogs */
             const label = prompt("Label?");
             if (label != null) {
               const threshold = parseFloat(prompt("Threshold?"));

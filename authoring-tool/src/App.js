@@ -68,44 +68,6 @@ function App(): React.MixedElement {
     );
   };
 
-  const addLink = (from: UniqueId, to: UniqueId) => {
-    const fromCard = cards.get(from);
-    if (fromCard == null) {
-      console.error(
-        // $FlowExpectedError coerce id for the sake of logging
-        `addLink called with unrecognized card id: ${from}`
-      );
-      return;
-    }
-    switch (fromCard.links.type) {
-      case "simple_link":
-        updateCard(
-          produce(fromCard, (draftState) => {
-            // eslint-disable-next-line no-param-reassign
-            draftState.links = {
-              next: to,
-              type: "simple_link",
-            };
-          })
-        );
-        break;
-      // case "classifier_links":
-      //   updateCard(
-      //     produce(fromCard, (draftState) => {
-      //       // eslint-disable-next-line no-param-reassign
-      //       draftState.links = {
-      //         next: to,
-      //         type: "simple_link",
-      //       };
-      //     })
-      //   );
-      //   break;
-      default:
-        throw new Error(
-          `addLink: unrecognized link type: ${fromCard.links.type}`
-        );
-    }
-  };
   const removeLink = (from: UniqueId, to: UniqueId) => {
     const fromCard = cards.get(from);
     if (fromCard == null) {
@@ -123,6 +85,17 @@ function App(): React.MixedElement {
             draftState.links = {
               next: null,
               type: "simple_link",
+            };
+          })
+        );
+        break;
+      case "classifier_links":
+        updateCard(
+          produce(fromCard, (draftState) => {
+            // eslint-disable-next-line no-param-reassign
+            draftState.links = {
+              links: draftState.links.links.filter((link) => link.next !== to),
+              type: "classifier_links",
             };
           })
         );
