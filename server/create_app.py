@@ -42,7 +42,7 @@ def create_app(device,
         return response
 
     @app.errorhandler(HTTPException)
-    def handle_exception(e):
+    def handle_http_exception(e):
         """Return JSON instead of HTML"""
         response = e.get_response()
         response.data = json.dumps({
@@ -65,6 +65,10 @@ def create_app(device,
     @app.errorhandler(AudioStoryAlreadyExistsError)
     def handle_existing_audio_story(e):
         return str(e), http.HTTPStatus.METHOD_NOT_ALLOWED
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        return str(e), http.HTTPStatus.INTERNAL_SERVER_ERROR
 
     @app.route('/')
     def index():
@@ -123,5 +127,11 @@ def create_app(device,
         response = flask.jsonify(graph)
 
         return response
+
+    @app.route('/throw-error')
+    def throw_error():
+        raise RuntimeError("this is an error!")
+
+        return "ok"
 
     return app

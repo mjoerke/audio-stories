@@ -134,6 +134,10 @@ class TestApi(unittest.TestCase):
         self.assertEqual("{}_0.mp3".format(audio_story_id),
                          returned_graph['nodes']['0']['audio_file'])
 
+    def test_error(self):
+        response = self.client.get("/throw-error")
+        self.assertEqual(500, response.status_code)
+
 
 if __name__ == "__main__":
     unittest.main()
