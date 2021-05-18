@@ -6,6 +6,10 @@ from typing import Dict, Optional
 from server.speech_generator import SpeechGenerator
 
 
+class NonexistentAudioStoryError(Exception):
+    pass
+
+
 class AudioStoryGraph():
     def __init__(self, graph):
         self._graph = graph
@@ -137,7 +141,13 @@ class AudioStoryLoader():
              must_have_audio: bool = True,
              audio_relative_to: str = "/") -> Dict:
         savepath = self._get_savepath(story_id)
-        audio_story = AudioStoryGraph.from_file(savepath)
+        try:
+            audio_story = AudioStoryGraph.from_file(savepath)
+        except OSError:
+            existing_audio_files = self.get_audio_stories()
+            raise NonexistentAudioStoryError(
+                "Audio story with id '{}' does not exist! Existing audio stories include: {}"
+                .format(story_id, str(existing_audio_files)))
 
         if must_have_audio:
             assert audio_story.has_audio_files()
@@ -145,3 +155,13 @@ class AudioStoryLoader():
         graph = audio_story.relative_to(audio_relative_to)
 
         return graph
+
+    def get_audio_stories(self):
+        audio_story_files = os.listdir(self.save_dir)
+
+        audio_story_files = [
+            elt.replace(".json", "") for elt in audio_story_files
+            if os.path.join(self.save_dir, elt) != self.audio_save_dir
+        ]
+
+        return audio_story_files
