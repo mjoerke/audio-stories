@@ -7,7 +7,8 @@ from PIL import Image
 from werkzeug.exceptions import HTTPException
 
 from server.model_utils import CLIPModel
-from server.save_audio_files import AudioStoryLoader
+from server.save_audio_files import (AudioStoryLoader,
+                                     NonexistentAudioStoryError)
 from server.speech_generator import GoogleSpeechGenerator
 
 AUDIO_FILES_ENDPOINT = "/audio-files/"
@@ -55,6 +56,10 @@ def create_app(device,
     @app.errorhandler(InvalidLabelException)
     def handle_invalid_label_exception(e):
         return str(e), http.HTTPStatus.UNPROCESSABLE_ENTITY
+
+    @app.errorhandler(NonexistentAudioStoryError)
+    def handle_nonexistent_audio_story(e):
+        return str(e), http.HTTPStatus.NOT_FOUND
 
     @app.route('/')
     def index():
