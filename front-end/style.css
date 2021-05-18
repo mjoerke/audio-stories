@@ -154,3 +154,23 @@ i.material-icons {
 .badge-success {
     opacity: 100% !important;
 }
+
+#story-select-modal {
+  display:block; 
+  background-color: rgba(0,0,0,0.75);
+}
+
+form {
+  display: flex;
+  align-items: center;
+}
+
+textarea, select {
+  width: 85%;
+  resize: none;
+}
+
+#submit {
+  width: 15%
+}
+
