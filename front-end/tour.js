@@ -53,20 +53,13 @@ async function loop() {
 
     switch (state) {
 
-        // advance state as soon as the audio file ends        
-        // assumes the thresholds are set up so that one label will always be above threshold
-        // assumes next_state is never undefined
         case "audio":
             console.log('audio')
 
             // adapted from https://stackoverflow.com/questions/9419263/how-to-play-audio
-
-            // always add the audio and play it
-            // if there's no audio for this state, the JSON should specify audio/dummy.mp3
-            // which is a 1ms long silent mp3 file
             audio = document.createElement('audio');
             audio.style.display = "none";
-            audio.src = current_node.audio_file;
+            audio.src = SERVER_IP + "/audio-files/" + current_node.audio_file;
             audio.autoplay = true;
 
             audio.onended = function(){
@@ -83,12 +76,9 @@ async function loop() {
             document.body.appendChild(audio);
             break;
 
-        // wait to advance state until at least one label is above threshold
-        // e.g. wait until you see a cat
         case "classifier":
             console.log('classifier')
             
-
             // we want to timeout on the await (cancel after MAX_TIMEOUT ms)
             let results;
             try {
@@ -128,6 +118,9 @@ story = {
     }
 }
 
+
+
+
 // this will transition to indoors if spacebar else outdoors
 // story = {
 //     "nodes": {
@@ -148,6 +141,31 @@ story = {
 //         "4": {"type": "audio", "next": null, "audio_file": "audio/changes.mp3"}
 //     }
 // }
+
+function fetch_story(story_id) {
+    fetch(SERVER_IP + '/load-audio-story/' + story_id, {
+            method: 'GET'
+          }).then( response => response.json())
+	    .then( function (data) {story = data;}) 
+}
+
+var modal = document.getElementById("story-select-modal");
+
+var story_select_form = document.getElementById("story-select-form");
+story_select_form.onsubmit = function() {
+    modal.style.display = "none";
+    e = document.getElementById("story-select");
+    fetch_story(e.options[e.selectedIndex].text)
+    return false;
+}
+
+var story_id_form = document.getElementById("story-id-form");
+story_id_form.onsubmit = function() {
+    modal.style.display = "none";
+    e = document.getElementById("story-id");
+    fetch_story(e.value);
+    return false;
+}
 
 var play_button = document.getElementById("play-button");
 
