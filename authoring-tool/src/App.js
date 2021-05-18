@@ -20,8 +20,6 @@ import "./App.css";
 
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
-  console.log(JSON.stringify(exportAsObject(cards), null, 2));
-  console.log(validate(exportAsObject(cards)));
 
   const addCard = (newCard: CardData) => {
     setCards((baseState) =>
@@ -111,10 +109,28 @@ function App(): React.MixedElement {
     }
   };
 
+  const onUploadStart = async () => {
+    const obj = exportAsObject(cards);
+    console.log(JSON.stringify(obj, null, 2));
+    if (validate(obj)) {
+      const response = await fetch(
+        // "http://35.226.183.11:5000/save-audio-story",
+        "https://anelise-lambda.csail.mit.edu:5000/save-audio-story",
+        {
+          method: "POST",
+          // pretty print JSON
+          body: JSON.stringify(obj, null, 2),
+        }
+      );
+      const result = await response.text();
+      console.log("result:", result);
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="App-container">
-        <SidePanel />
+        <SidePanel onUploadStart={onUploadStart} />
         <Canvas
           addCard={addCard}
           addClassifierLink={addClassifierLink}

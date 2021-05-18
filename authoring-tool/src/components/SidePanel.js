@@ -8,7 +8,11 @@ import Draggables from "../constants/Draggables";
 
 import "./SidePanel.css";
 
-function SidePanel(): React.MixedElement {
+type Props = {
+  onUploadStart: () => {},
+};
+
+function SidePanel({ onUploadStart }: Props): React.MixedElement {
   return (
     <div className="SidePanel-container">
       <AudioCard isDrawingNewLinkFrom={null} type={Draggables.NEW_AUDIO_CARD} />
@@ -17,6 +21,9 @@ function SidePanel(): React.MixedElement {
         links={[]}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
+      <button onClick={onUploadStart} type="button">
+        Upload
+      </button>
     </div>
   );
 }
