@@ -2,6 +2,9 @@
 .mypy_cache/
 .cache/
 server/audio-project-google-creds.json
+server/fullchain.pem
+server/privkey.pem
+server/server_data
 
 # swp files 
 *.sw[oap]
