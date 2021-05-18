@@ -85,6 +85,19 @@ class TestApi(unittest.TestCase):
                                     json=audio_story_graph)
         self.assertEqual(200, response.status_code)
 
+    def test_resave_audio_story(self):
+        audio_story_graph = self._get_dummy_audio_graph("one_audio_node.json")
+        audio_story_id = "story_id"
+        audio_story_graph["story_id"] = audio_story_id
+
+        response = self.client.post("/save-audio-story",
+                                    json=audio_story_graph)
+        self.assertEqual(200, response.status_code)
+
+        response = self.client.post("/save-audio-story",
+                                    json=audio_story_graph)
+        self.assertEqual(200, response.status_code)
+
     def test_load_audio_story(self):
         audio_story_graph = self._get_dummy_audio_graph("one_audio_node.json")
         audio_story_id = "story_id"

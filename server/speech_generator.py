@@ -18,7 +18,7 @@ class DummySpeechGenerator(SpeechGenerator):
     def to_speech(self, transcript: str, savepath: str) -> None:
         # for now, just load a sample file
         this_dir = os.path.dirname(os.path.realpath(__file__))
-        sample_path = os.path.join(this_dir, "server_data", "audio",
+        sample_path = os.path.join(this_dir, "..", "data", "samples",
                                    "outdoors.mp3")
         assert os.path.exists(sample_path)
         shutil.copyfile(sample_path, savepath)

@@ -7,7 +7,8 @@ from PIL import Image
 from werkzeug.exceptions import HTTPException
 
 from server.model_utils import CLIPModel
-from server.save_audio_files import (AudioStoryLoader,
+from server.save_audio_files import (AudioStoryAlreadyExistsError,
+                                     AudioStoryLoader,
                                      NonexistentAudioStoryError)
 from server.speech_generator import GoogleSpeechGenerator
 
@@ -61,6 +62,10 @@ def create_app(device,
     def handle_nonexistent_audio_story(e):
         return str(e), http.HTTPStatus.NOT_FOUND
 
+    @app.errorhandler(AudioStoryAlreadyExistsError)
+    def handle_existing_audio_story(e):
+        return str(e), http.HTTPStatus.METHOD_NOT_ALLOWED
+
     @app.route('/')
     def index():
         return "This is the audio stories server."
@@ -101,7 +106,7 @@ def create_app(device,
         audio_story_id = audio_story["story_id"]
         audio_story_loader.save(audio_story,
                                 audio_story_id,
-                                check_exists=True,
+                                check_exists=False,
                                 generate_audio=True)
 
         response = flask.jsonify("ok")

@@ -10,6 +10,10 @@ class NonexistentAudioStoryError(Exception):
     pass
 
 
+class AudioStoryAlreadyExistsError(Exception):
+    pass
+
+
 class AudioStoryGraph():
     def __init__(self, graph):
         self._graph = graph
@@ -118,7 +122,7 @@ class AudioStoryLoader():
 
         if check_exists:
             if os.path.exists(savepath):
-                raise RuntimeError(
+                raise AudioStoryAlreadyExistsError(
                     "Audio story with id {} already exists".format(story_id))
 
         audio_story = AudioStoryGraph.from_json(audio_file_graph)
