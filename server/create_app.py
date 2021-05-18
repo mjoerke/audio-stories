@@ -128,6 +128,13 @@ def create_app(device,
 
         return response
 
+    @app.route('/list-audio-stories')
+    def list_audio_stories():
+        stories = audio_story_loader.get_audio_stories()
+        response = flask.jsonify(stories)
+
+        return response
+
     @app.route('/throw-error')
     def throw_error():
         raise RuntimeError("this is an error!")

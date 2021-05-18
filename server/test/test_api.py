@@ -138,6 +138,28 @@ class TestApi(unittest.TestCase):
         response = self.client.get("/throw-error")
         self.assertEqual(500, response.status_code)
 
+    def test_list_audio_stories(self):
+        response = self.client.get("/list-audio-stories")
+        self.assertEqual(200, response.status_code)
+        stories = response.get_json()
+        self.assertEqual(len(stories), 0)
+
+        audio_story_graph = self._get_dummy_audio_graph("one_audio_node.json")
+        audio_story_id = "story_id"
+        audio_story_graph["story_id"] = audio_story_id
+
+        # post to save the story
+        response = self.client.post("/save-audio-story",
+                                    json=audio_story_graph)
+        self.assertEqual(200, response.status_code)
+
+        # check the endpoint again
+        response = self.client.get("/list-audio-stories")
+        self.assertEqual(200, response.status_code)
+        stories = response.get_json()
+        self.assertEqual(len(stories), 1)
+        self.assertEqual(stories[0], audio_story_id)
+
 
 if __name__ == "__main__":
     unittest.main()

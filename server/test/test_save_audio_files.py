@@ -294,6 +294,30 @@ class TestAudioStoryLoader(unittest.TestCase):
 
         assert graph["nodes"]["0"]["audio_file"] == "{}_0.mp3".format(story_id)
 
+    def test_list(self):
+
+        speech_generator = DummySpeechGenerator()
+        audio_story_loader = AudioStoryLoader(
+            save_dir=self.test_dir,
+            audio_save_dir=self.audio_dir,
+            speech_generator=speech_generator)
+
+        stories = audio_story_loader.get_audio_stories()
+        assert len(stories) == 0
+
+        story_id = "my_story"
+        filepath = get_test_filepath("one_audio_node.json")
+        audio_story = AudioStoryGraph.from_file(filepath)
+
+        audio_story_loader.save(audio_file_graph=audio_story.graph,
+                                story_id=story_id,
+                                generate_audio=True)
+
+        stories = audio_story_loader.get_audio_stories()
+        assert len(stories) == 1
+
+        assert stories[0] == "my_story"
+
 
 if __name__ == "__main__":
     unittest.main()
