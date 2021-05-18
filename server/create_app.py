@@ -33,6 +33,12 @@ def create_app(device,
                                           audio_save_dir=audio_save_dir,
                                           speech_generator=speech_generator)
 
+    @app.after_request
+    def add_cors_headers(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+
+        return response
+
     @app.errorhandler(HTTPException)
     def handle_exception(e):
         """Return JSON instead of HTML"""
@@ -43,7 +49,6 @@ def create_app(device,
             "description": e.description
         })
         response.content_type = "application/json"
-        response.headers.add('Access-Control-Allow-Origin', '*')
 
         return response
 
@@ -61,8 +66,6 @@ def create_app(device,
 
     @app.route('/inference', methods=['POST'])
     def inference():
-        print("INSIDE INFERENCE")
-
         img_file = flask.request.files['image']
         image = Image.open(img_file.stream)
         print("image", image)
@@ -79,7 +82,6 @@ def create_app(device,
         scores = model.inference(image, labels).tolist()
 
         response = flask.jsonify(scores)
-        response.headers.add('Access-Control-Allow-Origin', '*')
 
         return response
 
@@ -98,7 +100,6 @@ def create_app(device,
                                 generate_audio=True)
 
         response = flask.jsonify("ok")
-        response.headers.add('Access-Control-Allow-Origin', '*')
 
         return response
 
@@ -110,7 +111,6 @@ def create_app(device,
                                         audio_relative_to=audio_save_dir)
 
         response = flask.jsonify(graph)
-        response.headers.add('Access-Control-Allow-Origin', '*')
 
         return response
 
