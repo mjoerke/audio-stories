@@ -57,14 +57,19 @@ async function loop() {
             console.log('audio')
 
             // adapted from https://stackoverflow.com/questions/9419263/how-to-play-audio
-            audio = document.createElement('audio');
-            audio.style.display = "none";
+            if (!audio) {
+	   	 audio = document.createElement('audio');
+           	 audio.style.display = "none";
+	    }
+
             audio.src = SERVER_IP + "/audio-files/" + current_node.audio_file;
             audio.autoplay = true;
+	    audio.play()
 
             audio.onended = function(){
                 let next_state = current_node.next;
-                audio.remove(); 
+		audio.pause();
+		//audio.remove(); 
                 current_node = story["nodes"][next_state];
 
                 if (current_node != null) {
@@ -175,12 +180,18 @@ function toggle_play_button() {
         play_button.children[0].innerHTML = "pause";
 
         if (!current_node) {
-            current_node = story['nodes'][0];
+            current_node = story['nodes'][1];
         }
+	else if (current_node.type == "audio"){
+	    audio.play();
+	}
 
         loop();
     } else {
         paused = true;
+	if (current_node.type == "audio" ) {
+	    audio.pause();
+	}
         play_button.children[0].innerHTML = "play_arrow";
     }   
 }

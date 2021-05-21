@@ -160,12 +160,12 @@ i.material-icons {
   background-color: rgba(0,0,0,0.75);
 }
 
-form {
+.form {
   display: flex;
   align-items: center;
 }
 
-textarea, select {
+.textarea, .select {
   width: 85%;
   resize: none;
 }
