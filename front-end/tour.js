@@ -14,7 +14,7 @@ function check_threshold(label_transitions, thresholds, results) {
     // assumes at least one keys is present 
     // in all 3 of labels, thresholds and results 
 
-    let next_node = undefined
+    let next_node_idx = undefined
     let max_confidence = -1
     
     var i = 0;
@@ -23,14 +23,17 @@ function check_threshold(label_transitions, thresholds, results) {
         let conf = results[i];
 
         if (conf >= thresholds[label] && conf >= max_confidence) {
-            next_node = label_transitions[label];
+            next_node_idx = label_transitions[label];
             max_confidence = conf;
         } 
         i++;
     }
 
-    if (next_node == undefined) {
+    let next_node;
+    if (next_node_idx == undefined) {
         next_node = current_node
+    } else {
+        next_node = story['nodes'][next_node_idx]
     }
     
     return next_node;
@@ -97,8 +100,7 @@ async function loop() {
             }
 
             // handle logic here 
-            let next_state = check_threshold(current_node.labels, current_node.thresholds, results);
-            current_node = story["nodes"][next_state];
+            current_node = check_threshold(current_node.labels, current_node.thresholds, results);
 
             if (current_node != null) {
                 setTimeout(()=>loop())
