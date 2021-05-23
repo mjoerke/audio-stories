@@ -155,6 +155,14 @@ i.material-icons {
     opacity: 100% !important;
 }
 
+.modal-header {
+    align-items: center !important;
+}
+
+.modal-header h5 {
+    margin: 0;
+}
+
 #story-select-modal {
   display:block; 
   background-color: rgba(0,0,0,0.75);

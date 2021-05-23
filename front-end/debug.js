@@ -14,47 +14,55 @@ function toggle_debug_mode() {
         debug_toggle.children[0].style.color = "lime";
         edit_button.style.display = "block";
         document.getElementById("classifier-bar-chart").style.display = "block"
+
+        if (debug_labels.length != 0) {
+            update_debug_labels();
+        }
+
+        if (paused) {
+            setTimeout(()=>loop())
+        }
     }
 }
 
 debug_toggle.onclick = toggle_debug_mode;
 
-async function debug_loop() {
-    console.log("debug loop")
+// async function debug_loop() {
+//     console.log("debug loop")
 
-    if (paused) {
-        return
-    }
+//     if (!debug) {
+//         return
+//     }
 
-    if (!debug) {
-        setTimeout(()=>loop())
-        return
-    }
+//     let results;
+//     try {
 
-    let results;
-    try {
-        let labels = debug_labels.map(function (s) {
-            if (s.descriptor == "") {
-                return "none"
-            } else {
-                return s.descriptor
-            }
-        })
-        
-        results = await query_classifier(MAX_TIMEOUT, JSON.stringify(labels))
-        console.log(results)
-        update_barchart_UI(results)
+//         if (debug_labels.length == 0) {
+//             setTimeout(()=>debug_loop())
+//         }
 
-        setTimeout(()=>debug_loop())
-        return
+//         let labels = debug_labels.map(function (s) {
+//             if (s.descriptor == "") {
+//                 return "none"
+//             } else {
+//                 return s.descriptor
+//             }
+//         })
 
-    } catch(e) {
-        // if the server doesn't respond in time, immediately trigger next frame
-        console.log("dropped frame", e)
-        setTimeout(()=>debug_loop())
-        return
-    }
-}
+//         results = await query_classifier(MAX_TIMEOUT, JSON.stringify(labels))
+//         console.log(results)
+//         update_barchart_UI(results)
+
+//         setTimeout(()=>debug_loop())
+//         return
+
+//     } catch(e) {
+//         // if the server doesn't respond in time, immediately trigger next frame
+//         console.log("dropped frame", e)
+//         setTimeout(()=>debug_loop())
+//         return
+//     }
+// }
 
 async function query_classifier_(t, labels) {
     function softmax(arr) {
@@ -68,6 +76,30 @@ async function query_classifier_(t, labels) {
     return new Promise(resolve => setTimeout(resolve, 1000, data))
 }
 
+function update_debug_labels() {
+    console.log("UPDATE")
+    if (current_node.type == 'audio') {
+        return
+    }
+
+    let new_debug_labels = []
+    let classifier_labels = Object.keys(current_node.labels)
+    
+    for (var i = 0; i < classifier_labels.length; i++) {
+        let label = classifier_labels[i];
+        let label_obj = {'descriptor': label,
+                         'threshold': 100 * current_node.thresholds[label]};
+        new_debug_labels.push(label_obj);
+    }
+
+    debug_labels = new_debug_labels;
+
+    if (debug) {
+        render_barchart_UI();
+        render_modal_UI();
+    }
+}
+
 function add_label() {
     read_label_input();
 
@@ -78,6 +110,7 @@ function add_label() {
 
     debug_labels.push(new_label);
     render_modal_UI()
+    render_barchart_UI()
 }
 
 function increment(id) {
@@ -86,6 +119,7 @@ function increment(id) {
     let current_value = parseInt(el.innerHTML);
     current_value = Math.min(current_value + 10, 100);
     el.innerHTML = current_value.toString()
+    render_barchart_UI()
 }
 
 function decrement(id) {
@@ -94,12 +128,14 @@ function decrement(id) {
     let current_value = parseInt(el.innerHTML);
     current_value = Math.max(current_value - 10, 0);
     el.innerHTML = current_value.toString()
+    render_barchart_UI()
 }
 
 function remove_label(id) {
     read_label_input();
     debug_labels.splice(parseInt(id), 1)
     render_modal_UI()
+    render_barchart_UI()
 }
 
 function read_label_input() {
@@ -160,7 +196,7 @@ function render_modal_UI() {
 }
 
 function render_barchart_UI() {
-    read_label_input();
+    // read_label_input();
 
     var barchart_container = document.getElementById("classifier-bar-chart");
     let barchart_HTML = ""
@@ -190,10 +226,14 @@ function render_barchart_UI() {
     barchart_container.innerHTML = barchart_HTML
 }
 
-$("#classifier-modal").on('hide.bs.modal', render_barchart_UI);
+$("#classifier-modal").on('hide.bs.modal', function() {
+    read_label_input();
+    render_barchart_UI();
+})
+
+    
 
 function update_barchart_UI(results) {
-    console.log("update", results)
     let max_confidence = -1;
     let max_label = -1;
 
@@ -208,8 +248,6 @@ function update_barchart_UI(results) {
             max_label = i;
         } 
     }
-
-    console.log(max_label)
 
     for (var i = 0; i < results.length; i++) {
         let badge = document.getElementById("badge-" + i.toString())

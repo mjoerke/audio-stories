@@ -36,20 +36,46 @@ function check_threshold(label_transitions, thresholds, results) {
         next_node = story['nodes'][next_node_idx]
     }
     
-    return next_node;
+    return next_node_idx;
 }
 
 async function loop() {
 
     console.log("main loop")
 
-    if (paused) {
+    if (paused && !debug) {
         return
     }
 
-    if (debug) {
-        setTimeout(()=>debug_loop())
-        return
+
+    if (paused && debug) {
+        let results;
+        try {
+            if (debug_labels.length == 0) {
+                setTimeout(()=>loop(), 500)
+                return
+            }
+
+            let labels = debug_labels.map(function (s) {
+                if (s.descriptor == "") {
+                    return "none"
+                } else {
+                    return s.descriptor
+                }
+            })
+
+            results = await query_classifier(MAX_TIMEOUT, JSON.stringify(labels))
+            update_barchart_UI(results)
+
+            setTimeout(()=>loop())
+            return
+
+        } catch(e) {
+            // if the server doesn't respond in time, immediately trigger next frame
+            console.log("dropped frame", e)
+            setTimeout(()=>loop())
+            return
+        }
     }
 
     let state = current_node.type
@@ -61,22 +87,24 @@ async function loop() {
 
             // adapted from https://stackoverflow.com/questions/9419263/how-to-play-audio
             if (!audio) {
-	   	 audio = document.createElement('audio');
-           	 audio.style.display = "none";
-	    }
+                audio = document.createElement('audio');
+                audio.style.display = "none";
+            }
 
             audio.src = SERVER_IP + "/audio-files/" + current_node.audio_file;
             audio.autoplay = true;
-	    audio.play()
+            audio.play()
 
             audio.onended = function(){
                 let next_state = current_node.next;
-		audio.pause();
-		//audio.remove(); 
+                audio.pause();
                 current_node = story["nodes"][next_state];
 
                 if (current_node != null) {
-                    setTimeout(()=>loop(), 500)
+                    update_debug_labels();
+                    setTimeout(()=>loop())
+                } else {
+                    play_button.click()
                 }
                 
             };
@@ -86,7 +114,6 @@ async function loop() {
 
         case "classifier":
             console.log('classifier')
-            
             // we want to timeout on the await (cancel after MAX_TIMEOUT ms)
             let results;
             try {
@@ -96,14 +123,25 @@ async function loop() {
                 // if the server doesn't respond in time, immediately trigger next frame
                 console.log("dropped frame", e)
                 setTimeout(()=>loop())
-                break
+                return
+            }
+
+            if (debug) {
+                update_barchart_UI(results)
             }
 
             // handle logic here 
-            current_node = check_threshold(current_node.labels, current_node.thresholds, results);
+            let next_node_idx = check_threshold(current_node.labels, current_node.thresholds, results);
+
+            if (next_node_idx != undefined) {
+                current_node = story['nodes'][next_node_idx]
+                update_debug_labels()
+            }
 
             if (current_node != null) {
                 setTimeout(()=>loop())
+            } else {
+                play_button.click()
             }
             break;
     }
@@ -153,7 +191,7 @@ function fetch_story(story_id) {
     fetch(SERVER_IP + '/load-audio-story/' + story_id, {
             method: 'GET'
           }).then( response => response.json())
-	    .then( function (data) {story = data;}) 
+        .then( function (data) {story = data;}) 
 }
 
 var modal = document.getElementById("story-select-modal");
@@ -183,17 +221,22 @@ function toggle_play_button() {
 
         if (!current_node) {
             current_node = story['nodes'][1];
+            loop();
         }
-	else if (current_node.type == "audio"){
-	    audio.play();
-	}
-
-        loop();
+        else if (current_node.type == "audio" && audio != undefined) {
+            audio.play();
+        }
+        update_debug_labels()
     } else {
         paused = true;
-	if (current_node.type == "audio" ) {
-	    audio.pause();
-	}
+
+        if (!current_node) {
+            return
+        }
+
+        if (current_node.type == "audio" && audio != undefined) {
+            audio.pause();
+        }
         play_button.children[0].innerHTML = "play_arrow";
     }   
 }
