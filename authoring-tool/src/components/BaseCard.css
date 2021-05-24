@@ -13,3 +13,9 @@
   position: absolute;
   right: -30px;
 }
+
+.BaseCard-deleteButton {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}

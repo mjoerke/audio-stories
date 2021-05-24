@@ -14,6 +14,7 @@ export type ExposedProps = {
   id?: UniqueId,
   isDrawingNewLinkFrom: ?UniqueId,
   onCreateLink?: (UniqueId) => void,
+  onDelete?: () => void,
   onFinishLink?: (UniqueId) => void,
   height?: number,
   linkButtonText?: string,
@@ -33,6 +34,7 @@ export default function BaseCard({
   id,
   isDrawingNewLinkFrom,
   onCreateLink,
+  onDelete,
   onFinishLink,
   height = DEFAULT_CARD_SIZE,
   linkButtonText = "▶",
@@ -84,6 +86,17 @@ export default function BaseCard({
           type="button"
         >
           {linkButtonText}
+        </button>
+      ) : null}
+      {onDelete && id != null ? (
+        <button
+          className="BaseCard-deleteButton"
+          type="button"
+          onClick={(_e) => onDelete()}
+        >
+          <span role="img" aria-label="Delete card">
+            🗑️
+          </span>
         </button>
       ) : null}
     </div>

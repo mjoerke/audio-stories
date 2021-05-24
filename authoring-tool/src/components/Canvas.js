@@ -16,7 +16,7 @@ import ClassifierCard from "./ClassifierCard";
 import Draggables from "../constants/Draggables";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
-import makeUniqueId from "../util/UniqueId";
+import makeUniqueId, { uniqueIdAsString } from "../util/UniqueId";
 
 import "./Canvas.css";
 import getAdjacentCardIds from "../util/CardDataUtils";
@@ -27,6 +27,7 @@ type Props = $ReadOnly<{
   addSimpleLink: (AudioCardData, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
   updateCard: (CardData) => void,
+  removeCard: (UniqueId) => void,
   removeLink: (UniqueId, UniqueId) => void,
 }>;
 
@@ -36,6 +37,7 @@ function Canvas({
   addSimpleLink,
   cards,
   updateCard,
+  removeCard,
   removeLink,
 }: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
@@ -298,10 +300,12 @@ function Canvas({
       case "audio_card":
         cardComponent = (
           <AudioCard
+            key={uniqueIdAsString(id)}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             linkButtonText={linkButtonText}
             onCreateLink={startLinkFromCard}
+            onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
             onTextChange={(text) => {
               const audioCard: AudioCardData = card;
@@ -319,12 +323,14 @@ function Canvas({
       case "classifier_card":
         cardComponent = (
           <ClassifierCard
+            key={uniqueIdAsString(id)}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={card.links.links}
             linkButtonText={linkButtonText}
             newClassifierLinkInProgressData={newClassifierLinkInProgressData}
             onCreateLink={startLinkFromCard}
+            onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
             setNewClassifierLinkInProgressData={
               setNewClassifierLinkInProgressData

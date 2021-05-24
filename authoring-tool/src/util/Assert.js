@@ -10,7 +10,6 @@ import type { UniqueId } from "./UniqueId";
 export function assertCardsValid(
   cards: Map<UniqueId, CardData>
 ): Map<UniqueId, CardData> {
-  console.log(cards);
   Array.from(cards).forEach(([id, card]) => {
     switch (card.type) {
       case "audio_card":

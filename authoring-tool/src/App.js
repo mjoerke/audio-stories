@@ -52,6 +52,50 @@ function App(): React.MixedElement {
       });
     });
   };
+  const removeCard = (idToDelete: UniqueId) => {
+    setCards((baseState) =>
+      produce(baseState, (draftState) => {
+        baseState.forEach((card, id) => {
+          switch (card.links.type) {
+            case "simple_link": {
+              if (card.links.next === idToDelete) {
+                draftState.set(id, {
+                  ...card,
+                  links: {
+                    ...card.links,
+                    next: null,
+                  },
+                });
+              }
+              break;
+            }
+            case "classifier_links": {
+              const newLinks = card.links.links.filter(
+                (link) => link.next !== idToDelete
+              );
+              draftState.set(id, {
+                ...card,
+                links: { ...card.links, links: newLinks },
+              });
+              break;
+            }
+            default:
+              throw new Error(
+                `deleteCard: unrecognized link type: ${card.links.type}`
+              );
+          }
+        });
+
+        const didDelete = draftState.delete(idToDelete);
+        if (!didDelete) {
+          console.warn(
+            // $FlowExpectedError coerce id for the sake of logging
+            `deleteCard called with unrecognized card id: ${idToDelete}`
+          );
+        }
+      })
+    );
+  };
   const addSimpleLink = (
     fromCard: AudioCardData | ClassifierCardData,
     to: UniqueId
@@ -146,6 +190,7 @@ function App(): React.MixedElement {
           addSimpleLink={addSimpleLink}
           cards={cards}
           updateCard={updateCard}
+          removeCard={removeCard}
           removeLink={removeLink}
         />
       </div>

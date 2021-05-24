@@ -31,13 +31,12 @@ export default function ClassifierCard({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...otherProps}
     >
-      {links.map((link) => (
-        <div>
-          {`${link.label} > ${link.threshold} ? go to ${uniqueIdAsString(
-            link.next
-          )}`}
-        </div>
-      ))}
+      {links.map((link) => {
+        const description = `${link.label} > ${
+          link.threshold
+        } ? go to ${uniqueIdAsString(link.next)}`;
+        return <div key={description}>{description}</div>;
+      })}
       <button
         disabled={
           setNewClassifierLinkInProgressData == null ||
