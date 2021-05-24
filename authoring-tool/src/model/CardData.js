@@ -16,9 +16,6 @@ export type ClassifierLink = $ReadOnly<{
 }>;
 
 export type ClassifierLinks = $ReadOnly<{
-  // // link destinations by label
-  // labels: { [string]: UniqueId },
-  // thresholds: { [string]: number },
   links: Array<ClassifierLink>,
   type: "classifier_links",
 }>;

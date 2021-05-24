@@ -14,12 +14,21 @@ import type {
 import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
 import SidePanel from "./components/SidePanel";
+import { assertCardsValid } from "./util/Assert";
 import { exportAsObject, validate } from "./util/Serializer";
 
 import "./App.css";
 
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
+
+  // On dev, validate state after every update
+  React.useEffect(() => {
+    // eslint-disable-next-line no-constant-condition
+    if (process.env.NODE_ENV || "development") {
+      assertCardsValid(cards);
+    }
+  }, [assertCardsValid, cards]);
 
   const addCard = (newCard: CardData) => {
     setCards((baseState) =>
@@ -113,8 +122,8 @@ function App(): React.MixedElement {
     const obj = exportAsObject(cards);
     console.log(JSON.stringify(obj, null, 2));
     if (validate(obj)) {
+      // eslint-disable-next-line no-undef
       const response = await fetch(
-        // "http://35.226.183.11:5000/save-audio-story",
         "https://anelise-lambda.csail.mit.edu:5000/save-audio-story",
         {
           method: "POST",

@@ -12,8 +12,6 @@ type Props = {
   onUploadStart: () => {},
 };
 
-
-
 function SidePanel({ onUploadStart }: Props): React.MixedElement {
   return (
     <div className="SidePanel-container">
@@ -23,12 +21,12 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
         links={[]}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
-      <p> Add a story name!  </p>
+      <p> Add a story name! </p>
       <div id="submit-div">
-         <textarea id="story-name" cols="30" rows="1"/>
-      	 <button onClick={onUploadStart} type="button" id="upload-button">
+        <textarea id="story-name" cols="30" rows="1" />
+        <button onClick={onUploadStart} type="button" id="upload-button">
           Save
-     	 </button>
+        </button>
       </div>
     </div>
   );
