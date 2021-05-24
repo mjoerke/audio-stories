@@ -1,4 +1,4 @@
-// @flow
+//      
 
 import * as React from "react";
 
@@ -8,13 +8,7 @@ import Draggables from "../constants/Draggables";
 
 import "./SidePanel.css";
 
-type Props = {
-  onUploadStart: () => {},
-};
-
-
-
-function SidePanel({ onUploadStart }: Props): React.MixedElement {
+function SidePanel()                     {
   return (
     <div className="SidePanel-container">
       <AudioCard isDrawingNewLinkFrom={null} type={Draggables.NEW_AUDIO_CARD} />
@@ -23,13 +17,6 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
         links={[]}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
-      <p> Add a story name!  </p>
-      <div id="submit-div">
-         <textarea id="story-name" cols="30" rows="1"/>
-      	 <button onClick={onUploadStart} type="button" id="upload-button">
-          Save
-     	 </button>
-      </div>
     </div>
   );
 }

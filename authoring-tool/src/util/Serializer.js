@@ -16,6 +16,7 @@ type ClassifierCardSchema = $ReadOnly<{
 }>;
 
 export type JsonSchema = $ReadOnly<{
+//  story_id: string,
   nodes: { [string]: AudioCardSchema | ClassifierCardSchema },
 }>;
 
@@ -50,8 +51,13 @@ export function exportAsObject(cards: Map<UniqueId, CardData>): JsonSchema {
         throw new Error(`exportAsObject: unrecognized card type: ${card.type}`);
     }
   });
-  // TODO: don't hardcode story id
-  return { story_id: "story_demo_test", nodes };
+
+   let storyName = "story_demo_test";
+   const storyNameNode = (document.querySelector("textarea[id=story-name]"));
+   if (storyNameNode && storyNameNode instanceof HTMLTextAreaElement) {
+	   storyName = storyNameNode.value ? storyNameNode.value : storyName;   
+   }
+  return {story_id: storyName, nodes};
 }
 
 /* TODO: in an ideal world, this would output what's wrong */

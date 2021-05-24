@@ -3,3 +3,16 @@
   border-right-style: solid;
   width: 200px;
 }
+
+#submit-div {
+  display: flex;
+  align-items: center;
+}
+
+#upload-button {
+  width: 25%;
+}
+
+#story-name {
+  width: 75%;
+}
