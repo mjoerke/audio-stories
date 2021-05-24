@@ -220,7 +220,17 @@ function toggle_play_button() {
         play_button.children[0].innerHTML = "pause";
 
         if (!current_node) {
-            current_node = story['nodes'][1];
+            
+	    if (story.start_id != undefined){
+		current_node = story['nodes'][story.start_id];
+	    }
+	    else if (story['nodes'][0]) {
+		current_node = story['nodes'][0]
+	    }
+	    else {	    
+	        current_node = story['nodes'][1];
+	    }
+
             loop();
         }
         else if (current_node.type == "audio" && audio != undefined) {
@@ -239,6 +249,22 @@ function toggle_play_button() {
         }
         play_button.children[0].innerHTML = "play_arrow";
     }   
+}
+
+
+fetch(SERVER_IP + '/list-audio-stories', {
+            method: 'GET'
+      }).then( response => response.json())
+        .then( function (data) {set_story_names(data);})
+
+function set_story_names (story_names) {
+
+	for (let i = 0; i < story_names.length; i++) {
+		e = document.createElement("option");
+		e.setAttribute("name",story_names[i])
+		e.text = story_names[i]
+		document.querySelector("#story-select").add(e)
+	}
 }
 
 play_button.onclick = toggle_play_button;
