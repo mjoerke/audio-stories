@@ -324,6 +324,7 @@ function Canvas({
         cardComponent = (
           <ClassifierCard
             key={uniqueIdAsString(id)}
+            addClassifierLink={addClassifierLink}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={card.links.links}

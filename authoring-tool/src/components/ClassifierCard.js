@@ -1,14 +1,17 @@
 // @flow
 
 import * as React from "react";
+
 import Draggables from "../constants/Draggables";
-import type { ClassifierLink } from "../model/CardData";
+import type { ClassifierCardData, ClassifierLink } from "../model/CardData";
 import { uniqueIdAsString } from "../util/UniqueId";
 import type { ExposedProps as CardProps } from "./BaseCard";
 import BaseCard from "./BaseCard";
+import ClassifierCardDialog from "./ClassifierCardDialog";
 
 type Props = {
   ...CardProps,
+  addClassifierLink?: (ClassifierCardData, ClassifierLink) => void,
   links: Array<ClassifierLink>,
   newClassifierLinkInProgressData?: ?{ label: string, threshold: number },
   setNewClassifierLinkInProgressData?: (
@@ -19,11 +22,13 @@ type Props = {
 };
 
 export default function ClassifierCard({
+  addClassifierLink,
   links,
   newClassifierLinkInProgressData,
   setNewClassifierLinkInProgressData,
   ...otherProps
 }: Props): React.MixedElement {
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   return (
     <BaseCard
       title="Classifier"
@@ -44,23 +49,21 @@ export default function ClassifierCard({
         }
         onClick={(_e) => {
           if (setNewClassifierLinkInProgressData != null) {
-            /* TODO: replace prompts with better dialogs */
-            const label = prompt("Label?");
-            if (label != null) {
-              const threshold = parseFloat(prompt("Threshold?"));
-              if (threshold != null) {
-                setNewClassifierLinkInProgressData((_) => ({
-                  label,
-                  threshold,
-                }));
-              }
-            }
+            setIsDialogOpen(true);
           }
         }}
         type="button"
       >
         Add transition
       </button>
+      {addClassifierLink ? (
+        <ClassifierCardDialog
+          addClassifierLink={addClassifierLink}
+          closeDialog={() => setIsDialogOpen(false)}
+          isOpen={isDialogOpen}
+          initialLinks={links}
+        />
+      ) : null}
     </BaseCard>
   );
 }

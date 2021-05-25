@@ -1,0 +1,42 @@
+.ClassifierCardDialog-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.ClassifierCardDialog-headerContainer {
+  align-items: center;
+  flex-direction: column;
+  display: flex;
+  width: 100%;
+}
+
+.ClassifierCardDialog-closeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.ClassifierCardDialog-classifierRow {
+}
+
+.ClassifierCardDialog-destinationInput {
+}
+
+.ClassifierCardDialog-labelInput {
+}
+
+.ClassifierCardDialog-thresholdButton {
+}
+
+.ClassifierCardDialog-thresholdInput {
+}
+
+.ClassifierCardDialog-classifierRowCloseButton {
+}
+
+.ClassifierCardDialog-addClassifierButton {
+}
+
+.ClassifierCardDialog-saveButton {
+}
