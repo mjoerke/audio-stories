@@ -29,6 +29,7 @@ type Props = $ReadOnly<{
   updateCard: (CardData) => void,
   removeCard: (UniqueId) => void,
   removeLink: (UniqueId, UniqueId) => void,
+  updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
 }>;
 
 function Canvas({
@@ -39,6 +40,7 @@ function Canvas({
   updateCard,
   removeCard,
   removeLink,
+  updateClassifierLinks,
 }: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -218,6 +220,20 @@ function Canvas({
     };
   };
 
+  const validateClassifierLinks = (links) => {
+    let result = true;
+    links.forEach((link) => {
+      if (link.next == null || cards.get(link.next) == null) {
+        result = false;
+      } else if (link.label == null || link.label.length === 0) {
+        result = false;
+      } else if (link.threshold == null || link.threshold.length === 0) {
+        result = false;
+      }
+    });
+    return result;
+  };
+
   const startLinkFromCard = (id) => {
     if (id != null) {
       setisDrawingNewLinkFrom((_) => id);
@@ -324,7 +340,6 @@ function Canvas({
         cardComponent = (
           <ClassifierCard
             key={uniqueIdAsString(id)}
-            addClassifierLink={addClassifierLink}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={card.links.links}
@@ -336,6 +351,8 @@ function Canvas({
             setNewClassifierLinkInProgressData={
               setNewClassifierLinkInProgressData
             }
+            updateClassifierLinks={updateClassifierLinks}
+            validateClassifierLinks={validateClassifierLinks}
           />
         );
         break;

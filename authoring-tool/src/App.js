@@ -123,6 +123,33 @@ function App(): React.MixedElement {
     );
   };
 
+  const updateClassifierLinks = (
+    id: UniqueId,
+    links: Array<ClassifierLink>
+  ) => {
+    setCards((baseState) => {
+      const foundCard = baseState.get(id);
+      if (foundCard == null) {
+        console.error(
+          // $FlowExpectedError coerce id for the sake of logging
+          `updateClassifierLinks called with unrecognized card id: ${id}`
+        );
+        return baseState;
+      }
+      // TODO: confirm that it's a classifier card
+      const editedCard = {
+        ...foundCard,
+        links: {
+          ...foundCard.links,
+          links,
+        },
+      };
+      return produce(baseState, (draftState) => {
+        draftState.set(editedCard.id, editedCard);
+      });
+    });
+  };
+
   const removeLink = (from: UniqueId, to: UniqueId) => {
     const fromCard = cards.get(from);
     if (fromCard == null) {
@@ -192,6 +219,7 @@ function App(): React.MixedElement {
           updateCard={updateCard}
           removeCard={removeCard}
           removeLink={removeLink}
+          updateClassifierLinks={updateClassifierLinks}
         />
       </div>
     </DndProvider>

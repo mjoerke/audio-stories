@@ -4,28 +4,39 @@ import produce from "immer";
 import * as React from "react";
 import Modal from "react-modal";
 
-import type { ClassifierCardData, ClassifierLink } from "../model/CardData";
+import type { ClassifierLink } from "../model/CardData";
+import type { UniqueId } from "../util/UniqueId";
 
 import "./ClassifierCardDialog.css";
 
 type Props = {
-  addClassifierLink: (ClassifierCardData, ClassifierLink) => void,
   closeDialog: () => void,
+  id: UniqueId,
   isOpen: boolean,
   initialLinks: Array<ClassifierLink>,
+  updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
+  validateClassifierLinks: (Array<ClassifierLink>) => boolean,
 };
 
 export default function ClassifierCardDialog({
-  addClassifierLink,
   closeDialog,
+  id,
   isOpen,
   initialLinks,
+  updateClassifierLinks,
+  validateClassifierLinks,
 }: Props): React.MixedElement {
   const [draftLinks, setDraftLinks] = React.useState(initialLinks);
   // repopulate links if initialLinks is updated
   React.useEffect(() => {
     if (initialLinks.length > 0) {
-      setDraftLinks(initialLinks);
+      // TODO: i would prefer not to do this conversion
+      setDraftLinks(
+        initialLinks.map((link) => ({
+          ...link,
+          threshold: link.threshold * 100,
+        }))
+      );
     } else {
       // if no links, then put an empty one so the form isn't blank
       setDraftLinks([{ next: null, label: null, threshold: 50 }]);
@@ -44,35 +55,103 @@ export default function ClassifierCardDialog({
     );
   };
 
-  const classifierRows = draftLinks.map((link) => (
+  const removeClassifier = (linkToRemove) => {
+    setDraftLinks((baseState) =>
+      // $FlowFixMe fix types
+      baseState.filter((link) => link !== linkToRemove)
+    );
+  };
+
+  const updateDraftLink = (idx, updatedLink) => {
+    setDraftLinks((baseState) =>
+      produce(baseState, (draftState) => {
+        // eslint-disable-next-line no-param-reassign
+        draftState[idx] = updatedLink;
+      })
+    );
+  };
+
+  const adjustThreshold = (idx, link, delta) => {
+    updateDraftLink(idx, {
+      ...link,
+      threshold: Math.max(Math.min(link.threshold + delta, 100), 0),
+    });
+  };
+
+  const classifierRows = draftLinks.map((link, idx) => (
     <tr className="ClassifierCardDialog-classifierRow">
       <td>
-        <input type="text" className="ClassifierCardDialog-destinationInput" />
+        <input
+          type="number"
+          className="ClassifierCardDialog-destinationInput"
+          onChange={(e) => {
+            e.persist();
+            updateDraftLink(idx, {
+              ...link,
+              next: parseInt(e.target.value, 10),
+            });
+          }}
+          value={link.next}
+        />
       </td>
       <td>
-        <input type="text" className="ClassifierCardDialog-labelInput" />
-      </td>
-      <td>
-        <button type="button" className="ClassifierCardDialog-thresholdButton">
-          &lt;
-        </button>
-      </td>
-      <td>
-        <input type="text" className="ClassifierCardDialog-thresholdInput" />
-      </td>
-      <td>
-        <button type="button" className="ClassifierCardDialog-thresholdButton">
-          &gt;
-        </button>
+        <input
+          type="text"
+          className="ClassifierCardDialog-labelInput"
+          onChange={(e) => {
+            e.persist();
+            updateDraftLink(idx, {
+              ...link,
+              label: e.target.value,
+            });
+          }}
+          value={link.label}
+        />
       </td>
       <td>
         <button
           type="button"
-          className="ClassifierCardDialog-classifierRowCloseButton"
+          className="ClassifierCardDialog-thresholdButton"
+          onClick={() => adjustThreshold(idx, link, -10)}
         >
-          X
+          &lt;
         </button>
       </td>
+      <td>
+        <input
+          type="number"
+          className="ClassifierCardDialog-thresholdInput"
+          onChange={(e) => {
+            e.persist();
+            updateDraftLink(idx, {
+              ...link,
+              threshold:
+                e.target.value === "" ? null : parseInt(e.target.value, 10),
+            });
+          }}
+          value={link.threshold}
+        />
+      </td>
+      <td>
+        <button
+          type="button"
+          className="ClassifierCardDialog-thresholdButton"
+          onClick={() => adjustThreshold(idx, link, 10)}
+        >
+          &gt;
+        </button>
+      </td>
+      {idx > 0 ? (
+        <td>
+          <button
+            type="button"
+            className="ClassifierCardDialog-classifierRowCloseButton"
+            onClick={() => removeClassifier(link)}
+          >
+            X
+          </button>
+        </td>
+      ) : null}
     </tr>
   ));
 
@@ -114,7 +193,22 @@ export default function ClassifierCardDialog({
         >
           +
         </button>
-        <button type="button" className="ClassifierCard-saveButton">
+        <button
+          type="button"
+          className="ClassifierCard-saveButton"
+          disabled={!validateClassifierLinks(draftLinks)}
+          onClick={() => {
+            // TODO: i would prefer not to do this conversion
+            updateClassifierLinks(
+              id,
+              draftLinks.map((link) => ({
+                ...link,
+                threshold: link.threshold / 100,
+              }))
+            );
+            closeDialog();
+          }}
+        >
           Save Classifiers
         </button>
       </div>
