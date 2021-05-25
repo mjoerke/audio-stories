@@ -21,6 +21,10 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
         links={[]}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
+      <p> What is the id of the first node in your story? </p>
+      <div id="id-div">
+        <textarea id="story-id" cols="30" rows="1" />
+      </div>
       <p> Add a story name! </p>
       <div id="submit-div">
         <textarea id="story-name" cols="30" rows="1" />
