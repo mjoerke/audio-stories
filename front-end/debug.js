@@ -77,7 +77,6 @@ async function query_classifier_(t, labels) {
 }
 
 function update_debug_labels() {
-    console.log("UPDATE")
     if (current_node.type == 'audio') {
         return
     }

@@ -104,7 +104,8 @@ async function loop() {
                     update_debug_labels();
                     setTimeout(()=>loop())
                 } else {
-                    play_button.click()
+                    console.log("tour ended");
+                    toggle_play_button();
                 }
                 
             };
@@ -141,7 +142,8 @@ async function loop() {
             if (current_node != null) {
                 setTimeout(()=>loop())
             } else {
-                play_button.click()
+                console.log("tour ended");
+                toggle_play_button();
             }
             break;
     }
@@ -215,6 +217,7 @@ story_id_form.onsubmit = function() {
 var play_button = document.getElementById("play-button");
 
 function toggle_play_button() {
+    console.log("toggle", paused)
     if (paused) {
         paused = false;
         play_button.children[0].innerHTML = "pause";
@@ -222,7 +225,7 @@ function toggle_play_button() {
         if (!current_node) {
             
 	    if (story.start_id != undefined){
-		current_node = story['nodes'][story.start_id];
+		  current_node = story['nodes'][story.start_id];
 	    }
 	    else if (story['nodes'][0]) {
 		current_node = story['nodes'][0]
@@ -239,15 +242,14 @@ function toggle_play_button() {
         update_debug_labels()
     } else {
         paused = true;
+        play_button.children[0].innerHTML = "play_arrow";
 
         if (!current_node) {
             return
-        }
-
-        if (current_node.type == "audio" && audio != undefined) {
+        } else if (current_node.type == "audio" && audio != undefined) {
             audio.pause();
         }
-        play_button.children[0].innerHTML = "play_arrow";
+        
     }   
 }
 
