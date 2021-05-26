@@ -227,7 +227,9 @@ function Canvas({
         result = false;
       } else if (link.label == null || link.label.length === 0) {
         result = false;
-      } else if (link.threshold == null || link.threshold.length === 0) {
+      }
+      // $FlowFixMe make type of threshold more clear
+      else if (link.threshold == null || link.threshold.length === 0) {
         result = false;
       }
     });
