@@ -37,7 +37,7 @@ export default function BaseCard({
   onDelete,
   onFinishLink,
   height = DEFAULT_CARD_SIZE,
-  linkButtonText = "▶",
+  linkButtonText = "+",
   title = "Card",
   width = DEFAULT_CARD_SIZE,
   type,
