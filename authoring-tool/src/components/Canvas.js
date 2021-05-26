@@ -263,7 +263,7 @@ function Canvas({
     const linkButtonText =
       isDrawingNewLinkFrom === id ||
       (existingEndsForNewLink != null && existingEndsForNewLink.includes(id))
-        ? "x"
+        ? "X"
         : "+";
     const onFinishLink = (to) => {
       if (isDrawingNewLinkFrom != null) {
