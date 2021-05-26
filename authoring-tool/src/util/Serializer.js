@@ -16,13 +16,13 @@ type ClassifierCardSchema = $ReadOnly<{
 }>;
 
 export type JsonSchema = $ReadOnly<{
-//  story_id: string,
+  //  story_id: string,
   nodes: { [string]: AudioCardSchema | ClassifierCardSchema },
 }>;
 
 export function exportAsObject(cards: Map<UniqueId, CardData>): JsonSchema {
   const nodes = {};
-  Array.from(cards).forEach(([id, card]) => {
+  Array.from(cards).forEach(([_id, card]) => {
     switch (card.type) {
       case "audio_card":
         // $FlowExpectedError cast id as number for serialization
@@ -52,17 +52,17 @@ export function exportAsObject(cards: Map<UniqueId, CardData>): JsonSchema {
     }
   });
 
-   let startID;
-   const storyIDNode = (document.querySelector("textarea[id=story-id]"));
-   if (storyIDNode && storyIDNode instanceof HTMLTextAreaElement) {
-	   startID = storyIDNode.value ? storyIDNode.value : startID;   
-   }
-   let storyName = "story_demo_test";
-   const storyNameNode = (document.querySelector("textarea[id=story-name]"));
-   if (storyNameNode && storyNameNode instanceof HTMLTextAreaElement) {
-	   storyName = storyNameNode.value ? storyNameNode.value : storyName;   
-   }
-  return {story_id: storyName, start_id: startID, nodes};
+  let startID;
+  const storyIDNode = document.querySelector("textarea[id=story-id]");
+  if (storyIDNode && storyIDNode instanceof HTMLTextAreaElement) {
+    startID = storyIDNode.value ? storyIDNode.value : startID;
+  }
+  let storyName = "story_demo_test";
+  const storyNameNode = document.querySelector("textarea[id=story-name]");
+  if (storyNameNode && storyNameNode instanceof HTMLTextAreaElement) {
+    storyName = storyNameNode.value ? storyNameNode.value : storyName;
+  }
+  return { story_id: storyName, start_id: startID, nodes };
 }
 
 /* TODO: in an ideal world, this would output what's wrong */

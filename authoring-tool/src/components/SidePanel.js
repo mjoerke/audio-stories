@@ -9,7 +9,7 @@ import Draggables from "../constants/Draggables";
 import "./SidePanel.css";
 
 type Props = {
-  onUploadStart: () => {},
+  onUploadStart: () => void,
 };
 
 function SidePanel({ onUploadStart }: Props): React.MixedElement {

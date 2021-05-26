@@ -204,6 +204,8 @@ function App(): React.MixedElement {
       );
       const result = await response.text();
       console.log("result:", result);
+    } else {
+      console.error("Failed to validate story JSON");
     }
   };
 
