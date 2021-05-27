@@ -14,12 +14,13 @@ import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import ClassifierCard from "./ClassifierCard";
 import Draggables from "../constants/Draggables";
+import { SIDE_PANEL_WIDTH } from "../constants/Sizes";
 import { DEFAULT_CARD_SIZE } from "../model/CardData";
+import getAdjacentCardIds from "../util/CardDataUtils";
 import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
 import makeUniqueId, { uniqueIdAsString } from "../util/UniqueId";
 
 import "./Canvas.css";
-import getAdjacentCardIds from "../util/CardDataUtils";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
@@ -162,7 +163,7 @@ function Canvas({
           /* Card coords are absolute relative to window, so we need to
            * offset by the size of the side panel */
           ctx.moveTo(
-            fromCard.x + fromCard.width - 200,
+            fromCard.x + fromCard.width - SIDE_PANEL_WIDTH,
             fromCard.y + fromCard.height / 2
           );
           ctx.lineTo(toCard.x - 200, toCard.y + toCard.height / 2);
@@ -245,7 +246,7 @@ function Canvas({
         /* Card coords are absolute relative to window, so we need to
          * offset by the size of the side panel */
         cardLinkStartCoords.current = {
-          x: card.x + card.width - /* panel size */ 200,
+          x: card.x + card.width - SIDE_PANEL_WIDTH,
           y: card.y + card.height / 2,
         };
       }

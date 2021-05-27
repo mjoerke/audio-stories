@@ -5,6 +5,8 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
+  /* WARNING: if you change this variable, please update 
+   * SIDE_PANEL_WIDTH in SidePanel.css */
   width: 240px;
   z-index: 1;
 }
