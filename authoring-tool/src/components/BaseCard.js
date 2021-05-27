@@ -8,6 +8,7 @@ import { DEFAULT_CARD_SIZE } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import { uniqueIdAsString } from "../util/UniqueId";
 
+import "css.gg/icons/css/close.css";
 import "./BaseCard.css";
 
 export type ExposedProps = {
@@ -94,9 +95,7 @@ export default function BaseCard({
           type="button"
           onClick={(_e) => onDelete()}
         >
-          <span role="img" aria-label="Delete card">
-            🗑️
-          </span>
+          <i className="gg-close" />
         </button>
       ) : null}
     </div>

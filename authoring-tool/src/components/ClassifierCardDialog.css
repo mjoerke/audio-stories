@@ -12,9 +12,18 @@
 }
 
 .ClassifierCardDialog-closeButton {
+  background-color: transparent;
+  border: none;
+  border-radius: 100%;
+  cursor: pointer;
+  padding: 6px;
   position: absolute;
   top: 12px;
   right: 12px;
+}
+
+.ClassifierCardDialog-closeButton:hover {
+  background-color: rgb(0, 0, 0, 0.1);
 }
 
 .ClassifierCardDialog-classifierRow {

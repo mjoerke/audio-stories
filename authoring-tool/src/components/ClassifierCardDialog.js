@@ -7,6 +7,7 @@ import Modal from "react-modal";
 import type { ClassifierLink } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 
+import "css.gg/icons/css/close.css";
 import "./ClassifierCardDialog.css";
 
 type Props = {
@@ -174,7 +175,7 @@ export default function ClassifierCardDialog({
             className="ClassifierCardDialog-closeButton"
             onClick={closeDialog}
           >
-            X
+            <i className="gg-close" />
           </button>
         </div>
         <table>
