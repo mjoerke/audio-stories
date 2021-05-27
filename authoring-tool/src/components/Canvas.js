@@ -14,11 +14,11 @@ import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import ClassifierCard from "./ClassifierCard";
 import Draggables from "../constants/Draggables";
-import { SIDE_PANEL_WIDTH } from "../constants/Sizes";
-import { DEFAULT_CARD_SIZE } from "../model/CardData";
+import { DEFAULT_CARD_SIZE, SIDE_PANEL_WIDTH } from "../constants/Sizes";
 import getAdjacentCardIds from "../util/CardDataUtils";
 import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
 import makeUniqueId, { uniqueIdAsString } from "../util/UniqueId";
+import { drawExistingLinks, drawLink } from "./CanvasDrawHandler";
 
 import "./Canvas.css";
 
@@ -143,71 +143,36 @@ function Canvas({
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
   const mouseCoords = React.useRef<?{ x: number, y: number }>(null);
 
-  const draw = (ctx, _frameCount) => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    // eslint-disable-next-line no-undef
-    ctx.canvas.width = window.innerWidth;
-    // eslint-disable-next-line no-undef
-    ctx.canvas.height = window.innerHeight;
-    Array.from(cards).forEach(([from, fromCard]) => {
-      ctx.beginPath();
-      const tos = getAdjacentCardIds(cards, from);
-      tos.forEach((to) => {
-        const toCard = cards.get(to);
-        if (toCard == null) {
-          console.error(
-            // $FlowExpectedError coerce to string for error logging
-            `No card found with id ${toCard.id} when trying to draw link to card!`
-          );
-        } else {
-          /* Card coords are absolute relative to window, so we need to
-           * offset by the size of the side panel */
-          ctx.moveTo(
-            fromCard.x + fromCard.width - SIDE_PANEL_WIDTH,
-            fromCard.y + fromCard.height / 2
-          );
-          ctx.lineTo(toCard.x - 200, toCard.y + toCard.height / 2);
-          ctx.stroke();
-        }
-      });
-    });
-
-    if (isDrawingNewLinkFrom != null) {
-      ctx.beginPath();
-      if (cardLinkStartCoords.current == null) {
-        return;
-      }
-      ctx.moveTo(cardLinkStartCoords.current.x, cardLinkStartCoords.current.y);
-      if (mouseCoords.current == null) {
-        return;
-      }
-      ctx.lineTo(mouseCoords.current.x, mouseCoords.current.y);
-      ctx.stroke();
-    }
-  };
-
+  /* Draw handler */
   React.useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas == null) {
       return () => {};
     }
     const context = canvas.getContext("2d");
-    let frameCount = 0;
+    let _frameCount = 0;
     let animationFrameId;
 
     const render = () => {
-      frameCount += 1;
-      draw(context, frameCount);
-      // eslint-disable-next-line
+      _frameCount += 1;
+      drawExistingLinks(context, cards);
+      if (
+        isDrawingNewLinkFrom != null &&
+        cardLinkStartCoords.current != null &&
+        mouseCoords.current != null
+      ) {
+        drawLink(context, cardLinkStartCoords.current, mouseCoords.current);
+      }
+      // eslint-disable-next-line no-undef
       animationFrameId = window.requestAnimationFrame(render);
     };
     render();
 
     return () => {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-undef
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, [draw, isDrawingNewLinkFrom]);
+  }, [isDrawingNewLinkFrom, cards]);
 
   const saveMousePosition = (e) => {
     const canvas = canvasRef.current;

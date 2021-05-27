@@ -4,7 +4,7 @@ import * as React from "react";
 import { useDrag } from "react-dnd";
 
 import type { DraggableType } from "../constants/Draggables";
-import { DEFAULT_CARD_SIZE } from "../model/CardData";
+import { DEFAULT_CARD_SIZE } from "../constants/Sizes";
 import type { UniqueId } from "../util/UniqueId";
 import { uniqueIdAsString } from "../util/UniqueId";
 
@@ -17,7 +17,7 @@ export type ExposedProps = {
   onCreateLink?: (UniqueId) => void,
   onDelete?: () => void,
   onFinishLink?: (UniqueId) => void,
-  onMouseMove?: (React.MouseEvent) => void,
+  onMouseMove?: (MouseEvent) => void,
   height?: number,
   linkButtonText?: string,
   title?: string,
