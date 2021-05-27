@@ -17,6 +17,7 @@ export type ExposedProps = {
   onCreateLink?: (UniqueId) => void,
   onDelete?: () => void,
   onFinishLink?: (UniqueId) => void,
+  onMouseMove?: (React.MouseEvent) => void,
   height?: number,
   linkButtonText?: string,
   title?: string,
@@ -37,6 +38,7 @@ export default function BaseCard({
   onCreateLink,
   onDelete,
   onFinishLink,
+  onMouseMove,
   height = DEFAULT_CARD_SIZE,
   linkButtonText = "+",
   title = "Card",
@@ -63,6 +65,7 @@ export default function BaseCard({
     <div
       ref={drag}
       className={containerClass}
+      onMouseMove={onMouseMove}
       style={{
         height,
         width,

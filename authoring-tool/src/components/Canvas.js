@@ -326,6 +326,7 @@ function Canvas({
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
+            onMouseMove={saveMousePosition}
             onTextChange={(text) => {
               const audioCard: AudioCardData = card;
               updateCard(
@@ -351,6 +352,7 @@ function Canvas({
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
+            onMouseMove={saveMousePosition}
             setNewClassifierLinkInProgressData={
               setNewClassifierLinkInProgressData
             }
