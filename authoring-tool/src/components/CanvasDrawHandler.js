@@ -31,6 +31,40 @@ export function drawLink(
   ctx.stroke();
 }
 
+export function drawSelfLink(
+ ctx: CanvasRenderingContext2D,
+  startCoords: { x: number, y: number },
+  endCoords: { x: number, y: number }
+) {
+  // const angle = Math.atan2(
+  //   endCoords.y - startCoords.y,
+  //   endCoords.x - startCoords.x
+  // );
+  const angle = 0;
+  ctx.beginPath();
+  ctx.moveTo(startCoords.x, startCoords.y);
+  ctx.bezierCurveTo(startCoords.x + 200, startCoords.y,
+	  	    (startCoords.x + endCoords.x )/2 + 200, (startCoords.y + endCoords.y)/2 + 200,
+	  	    (startCoords.x + endCoords.x )/2, (startCoords.y + endCoords.y)/2 + 200);
+  
+  ctx.bezierCurveTo((startCoords.x + endCoords.x )/2 - 200, (startCoords.y + endCoords.y)/2 + 200,
+	  	    endCoords.x - 200, endCoords.y,
+	  	    endCoords.x, endCoords.y);
+	
+ // ctx.lineTo(endCoords.x, endCoords.y);
+  ctx.lineTo(
+    endCoords.x - ARROWHEAD_LENGTH * Math.cos(angle - Math.PI / 6),
+    endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.moveTo(endCoords.x, endCoords.y);
+  ctx.lineTo(
+    endCoords.x - ARROWHEAD_LENGTH * Math.cos(angle + Math.PI / 6),
+    endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle + Math.PI / 6)
+  );
+  ctx.stroke();
+}
+
+
 export function drawExistingLinks(
   ctx: CanvasRenderingContext2D,
   cards: Map<UniqueId, CardData>
@@ -50,7 +84,23 @@ export function drawExistingLinks(
           // $FlowExpectedError coerce to string for error logging
           `No card found with id ${toCard.id} when trying to draw link to card!`
         );
-      } else {
+      } 
+	else if (toCard.id === fromCard.id) {
+	drawSelfLink(
+          ctx,
+          {
+            x: fromCard.x + fromCard.width - SIDE_PANEL_WIDTH,
+            y: fromCard.y + fromCard.height / 2,
+          },
+          {
+            x: toCard.x - SIDE_PANEL_WIDTH,
+            y: toCard.y + toCard.height / 2,
+          }
+        );
+
+	}
+	    
+	else {
         /* Card coords are absolute relative to window, so we need to
          * offset by the size of the side panel */
         drawLink(
