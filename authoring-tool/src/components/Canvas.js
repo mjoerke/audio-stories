@@ -279,7 +279,6 @@ function Canvas({
       case "audio_card":
         cardComponent = (
           <AudioCard
-            key={uniqueIdAsString(id)}
             canDeleteLinkTo={canDeleteLinkTo}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
@@ -304,7 +303,6 @@ function Canvas({
       case "classifier_card":
         cardComponent = (
           <ClassifierCard
-            key={uniqueIdAsString(id)}
             canDeleteLinkTo={canDeleteLinkTo}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
@@ -330,6 +328,7 @@ function Canvas({
 
     return (
       <div
+        key={uniqueIdAsString(id)}
         style={{
           position: "absolute",
           left: card.x,
