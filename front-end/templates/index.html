@@ -1,0 +1,95 @@
+<!-- adapted from: https://github.com/abenjamin765/camera-app/tree/master/part-1/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AR Audio Tour</title>
+
+	<link rel="stylesheet" href="static/style.css"> 
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<!-- BOOTSTRAP -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<div class="modal fade" id="classifier-modal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5>Classifier Options</h5>
+					<button type="button" class="btn btn-danger" data-dismiss="modal" id="model-close-button">
+			         	Close <span aria-hidden="true">&times;</span>
+			        </button>
+				</div>
+				<div class="modal-body">
+					<form id="label-input">
+						<div class="form-row align-items-center" onclick="add_label()">
+							<button type="button" class="btn btn-outline-secondary btn-block">Add Label +</button>
+						</div>
+					</form>
+			    </div>
+			</div>
+		</div>	
+	</div>
+
+
+	<div class='toolbar top-bar' id="classifier-bar-chart">
+	</div>
+
+	<div class='toolbar bottom-bar'>
+		<div class='toolbar-row'>
+			<div id='edit-classifier-button' style="display: none" data-toggle="modal" data-target="#classifier-modal">
+				<i class="material-icons">mode_edit</i>
+			</div>
+		</div>
+
+		<div class='toolbar-row'>
+			<div id='swap-camera-button'>
+				<i class="material-icons">sync</i>
+			</div>
+
+			<div id='play-button'>
+				<i class="material-icons">play_arrow</i>
+			</div>
+
+			<div id="debug-mode-toggle">
+				<i class="material-icons">bug_report</i>
+			</div>
+		</div>
+	</div>
+
+	<div id="camera">
+	    <video id="camera-viewport" autoplay playsinline></video>
+	    <canvas id="camera-canvas"></canvas>
+	    <img src="//:0" alt="" id="camera-image" style='display: none'>
+	</div>
+
+	<div id="story-select-modal" class="modal">
+          <div class="modal-content">	
+	      <p>Select your story ID</p>
+	      <form class="form" id="story-select-form">
+                 <select class="select" name="stories" id="story-select">
+                </select>
+               <input class="submit" type="submit" value="Select">
+             </form>
+
+             <form class="form" id="story-id-form">
+                 <textarea class="textarea" id="story-id" cols="30" rows="1" placeholder="Or, type story id"></textarea>
+                 <input class="submit" type="submit" value="Select">
+            </form>
+
+         </div>
+       </div>
+</body>
+
+<script src="static/network.js"></script> 
+<script src="static/webcam.js"></script> 
+<script src="static/tour.js"></script> 
+<script src="static/debug.js"></script> 
+
+</html>
