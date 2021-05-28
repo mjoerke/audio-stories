@@ -130,14 +130,10 @@ function Canvas({
     [addCard, cards, updateCard]
   );
 
-  const [
-    isDrawingNewLinkFrom,
-    setisDrawingNewLinkFrom,
-  ] = React.useState<?UniqueId>(null);
-  const [
-    newClassifierLinkInProgressData,
-    setNewClassifierLinkInProgressData,
-  ] = React.useState<?{ label: string, threshold: number }>(null);
+  const [isDrawingNewLinkFrom, setisDrawingNewLinkFrom] =
+    React.useState<?UniqueId>(null);
+  const [newClassifierLinkInProgressData, setNewClassifierLinkInProgressData] =
+    React.useState<?{ label: string, threshold: number }>(null);
 
   const canvasRef = React.useRef<?HTMLCanvasElement>(null);
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
@@ -224,13 +220,12 @@ function Canvas({
       : null;
 
   const renderCard = (id, card) => {
+    const canDeleteLinkTo =
+      existingEndsForNewLink != null && existingEndsForNewLink.includes(id);
     /* Render stop button if clicking the button represents a cancellation
      * or deletion */
     const linkButtonText =
-      isDrawingNewLinkFrom === id ||
-      (existingEndsForNewLink != null && existingEndsForNewLink.includes(id))
-        ? "X"
-        : "+";
+      isDrawingNewLinkFrom === id || canDeleteLinkTo ? "X" : "+";
     const onFinishLink = (to) => {
       if (isDrawingNewLinkFrom != null) {
         if (isDrawingNewLinkFrom !== to) {
@@ -285,6 +280,7 @@ function Canvas({
         cardComponent = (
           <AudioCard
             key={uniqueIdAsString(id)}
+            canDeleteLinkTo={canDeleteLinkTo}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             linkButtonText={linkButtonText}
@@ -309,6 +305,7 @@ function Canvas({
         cardComponent = (
           <ClassifierCard
             key={uniqueIdAsString(id)}
+            canDeleteLinkTo={canDeleteLinkTo}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={card.links.links}
@@ -352,6 +349,9 @@ function Canvas({
       <canvas
         ref={canvasRef}
         id="Canvas-canvas"
+        onClick={(_e) => {
+          setisDrawingNewLinkFrom((_) => null);
+        }}
         onMouseMove={saveMousePosition}
       />
       {Array.from(cards).map(([id, card]) => renderCard(id, card))}

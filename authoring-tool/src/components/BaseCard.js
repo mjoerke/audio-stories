@@ -8,10 +8,13 @@ import { DEFAULT_CARD_SIZE } from "../constants/Sizes";
 import type { UniqueId } from "../util/UniqueId";
 import { uniqueIdAsString } from "../util/UniqueId";
 
+import "css.gg/icons/css/add.css";
 import "css.gg/icons/css/close.css";
+import "css.gg/icons/css/close-o.css";
 import "./BaseCard.css";
 
 export type ExposedProps = {
+  canDeleteLinkTo: Boolean,
   id?: UniqueId,
   isDrawingNewLinkFrom: ?UniqueId,
   onCreateLink?: (UniqueId) => void,
@@ -33,6 +36,7 @@ type Props = {
 };
 
 export default function BaseCard({
+  canDeleteLinkTo,
   id,
   isDrawingNewLinkFrom,
   onCreateLink,
@@ -56,15 +60,40 @@ export default function BaseCard({
     }),
     [type]
   );
+  const [isMouseOver, setIsMouseOver] = React.useState(false);
+
+  let overlayClass = "BaseCard-canLinkOverlay";
+  if (canDeleteLinkTo) {
+    overlayClass += " BaseCard-canLinkOverlayDisconnect";
+  } else {
+    overlayClass += " BaseCard-canLinkOverlayConnect";
+  }
+  const overlay =
+    isDrawingNewLinkFrom != null &&
+    isDrawingNewLinkFrom !== id &&
+    isMouseOver ? (
+      <div className={overlayClass}>
+        {canDeleteLinkTo ? "Disconnect" : "Connect"}
+      </div>
+    ) : null;
 
   let containerClass = "BaseCard-container";
   if (isDragging) {
     containerClass += " BaseCard-containerBeingDragged";
   }
   return (
+    // TODO: ignore a11y concerns for now
+    // eslint-disable-next-line
     <div
       ref={drag}
       className={containerClass}
+      onClick={(_e) => {
+        if (isDrawingNewLinkFrom != null) {
+          onFinishLink(id);
+        }
+      }}
+      onMouseEnter={(_) => setIsMouseOver(true)}
+      onMouseLeave={(_) => setIsMouseOver(false)}
       onMouseMove={onMouseMove}
       style={{
         height,
@@ -86,10 +115,16 @@ export default function BaseCard({
               onCreateLink(id);
             }
           }}
-          style={{ top: height / 2 }}
+          /* offset by half button height to center */
+          style={{ top: height / 2 - 11 }}
           type="button"
         >
-          {linkButtonText}
+          {/* TODO: hacky, should change */}
+          {linkButtonText === "+" ? (
+            <i className="gg-add" />
+          ) : (
+            <i className="gg-close-o" />
+          )}
         </button>
       ) : null}
       {onDelete && id != null ? (
@@ -101,6 +136,7 @@ export default function BaseCard({
           <i className="gg-close" />
         </button>
       ) : null}
+      {overlay}
     </div>
   );
 }

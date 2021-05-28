@@ -1,5 +1,6 @@
 .BaseCard-container {
   background-color: white;
+  /* match canLinkOverlay */
   border-radius: 12px;
   box-shadow: 2px 2px 6px 0 rgb(0, 0, 0, 0.3);
   /* need this to keep card size consistent for drawing arrows */
@@ -13,15 +14,43 @@
   opacity: 0.5;
 }
 
-.BaseCard-linkHandle {
+.BaseCard-canLinkOverlay {
+  align-items: center;
+  /* match container */
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  height: 100%;
+  left: 0;
+  justify-content: center;
   position: absolute;
-  right: -30px;
+  top: 0;
+  width: 100%;
+}
+
+.BaseCard-canLinkOverlayConnect {
+  background-color: rgb(255, 255, 0, 0.1);
+}
+
+.BaseCard-canLinkOverlayDisconnect {
+  background-color: rgb(255, 0, 0, 0.1);
+}
+
+.BaseCard-linkHandle {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  /* height: 24px; */
+  padding: 0;
+  position: absolute;
+  right: -12px;
+  /* width: 24px; */
 }
 
 .BaseCard-deleteButton {
   background-color: transparent;
   border: none;
-  border-radius: 100%;
+  border-radius: 50%;
   cursor: pointer;
   padding: 6px;
   position: absolute;
