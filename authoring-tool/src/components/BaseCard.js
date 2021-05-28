@@ -14,7 +14,7 @@ import "css.gg/icons/css/close-o.css";
 import "./BaseCard.css";
 
 export type ExposedProps = {
-  canDeleteLinkTo: Boolean,
+  canDeleteLinkTo: boolean,
   id?: UniqueId,
   isDrawingNewLinkFrom: ?UniqueId,
   onCreateLink?: (UniqueId) => void,
@@ -88,7 +88,11 @@ export default function BaseCard({
       ref={drag}
       className={containerClass}
       onClick={(_e) => {
-        if (isDrawingNewLinkFrom != null) {
+        if (
+          isDrawingNewLinkFrom != null &&
+          onFinishLink != null &&
+          id != null
+        ) {
           onFinishLink(id);
         }
       }}

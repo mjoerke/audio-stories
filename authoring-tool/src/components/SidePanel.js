@@ -16,8 +16,13 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
   return (
     <div className="SidePanel-container">
       Drag and drop cards onto the canvas to the right!
-      <AudioCard isDrawingNewLinkFrom={null} type={Draggables.NEW_AUDIO_CARD} />
+      <AudioCard
+        canDeleteLinkTo={false}
+        isDrawingNewLinkFrom={null}
+        type={Draggables.NEW_AUDIO_CARD}
+      />
       <ClassifierCard
+        canDeleteLinkTo={false}
         isDrawingNewLinkFrom={null}
         links={[]}
         type={Draggables.NEW_CLASSIFIER_CARD}
