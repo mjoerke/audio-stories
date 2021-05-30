@@ -26,20 +26,39 @@ export function drawLink(
   else if (startCoords.y < endCoords.y) {
     ctx.beginPath();
     ctx.moveTo(startCoords.x, startCoords.y)
-    ctx.lineTo(Math.max(startCoords.x + 30, endCoords.x + 240), startCoords.y)
-    ctx.lineTo(Math.max(startCoords.x + 30, endCoords.x + 240), endCoords.y + 130)
-    ctx.lineTo(endCoords.x - 30, endCoords.y + 130)
-    ctx.lineTo(endCoords.x - 30, endCoords.y)
-    ctx.lineTo(endCoords.x, endCoords.y)
+
+    ctx.bezierCurveTo(  
+	              startCoords.x + 200,
+	    	      startCoords.y,
+	    	      endCoords.x + 300, 
+	              endCoords.y + 130,	
+	    	      endCoords.x + 100, 
+	              endCoords.y + 130);
+
+    ctx.bezierCurveTo(endCoords.x - 70, 
+	              endCoords.y + 130,
+		      endCoords.x - 200,
+	    	      endCoords.y,
+	    	      endCoords.x,
+	    	      endCoords.y);
   }
   else {
     ctx.beginPath();
     ctx.moveTo(startCoords.x, startCoords.y)
-    ctx.lineTo(Math.max(startCoords.x + 60, endCoords.x + 240), startCoords.y)
-    ctx.lineTo(Math.max(startCoords.x + 60, endCoords.x + 240), endCoords.y - 130)
-    ctx.lineTo(endCoords.x - 130, endCoords.y - 130)
-    ctx.lineTo(endCoords.x - 130, endCoords.y)
-    ctx.lineTo(endCoords.x, endCoords.y)
+    ctx.bezierCurveTo(  
+	              startCoords.x + 300,
+	    	      startCoords.y,
+	    	      endCoords.x + 400, 
+	              endCoords.y - 130,	
+	    	      endCoords.x + 100, 
+	              endCoords.y - 130);
+
+    ctx.bezierCurveTo(endCoords.x - 200, 
+	              endCoords.y - 130,
+		      endCoords.x - 200,
+	    	      endCoords.y,
+	    	      endCoords.x,
+	    	      endCoords.y);
   }
 
     ctx.lineTo(
