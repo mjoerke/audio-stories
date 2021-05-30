@@ -70,7 +70,6 @@ export default function BaseCard({
   }
   const overlay =
     isDrawingNewLinkFrom != null &&
-    isDrawingNewLinkFrom !== id &&
     isMouseOver ? (
       <div className={overlayClass}>
         {canDeleteLinkTo ? "Disconnect" : "Connect"}
