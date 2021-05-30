@@ -108,8 +108,6 @@ export default function ClassifierCardDialog({
         >
           &lt;
         </button>
-      </td>
-      <td>
         <input
           type="number"
           className="ClassifierCardDialog-thresholdInput"
@@ -123,8 +121,6 @@ export default function ClassifierCardDialog({
           }}
           value={link.threshold}
         />
-      </td>
-      <td>
         <button
           type="button"
           className="ClassifierCardDialog-thresholdButton"
@@ -146,6 +142,15 @@ export default function ClassifierCardDialog({
           }}
           value={link.next}
         />
+      </td>
+      <td>
+        <button
+          type="button"
+          className="ClassifierCardDialog-selectDestinationButton"
+          onClick={() => adjustThreshold(idx, link, 10)}
+        >
+          Select Dest.
+        </button>
       </td>
       {idx > 0 ? (
         <td>
@@ -186,9 +191,7 @@ export default function ClassifierCardDialog({
         <table>
           <tr>
             <th>Classifier Label</th>
-            <th />
             <th>Threshold</th>
-            <th />
             <th>Destination</th>
           </tr>
           {classifierRows}
