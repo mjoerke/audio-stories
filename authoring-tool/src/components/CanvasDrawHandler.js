@@ -11,24 +11,47 @@ export function drawLink(
   ctx: CanvasRenderingContext2D,
   startCoords: { x: number, y: number },
   endCoords: { x: number, y: number }
-) {
-  const angle = Math.atan2(
-    endCoords.y - startCoords.y,
-    endCoords.x - startCoords.x
-  );
-  ctx.beginPath();
-  ctx.moveTo(startCoords.x, startCoords.y);
-  ctx.lineTo(endCoords.x, endCoords.y);
-  ctx.lineTo(
-    endCoords.x - ARROWHEAD_LENGTH * Math.cos(angle - Math.PI / 6),
-    endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle - Math.PI / 6)
-  );
-  ctx.moveTo(endCoords.x, endCoords.y);
-  ctx.lineTo(
-    endCoords.x - ARROWHEAD_LENGTH * Math.cos(angle + Math.PI / 6),
-    endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle + Math.PI / 6)
-  );
-  ctx.stroke();
+) 
+  {
+  let angle=0;
+  if (startCoords.x < endCoords.x) {
+     angle = Math.atan2(
+      endCoords.y - startCoords.y,
+      endCoords.x - startCoords.x
+    );
+    ctx.beginPath();
+    ctx.moveTo(startCoords.x, startCoords.y);
+    ctx.lineTo(endCoords.x, endCoords.y);
+  }
+  else if (startCoords.y < endCoords.y) {
+    ctx.beginPath();
+    ctx.moveTo(startCoords.x, startCoords.y)
+    ctx.lineTo(Math.max(startCoords.x + 30, endCoords.x + 240), startCoords.y)
+    ctx.lineTo(Math.max(startCoords.x + 30, endCoords.x + 240), endCoords.y + 130)
+    ctx.lineTo(endCoords.x - 30, endCoords.y + 130)
+    ctx.lineTo(endCoords.x - 30, endCoords.y)
+    ctx.lineTo(endCoords.x, endCoords.y)
+  }
+  else {
+    ctx.beginPath();
+    ctx.moveTo(startCoords.x, startCoords.y)
+    ctx.lineTo(Math.max(startCoords.x + 60, endCoords.x + 240), startCoords.y)
+    ctx.lineTo(Math.max(startCoords.x + 60, endCoords.x + 240), endCoords.y - 130)
+    ctx.lineTo(endCoords.x - 130, endCoords.y - 130)
+    ctx.lineTo(endCoords.x - 130, endCoords.y)
+    ctx.lineTo(endCoords.x, endCoords.y)
+  }
+
+    ctx.lineTo(
+      endCoords.x - ARROWHEAD_LENGTH * Math.cos(angle - Math.PI / 6),
+      endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle - Math.PI / 6)
+    );
+    ctx.moveTo(endCoords.x, endCoords.y);
+    ctx.lineTo(
+      endCoords.x - ARROWHEAD_LENGTH * Math.cos(angle + Math.PI / 6),
+      endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle + Math.PI / 6)
+    );
+    ctx.stroke();
 }
 
 export function drawSelfLink(
