@@ -37,7 +37,7 @@ export function exportAsObject(cards: Map<UniqueId, CardData>): JsonSchema {
         const thresholds = {};
         card.links.links.forEach((link) => {
           labels[link.label] = link.next;
-          thresholds[link.label] = link.threshold;
+          thresholds[link.label] = link.threshold / 100;
         });
         // $FlowExpectedError cast id as number for serialization
         nodes[card.id] = {
@@ -83,6 +83,12 @@ export function validate(obj: JsonSchema): boolean {
           Object.keys(node.thresholds).length === 0
         ) {
           return false;
+        }
+        // eslint-disable-next-line no-restricted-syntax
+        for (const threshold of node.thresholds) {
+          if (threshold < 0 || threshold > 100) {
+            return false;
+          }
         }
         break;
       default:

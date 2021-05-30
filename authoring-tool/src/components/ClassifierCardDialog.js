@@ -47,7 +47,7 @@ export default function ClassifierCardDialog({
         draftState.push({
           next: null,
           label: null,
-          threshold: DEFAULT_CLASSIFIER_THRESHOLD * 100,
+          threshold: DEFAULT_CLASSIFIER_THRESHOLD,
         });
       })
     );
@@ -203,13 +203,7 @@ export default function ClassifierCardDialog({
           className="ClassifierCard-saveButton"
           disabled={validateClassifierLinks(draftLinks) == null}
           onClick={() => {
-            updateClassifierLinks(
-              id,
-              validateClassifierLinks(draftLinks).map((link) => ({
-                ...link,
-                threshold: link.threshold / 100,
-              }))
-            );
+            updateClassifierLinks(id, validateClassifierLinks(draftLinks));
             closeDialog();
           }}
         >
