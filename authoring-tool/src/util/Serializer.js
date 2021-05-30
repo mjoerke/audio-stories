@@ -84,12 +84,12 @@ export function validate(obj: JsonSchema): boolean {
         ) {
           return false;
         }
-        // eslint-disable-next-line no-restricted-syntax
-        for (const threshold of node.thresholds) {
-          if (threshold < 0 || threshold > 100) {
-            return false;
-          }
-        }
+       // eslint-disable-next-line no-restricted-syntax
+       //  for (const threshold of node.thresholds) {
+       //   if (threshold < 0 || threshold > 100) {
+       //     return false;
+       //   }
+       // }
         break;
       default:
         return false;
