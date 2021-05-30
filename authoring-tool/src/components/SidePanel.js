@@ -24,6 +24,7 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
       <ClassifierCard
         canDeleteLinkTo={false}
         isDrawingNewLinkFrom={null}
+        isDialogOpen={false}
         links={[]}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
@@ -41,7 +42,7 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
             Save
           </button>
         </div>
-      </div>	  
+      </div>
     </div>
   );
 }

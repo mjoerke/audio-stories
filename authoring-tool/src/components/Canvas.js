@@ -25,7 +25,6 @@ import "./Canvas.css";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
-  addClassifierLink: (ClassifierCardData, ClassifierLink) => void,
   addSimpleLink: (AudioCardData, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
   updateCard: (CardData) => void,
@@ -36,7 +35,6 @@ type Props = $ReadOnly<{
 
 function Canvas({
   addCard,
-  addClassifierLink,
   addSimpleLink,
   cards,
   updateCard,
@@ -133,8 +131,11 @@ function Canvas({
 
   const [isDrawingNewLinkFrom, setIsDrawingNewLinkFrom] =
     React.useState<?UniqueId>(null);
-  const [newClassifierLinkInProgressData, setNewClassifierLinkInProgressData] =
-    React.useState<?{ label: string, threshold: number }>(null);
+  /* TODO: Each classifier card has its own dialog, and this state determines
+   * which (if any) should currently be open. Bad idea for performance, but
+   * it makes saving the user's work in the dialog trivial, which is nice. */
+  const [classifierDialogOpenId, setClassifierDialogOpenId] =
+    React.useState<?UniqueId>(null);
 
   const canvasRef = React.useRef<?HTMLCanvasElement>(null);
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
@@ -178,7 +179,9 @@ function Canvas({
       return;
     }
     mouseCoords.current = {
+      // eslint-disable-next-line no-undef
       x: e.clientX - canvas.offsetLeft + window.scrollX,
+      // eslint-disable-next-line no-undef
       y: e.clientY - canvas.offsetTop + window.scrollY,
     };
   };
@@ -252,20 +255,6 @@ function Canvas({
                 addSimpleLink(fromCard, to);
                 break;
               case "classifier_card":
-                if (newClassifierLinkInProgressData == null) {
-                  console.error(
-                    // $FlowExpectedError coerce id for the sake of logging
-                    `onFinishLink: cannot add new classifier link if labels and threshold haven't been assigned for card id: ${isDrawingNewLinkFrom}`
-                  );
-                  setIsDrawingNewLinkFrom((_) => null);
-                  return;
-                }
-                addClassifierLink(fromCard, {
-                  next: to,
-                  label: newClassifierLinkInProgressData.label,
-                  threshold: newClassifierLinkInProgressData.threshold,
-                });
-                setNewClassifierLinkInProgressData((_) => null);
                 break;
               default:
                 throw new Error(
@@ -309,16 +298,16 @@ function Canvas({
           <ClassifierCard
             canDeleteLinkTo={canDeleteLinkTo}
             id={id}
+            isDialogOpen={classifierDialogOpenId === id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={card.links.links}
             linkButtonText={linkButtonText}
-            newClassifierLinkInProgressData={newClassifierLinkInProgressData}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
             onMouseMove={saveMousePosition}
-            setNewClassifierLinkInProgressData={
-              setNewClassifierLinkInProgressData
+            setIsDialogOpen={(state) =>
+              setClassifierDialogOpenId(state ? id : null)
             }
             updateClassifierLinks={updateClassifierLinks}
             validateClassifierLinks={validateClassifierLinks}

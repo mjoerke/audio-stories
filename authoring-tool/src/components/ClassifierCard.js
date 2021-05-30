@@ -12,14 +12,9 @@ import ClassifierCardDialog from "./ClassifierCardDialog";
 
 type Props = {
   ...CardProps,
+  isDialogOpen: boolean,
   links: Array<ClassifierLink>,
-  newClassifierLinkInProgressData?: ?{ label: string, threshold: number },
-  setNewClassifierLinkInProgressData?: (
-    ((?{ label: string, threshold: number }) => ?{
-      label: string,
-      threshold: number,
-    })
-  ) => void,
+  setIsDialogOpen?: (boolean) => void,
   updateClassifierLinks?: (UniqueId, Array<ClassifierLink>) => void,
   validateClassifierLinks?: (
     Array<DraftClassifierLink>
@@ -27,16 +22,15 @@ type Props = {
 };
 
 export default function ClassifierCard({
+  isDialogOpen,
   links,
-  newClassifierLinkInProgressData,
-  setNewClassifierLinkInProgressData,
+  setIsDialogOpen,
   updateClassifierLinks,
   validateClassifierLinks,
   // base props
   id,
   ...otherProps
 }: Props): React.MixedElement {
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   return (
     <BaseCard
       title="Classifier"
@@ -52,20 +46,22 @@ export default function ClassifierCard({
         return <div key={description}>{description}</div>;
       })}
       <button
-        disabled={
-          setNewClassifierLinkInProgressData == null ||
-          newClassifierLinkInProgressData != null
+        disabled={setIsDialogOpen == null}
+        onClick={
+          setIsDialogOpen != null
+            ? (_e) => {
+                setIsDialogOpen(true);
+              }
+            : undefined
         }
-        onClick={(_e) => {
-          if (setNewClassifierLinkInProgressData != null) {
-            setIsDialogOpen(true);
-          }
-        }}
         type="button"
       >
         Add transition
       </button>
-      {updateClassifierLinks && validateClassifierLinks && id != null ? (
+      {updateClassifierLinks &&
+      setIsDialogOpen &&
+      validateClassifierLinks &&
+      id != null ? (
         <ClassifierCardDialog
           closeDialog={() => setIsDialogOpen(false)}
           id={id}
