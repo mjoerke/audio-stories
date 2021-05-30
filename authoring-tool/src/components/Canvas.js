@@ -143,6 +143,10 @@ function Canvas({
   // classifier dialog is closed when this is null; open otherwise
   const [classifierDialogOpenId, setClassifierDialogOpenId] =
     React.useState<?UniqueId>(null);
+  /* used to keep track of draft link state after selecting "select dest"
+   * in the classifier dialog */
+  const [currentDraftClassifierIdx, setCurrentDraftClassifierIdx] =
+    React.useState<?number>(null);
 
   const canvasRef = React.useRef<?HTMLCanvasElement>(null);
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
@@ -266,17 +270,35 @@ function Canvas({
               }
               break;
             case "classifier_card":
-              // TODO: this is copy and pasted from ClassifierCardDialog
-              setDraftLinks(
-                isDrawingNewLinkFrom,
-                produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
-                  draftState.push({
-                    next: to,
-                    label: null,
-                    threshold: DEFAULT_CLASSIFIER_THRESHOLD * 100,
-                  });
-                })
-              );
+              /* If this link was triggered by pressing "select dest" in the
+               * classifier dialog, make sure to update the right classifier */
+              if (currentDraftClassifierIdx != null) {
+                setDraftLinks(
+                  isDrawingNewLinkFrom,
+                  produce(
+                    draftLinks.get(isDrawingNewLinkFrom),
+                    (draftState) => {
+                      // eslint-disable-next-line no-param-reassign
+                      draftState[currentDraftClassifierIdx].next = to;
+                    }
+                  )
+                );
+              } else {
+                // TODO: this is copy and pasted from ClassifierCardDialog
+                setDraftLinks(
+                  isDrawingNewLinkFrom,
+                  produce(
+                    draftLinks.get(isDrawingNewLinkFrom),
+                    (draftState) => {
+                      draftState.push({
+                        next: to,
+                        label: null,
+                        threshold: DEFAULT_CLASSIFIER_THRESHOLD * 100,
+                      });
+                    }
+                  )
+                );
+              }
               setClassifierDialogOpenId(isDrawingNewLinkFrom);
               break;
             default:
@@ -286,6 +308,7 @@ function Canvas({
           }
         }
         setIsDrawingNewLinkFrom((_) => null);
+        setCurrentDraftClassifierIdx(null);
       }
     };
 
@@ -361,7 +384,9 @@ function Canvas({
         ref={canvasRef}
         id="Canvas-canvas"
         onClick={(_e) => {
-          setIsDrawingNewLinkFrom((_) => null);
+          // TODO: code duplication
+          setIsDrawingNewLinkFrom(null);
+          setCurrentDraftClassifierIdx(null);
         }}
         onMouseMove={saveMousePosition}
       />
@@ -373,6 +398,11 @@ function Canvas({
           draftLinks={draftLinks.get(classifierDialogOpenId)}
           id={classifierDialogOpenId}
           isOpen={classifierDialogOpenId != null}
+          onSelectDestinationClick={(idx) => {
+            startLinkFromCard(classifierDialogOpenId);
+            setCurrentDraftClassifierIdx(idx);
+            setClassifierDialogOpenId(null);
+          }}
           setDraftLinks={(newDraftLinks) =>
             setDraftLinks(classifierDialogOpenId, newDraftLinks)
           }

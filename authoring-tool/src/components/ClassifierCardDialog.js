@@ -16,6 +16,7 @@ type Props = {
   draftLinks: Array<DraftClassifierLink>,
   id: UniqueId,
   isOpen: boolean,
+  onSelectDestinationClick: (number) => void,
   setDraftLinks: (Array<DraftClassifierLink>) => void,
   updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
   validateClassifierLinks: (
@@ -28,6 +29,7 @@ export default function ClassifierCardDialog({
   draftLinks,
   id,
   isOpen,
+  onSelectDestinationClick,
   setDraftLinks,
   updateClassifierLinks,
   validateClassifierLinks,
@@ -61,7 +63,6 @@ export default function ClassifierCardDialog({
   const updateDraftLink = (idx, updatedLink) => {
     setDraftLinks(
       produce(draftLinks, (draftState) => {
-        console.log(draftState);
         // eslint-disable-next-line no-param-reassign
         draftState[idx] = updatedLink;
       })
@@ -140,7 +141,7 @@ export default function ClassifierCardDialog({
         <button
           type="button"
           className="ClassifierCardDialog-selectDestinationButton"
-          // onClick={() => adjustThreshold(idx, link, 10)}
+          onClick={() => onSelectDestinationClick(idx)}
         >
           Select Dest.
         </button>
@@ -202,7 +203,6 @@ export default function ClassifierCardDialog({
           className="ClassifierCard-saveButton"
           disabled={validateClassifierLinks(draftLinks) == null}
           onClick={() => {
-            // TODO: i would prefer not to do this conversion
             updateClassifierLinks(
               id,
               validateClassifierLinks(draftLinks).map((link) => ({
