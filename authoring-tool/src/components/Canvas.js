@@ -9,6 +9,7 @@ import type {
   CardData,
   ClassifierCardData,
   ClassifierLink,
+  DraftClassifierLink,
 } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
@@ -130,7 +131,7 @@ function Canvas({
     [addCard, cards, updateCard]
   );
 
-  const [isDrawingNewLinkFrom, setisDrawingNewLinkFrom] =
+  const [isDrawingNewLinkFrom, setIsDrawingNewLinkFrom] =
     React.useState<?UniqueId>(null);
   const [newClassifierLinkInProgressData, setNewClassifierLinkInProgressData] =
     React.useState<?{ label: string, threshold: number }>(null);
@@ -182,7 +183,9 @@ function Canvas({
     };
   };
 
-  const validateClassifierLinks = (links) => {
+  const validateClassifierLinks = (
+    links: Array<DraftClassifierLink>
+  ): Array<ClassifierLink> => {
     let result = true;
     links.forEach((link) => {
       if (link.next == null || cards.get(link.next) == null) {
@@ -195,12 +198,13 @@ function Canvas({
         result = false;
       }
     });
-    return result;
+    // $FlowExpectedError we've checked it dynamically
+    return result ? links : null;
   };
 
   const startLinkFromCard = (id) => {
     if (id != null) {
-      setisDrawingNewLinkFrom((_) => id);
+      setIsDrawingNewLinkFrom((_) => id);
       const card = cards.get(id);
 
       if (card != null) {
@@ -253,7 +257,7 @@ function Canvas({
                     // $FlowExpectedError coerce id for the sake of logging
                     `onFinishLink: cannot add new classifier link if labels and threshold haven't been assigned for card id: ${isDrawingNewLinkFrom}`
                   );
-                  setisDrawingNewLinkFrom((_) => null);
+                  setIsDrawingNewLinkFrom((_) => null);
                   return;
                 }
                 addClassifierLink(fromCard, {
@@ -270,7 +274,7 @@ function Canvas({
             }
           }
         }
-        setisDrawingNewLinkFrom((_) => null);
+        setIsDrawingNewLinkFrom((_) => null);
       }
     };
 
@@ -349,7 +353,7 @@ function Canvas({
         ref={canvasRef}
         id="Canvas-canvas"
         onClick={(_e) => {
-          setisDrawingNewLinkFrom((_) => null);
+          setIsDrawingNewLinkFrom((_) => null);
         }}
         onMouseMove={saveMousePosition}
       />

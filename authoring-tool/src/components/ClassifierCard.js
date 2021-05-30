@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import Draggables from "../constants/Draggables";
-import type { ClassifierLink } from "../model/CardData";
+import type { ClassifierLink, DraftClassifierLink } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import { uniqueIdAsString } from "../util/UniqueId";
 import type { ExposedProps as CardProps } from "./BaseCard";
@@ -15,12 +15,15 @@ type Props = {
   links: Array<ClassifierLink>,
   newClassifierLinkInProgressData?: ?{ label: string, threshold: number },
   setNewClassifierLinkInProgressData?: (
-    ((
-      ?{ label: string, threshold: number }
-    ) => ?{ label: string, threshold: number })
+    ((?{ label: string, threshold: number }) => ?{
+      label: string,
+      threshold: number,
+    })
   ) => void,
   updateClassifierLinks?: (UniqueId, Array<ClassifierLink>) => void,
-  validateClassifierLinks?: (Array<ClassifierLink>) => boolean,
+  validateClassifierLinks?: (
+    Array<DraftClassifierLink>
+  ) => Array<ClassifierLink>,
 };
 
 export default function ClassifierCard({

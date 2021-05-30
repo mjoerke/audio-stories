@@ -4,7 +4,7 @@ import produce from "immer";
 import * as React from "react";
 import Modal from "react-modal";
 
-import type { ClassifierLink } from "../model/CardData";
+import type { ClassifierLink, DraftClassifierLink } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 
 import "css.gg/icons/css/close.css";
@@ -16,7 +16,9 @@ type Props = {
   isOpen: boolean,
   initialLinks: Array<ClassifierLink>,
   updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
-  validateClassifierLinks: (Array<ClassifierLink>) => boolean,
+  validateClassifierLinks: (
+    Array<DraftClassifierLink>
+  ) => Array<ClassifierLink>,
 };
 
 export default function ClassifierCardDialog({
@@ -27,12 +29,15 @@ export default function ClassifierCardDialog({
   updateClassifierLinks,
   validateClassifierLinks,
 }: Props): React.MixedElement {
-  const [draftLinks, setDraftLinks] = React.useState(initialLinks);
+  const [draftLinks, setDraftLinks] =
+    // $FlowExpectedError safe type-cast
+    React.useState<Array<DraftClassifierLink>>(initialLinks);
   // repopulate links if initialLinks is updated
   React.useEffect(() => {
     if (initialLinks.length > 0) {
       // TODO: i would prefer not to do this conversion
       setDraftLinks(
+        // $FlowExpectedError safe type-cast
         initialLinks.map((link) => ({
           ...link,
           threshold: link.threshold * 100,
@@ -83,20 +88,6 @@ export default function ClassifierCardDialog({
     <tr className="ClassifierCardDialog-classifierRow">
       <td>
         <input
-          type="number"
-          className="ClassifierCardDialog-destinationInput"
-          onChange={(e) => {
-            e.persist();
-            updateDraftLink(idx, {
-              ...link,
-              next: parseInt(e.target.value, 10),
-            });
-          }}
-          value={link.next}
-        />
-      </td>
-      <td>
-        <input
           type="text"
           className="ClassifierCardDialog-labelInput"
           onChange={(e) => {
@@ -142,6 +133,20 @@ export default function ClassifierCardDialog({
           &gt;
         </button>
       </td>
+      <td>
+        <input
+          type="number"
+          className="ClassifierCardDialog-destinationInput"
+          onChange={(e) => {
+            e.persist();
+            updateDraftLink(idx, {
+              ...link,
+              next: parseInt(e.target.value, 10),
+            });
+          }}
+          value={link.next}
+        />
+      </td>
       {idx > 0 ? (
         <td>
           <button
@@ -180,10 +185,11 @@ export default function ClassifierCardDialog({
         </div>
         <table>
           <tr>
-            <th>Destination</th>
             <th>Classifier Label</th>
             <th />
             <th>Threshold</th>
+            <th />
+            <th>Destination</th>
           </tr>
           {classifierRows}
         </table>
@@ -197,12 +203,12 @@ export default function ClassifierCardDialog({
         <button
           type="button"
           className="ClassifierCard-saveButton"
-          disabled={!validateClassifierLinks(draftLinks)}
+          disabled={validateClassifierLinks(draftLinks) == null}
           onClick={() => {
             // TODO: i would prefer not to do this conversion
             updateClassifierLinks(
               id,
-              draftLinks.map((link) => ({
+              validateClassifierLinks(draftLinks).map((link) => ({
                 ...link,
                 threshold: link.threshold / 100,
               }))

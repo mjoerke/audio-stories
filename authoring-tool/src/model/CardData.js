@@ -13,6 +13,14 @@ export type ClassifierLink = $ReadOnly<{
   threshold: number,
 }>;
 
+/* intermediate state representation for when the user is creating their
+ * classifier */
+export type DraftClassifierLink = $ReadOnly<{
+  next: ?UniqueId,
+  label: ?string,
+  threshold: number,
+}>;
+
 export type ClassifierLinks = $ReadOnly<{
   links: Array<ClassifierLink>,
   type: "classifier_links",
