@@ -4,6 +4,7 @@ import * as React from "react";
 import Draggables from "../constants/Draggables";
 import type { ExposedProps as CardProps } from "./BaseCard";
 import BaseCard from "./BaseCard";
+import "./AudioCard.css";
 
 type Props = {
   ...CardProps,
@@ -20,6 +21,7 @@ export default function AudioCard({
     // eslint-disable-next-line react/jsx-props-no-spreading
     <BaseCard title="Audio" type={Draggables.AUDIO_CARD} {...otherProps}>
       <textarea
+        className="AudioCard-textarea"
         onChange={
           onTextChange != null ? (e) => onTextChange(e.target.value) : undefined
         }
