@@ -143,7 +143,7 @@ export default function ClassifierCardDialog({
           className="ClassifierCardDialog-selectDestinationButton"
           onClick={() => onSelectDestinationClick(idx)}
         >
-          Select Dest.
+          Select Destination
         </button>
       </td>
       {idx > 0 ? (
@@ -154,7 +154,7 @@ export default function ClassifierCardDialog({
             onClick={() => removeClassifier(link)}
           >
             X
-          </button>
+	      </button>
         </td>
       ) : null}
     </tr>
@@ -187,7 +187,7 @@ export default function ClassifierCardDialog({
           <tr>
             <th>Classifier Label</th>
             <th>Threshold</th>
-            <th>Destination</th>
+            <th>Destination (id)</th>
           </tr>
           {classifierRows}
         </table>
@@ -196,7 +196,7 @@ export default function ClassifierCardDialog({
           className="ClassifierCardDialog-addClassifierButton"
           onClick={addNewClassifier}
         >
-          +
+          Add a label
         </button>
         <button
           type="button"
