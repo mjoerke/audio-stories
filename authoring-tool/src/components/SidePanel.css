@@ -7,7 +7,7 @@
   justify-content: space-between;
   padding: 20px;
   /* WARNING: if you change this variable, please update 
-   * SIDE_PANEL_WIDTH in Sizes.css */
+   * SIDE_PANEL_WIDTH in Constants.js */
   width: 240px;
   z-index: 1;
   flex-shrink: 0;

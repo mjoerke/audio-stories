@@ -2,7 +2,7 @@
 
 import type { CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
-import { SIDE_PANEL_WIDTH } from "../constants/Sizes";
+import { SIDE_PANEL_WIDTH } from "../constants/Constants";
 import getAdjacentCardIds from "../util/CardDataUtils";
 
 const ARROWHEAD_LENGTH = 16;
@@ -32,7 +32,7 @@ export function drawLink(
 }
 
 export function drawSelfLink(
- ctx: CanvasRenderingContext2D,
+  ctx: CanvasRenderingContext2D,
   startCoords: { x: number, y: number },
   endCoords: { x: number, y: number }
 ) {
@@ -43,15 +43,25 @@ export function drawSelfLink(
   const angle = 0;
   ctx.beginPath();
   ctx.moveTo(startCoords.x, startCoords.y);
-  ctx.bezierCurveTo(startCoords.x + 200, startCoords.y,
-	  	    (startCoords.x + endCoords.x )/2 + 200, (startCoords.y + endCoords.y)/2 + 200,
-	  	    (startCoords.x + endCoords.x )/2, (startCoords.y + endCoords.y)/2 + 200);
-  
-  ctx.bezierCurveTo((startCoords.x + endCoords.x )/2 - 200, (startCoords.y + endCoords.y)/2 + 200,
-	  	    endCoords.x - 200, endCoords.y,
-	  	    endCoords.x, endCoords.y);
-	
- // ctx.lineTo(endCoords.x, endCoords.y);
+  ctx.bezierCurveTo(
+    startCoords.x + 200,
+    startCoords.y,
+    (startCoords.x + endCoords.x) / 2 + 200,
+    (startCoords.y + endCoords.y) / 2 + 200,
+    (startCoords.x + endCoords.x) / 2,
+    (startCoords.y + endCoords.y) / 2 + 200
+  );
+
+  ctx.bezierCurveTo(
+    (startCoords.x + endCoords.x) / 2 - 200,
+    (startCoords.y + endCoords.y) / 2 + 200,
+    endCoords.x - 200,
+    endCoords.y,
+    endCoords.x,
+    endCoords.y
+  );
+
+  // ctx.lineTo(endCoords.x, endCoords.y);
   ctx.lineTo(
     endCoords.x - ARROWHEAD_LENGTH * Math.cos(angle - Math.PI / 6),
     endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle - Math.PI / 6)
@@ -63,7 +73,6 @@ export function drawSelfLink(
   );
   ctx.stroke();
 }
-
 
 export function drawExistingLinks(
   ctx: CanvasRenderingContext2D,
@@ -84,9 +93,8 @@ export function drawExistingLinks(
           // $FlowExpectedError coerce to string for error logging
           `No card found with id ${toCard.id} when trying to draw link to card!`
         );
-      } 
-	else if (toCard.id === fromCard.id) {
-	drawSelfLink(
+      } else if (toCard.id === fromCard.id) {
+        drawSelfLink(
           ctx,
           {
             x: fromCard.x + fromCard.width - SIDE_PANEL_WIDTH,
@@ -97,10 +105,7 @@ export function drawExistingLinks(
             y: toCard.y + toCard.height / 2,
           }
         );
-
-	}
-	    
-	else {
+      } else {
         /* Card coords are absolute relative to window, so we need to
          * offset by the size of the side panel */
         drawLink(

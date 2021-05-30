@@ -14,6 +14,7 @@ type Props = {
   ...CardProps,
   isDialogOpen: boolean,
   links: Array<ClassifierLink>,
+  newDraftClassifierLink: ?DraftClassifierLink,
   setIsDialogOpen?: (boolean) => void,
   updateClassifierLinks?: (UniqueId, Array<ClassifierLink>) => void,
   validateClassifierLinks?: (
@@ -24,6 +25,7 @@ type Props = {
 export default function ClassifierCard({
   isDialogOpen,
   links,
+  newDraftClassifierLink,
   setIsDialogOpen,
   updateClassifierLinks,
   validateClassifierLinks,
@@ -67,6 +69,7 @@ export default function ClassifierCard({
           id={id}
           isOpen={isDialogOpen}
           initialLinks={links}
+          newDraftClassifierLink={newDraftClassifierLink}
           updateClassifierLinks={updateClassifierLinks}
           validateClassifierLinks={validateClassifierLinks}
         />

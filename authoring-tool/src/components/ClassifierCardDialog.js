@@ -9,12 +9,14 @@ import type { UniqueId } from "../util/UniqueId";
 
 import "css.gg/icons/css/close.css";
 import "./ClassifierCardDialog.css";
+import { DEFAULT_CLASSIFIER_THRESHOLD } from "../constants/Constants";
 
 type Props = {
   closeDialog: () => void,
   id: UniqueId,
   isOpen: boolean,
   initialLinks: Array<ClassifierLink>,
+  newDraftClassifierLink: ?DraftClassifierLink,
   updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
   validateClassifierLinks: (
     Array<DraftClassifierLink>
@@ -26,6 +28,7 @@ export default function ClassifierCardDialog({
   id,
   isOpen,
   initialLinks,
+  newDraftClassifierLink,
   updateClassifierLinks,
   validateClassifierLinks,
 }: Props): React.MixedElement {
@@ -35,19 +38,35 @@ export default function ClassifierCardDialog({
   // repopulate links if initialLinks is updated
   React.useEffect(() => {
     if (initialLinks.length > 0) {
-      // TODO: i would prefer not to do this conversion
       setDraftLinks(
-        // $FlowExpectedError safe type-cast
-        initialLinks.map((link) => ({
-          ...link,
-          threshold: link.threshold * 100,
-        }))
+        produce(initialLinks, (draftState) => {
+          draftState.map((link) => ({
+            ...link,
+            // TODO: i would prefer not to do this conversion
+            threshold: link.threshold * 100,
+          }));
+          if (newDraftClassifierLink != null) {
+            draftState.push({
+              ...newDraftClassifierLink,
+              threshold: newDraftClassifierLink.threshold * 100,
+            });
+          }
+        })
       );
+    } else if (newDraftClassifierLink != null) {
+      /* if no existing links but user triggered the dialog by starting a new
+       * link, then that new draft link should be the only classifier listed */
+      setDraftLinks([
+        {
+          ...newDraftClassifierLink,
+          threshold: newDraftClassifierLink.threshold * 100,
+        },
+      ]);
     } else {
       // if no links, then put an empty one so the form isn't blank
       setDraftLinks([{ next: null, label: null, threshold: 50 }]);
     }
-  }, [setDraftLinks, initialLinks]);
+  }, [setDraftLinks, initialLinks, newDraftClassifierLink]);
 
   const addNewClassifier = () => {
     setDraftLinks((baseState) =>
@@ -55,7 +74,7 @@ export default function ClassifierCardDialog({
         draftState.push({
           next: null,
           label: null,
-          threshold: 50,
+          threshold: DEFAULT_CLASSIFIER_THRESHOLD * 100,
         });
       })
     );

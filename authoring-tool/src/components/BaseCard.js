@@ -4,7 +4,7 @@ import * as React from "react";
 import { useDrag } from "react-dnd";
 
 import type { DraggableType } from "../constants/Draggables";
-import { DEFAULT_CARD_SIZE } from "../constants/Sizes";
+import { DEFAULT_CARD_SIZE } from "../constants/Constants";
 import type { UniqueId } from "../util/UniqueId";
 import { uniqueIdAsString } from "../util/UniqueId";
 

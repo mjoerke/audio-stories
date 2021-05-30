@@ -15,7 +15,11 @@ import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import ClassifierCard from "./ClassifierCard";
 import Draggables from "../constants/Draggables";
-import { DEFAULT_CARD_SIZE, SIDE_PANEL_WIDTH } from "../constants/Sizes";
+import {
+  DEFAULT_CARD_SIZE,
+  DEFAULT_CLASSIFIER_THRESHOLD,
+  SIDE_PANEL_WIDTH,
+} from "../constants/Constants";
 import getAdjacentCardIds from "../util/CardDataUtils";
 import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
 import makeUniqueId, { uniqueIdAsString } from "../util/UniqueId";
@@ -136,6 +140,8 @@ function Canvas({
    * it makes saving the user's work in the dialog trivial, which is nice. */
   const [classifierDialogOpenId, setClassifierDialogOpenId] =
     React.useState<?UniqueId>(null);
+  const [newDraftClassifierLink, setNewDraftClassifierLink] =
+    React.useState<?DraftClassifierLink>(null);
 
   const canvasRef = React.useRef<?HTMLCanvasElement>(null);
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
@@ -255,6 +261,14 @@ function Canvas({
                 addSimpleLink(fromCard, to);
                 break;
               case "classifier_card":
+                // if (newDraftClassifierLink == null) {
+                setNewDraftClassifierLink({
+                  next: to,
+                  label: null,
+                  threshold: DEFAULT_CLASSIFIER_THRESHOLD,
+                });
+                setClassifierDialogOpenId(isDrawingNewLinkFrom);
+                // }
                 break;
               default:
                 throw new Error(
@@ -302,6 +316,7 @@ function Canvas({
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={card.links.links}
             linkButtonText={linkButtonText}
+            newDraftClassifierLink={newDraftClassifierLink}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}

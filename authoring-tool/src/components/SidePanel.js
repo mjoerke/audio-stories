@@ -26,6 +26,7 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
         isDrawingNewLinkFrom={null}
         isDialogOpen={false}
         links={[]}
+        newDraftClassifierLink={null}
         type={Draggables.NEW_CLASSIFIER_CARD}
       />
       <div>
