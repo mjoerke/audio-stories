@@ -1,6 +1,8 @@
 .Canvas-container {
   background-color: aliceblue;
   flex-grow: 1;
+  height: fit-content;
+  width: fit-content;
 }
 
 .Canvas-containerDropping {

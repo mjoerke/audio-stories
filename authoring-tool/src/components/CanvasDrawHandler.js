@@ -71,9 +71,9 @@ export function drawExistingLinks(
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   // eslint-disable-next-line no-undef
-  ctx.canvas.width = window.innerWidth;
+  ctx.canvas.width = Math.max(ctx.canvas.width, window.innerWidth);
   // eslint-disable-next-line no-undef
-  ctx.canvas.height = window.innerHeight;
+  ctx.canvas.height = Math.max(ctx.canvas.height, window.innerHeight);
   Array.from(cards).forEach(([from, fromCard]) => {
     ctx.beginPath();
     const tos = getAdjacentCardIds(cards, from);

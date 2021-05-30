@@ -11,6 +11,11 @@ export function calculateDropPosition(
   const nodeStartXY = monitor.getInitialSourceClientOffset();
   const pointerStartXY = monitor.getInitialClientOffset();
   const pointerEndXY = monitor.getClientOffset();
+  const scrollX = window.scrollX || 0; 
+  const scrollY = window.scrollY || 0;
+
+  // console.log(scrollX,scrollY)
+
   if (nodeStartXY == null || pointerStartXY == null || pointerEndXY == null) {
     return null;
   }
@@ -21,7 +26,10 @@ export function calculateDropPosition(
      * for this discrepancy, we need to calculate the distance between the
      * initial node position and the initial pointer pos, and then subtract
      * that from the final position pos. */
-    x: pointerEndXY.x - (pointerStartXY.x - nodeStartXY.x),
-    y: pointerEndXY.y - (pointerStartXY.y - nodeStartXY.y),
+    
+    // once we allow the canvas to grow, we also need to take into account
+    // the scrollbar position
+    x: pointerEndXY.x - (pointerStartXY.x - nodeStartXY.x) + scrollX,
+    y: pointerEndXY.y - (pointerStartXY.y - nodeStartXY.y) + scrollY,
   };
 }

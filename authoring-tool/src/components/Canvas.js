@@ -177,8 +177,8 @@ function Canvas({
       return;
     }
     mouseCoords.current = {
-      x: e.clientX - canvas.offsetLeft,
-      y: e.clientY - canvas.offsetTop,
+      x: e.clientX - canvas.offsetLeft + window.scrollX,
+      y: e.clientY - canvas.offsetTop + window.scrollY,
     };
   };
 
