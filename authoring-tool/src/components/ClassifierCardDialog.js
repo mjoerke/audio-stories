@@ -37,7 +37,7 @@ export default function ClassifierCardDialog({
   // if no links, then put an empty one so the form isn't blank
   React.useEffect(() => {
     if (draftLinks.length === 0) {
-      setDraftLinks([{ next: null, label: null, threshold: 50 }]);
+      setDraftLinks([{ next: null, label: null, threshold: 90 }]);
     }
   }, [draftLinks, setDraftLinks]);
 

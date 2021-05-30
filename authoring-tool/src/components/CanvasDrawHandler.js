@@ -46,14 +46,14 @@ export function drawLink(
     ctx.beginPath();
     ctx.moveTo(startCoords.x, startCoords.y)
     ctx.bezierCurveTo(  
-	              startCoords.x + 300,
+	              startCoords.x + 200,
 	    	      startCoords.y,
-	    	      endCoords.x + 400, 
+	    	      endCoords.x + 300, 
 	              endCoords.y - 130,	
 	    	      endCoords.x + 100, 
 	              endCoords.y - 130);
 
-    ctx.bezierCurveTo(endCoords.x - 200, 
+    ctx.bezierCurveTo(endCoords.x - 70, 
 	              endCoords.y - 130,
 		      endCoords.x - 200,
 	    	      endCoords.y,
