@@ -293,7 +293,7 @@ function Canvas({
                       draftState.push({
                         next: to,
                         label: null,
-                        threshold: DEFAULT_CLASSIFIER_THRESHOLD * 100,
+                        threshold: DEFAULT_CLASSIFIER_THRESHOLD,
                       });
                     }
                   )
