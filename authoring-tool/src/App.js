@@ -10,6 +10,7 @@ import type {
   CardData,
   ClassifierCardData,
   ClassifierLink,
+  DraftClassifierLink,
 } from "./model/CardData";
 import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
@@ -21,6 +22,11 @@ import "./App.css";
 
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
+
+  // TODO: may need to initialize based on cards
+  const [draftLinks, setDraftLinks] = React.useState<
+    Map<UniqueId, Array<DraftClassifierLink>>
+  >(new Map());
 
   // On dev, validate state after every update
   React.useEffect(() => {
@@ -34,6 +40,11 @@ function App(): React.MixedElement {
     setCards((baseState) =>
       produce(baseState, (draftState) => {
         draftState.set(newCard.id, newCard);
+      })
+    );
+    setDraftLinks((baseState) =>
+      produce(baseState, (draftState) => {
+        draftState.set(newCard.id, []);
       })
     );
   };
@@ -51,7 +62,14 @@ function App(): React.MixedElement {
         draftState.set(editedCard.id, editedCard);
       });
     });
+
+    setDraftLinks((baseState) =>
+      produce(baseState, (draftState) => {
+        draftState.set(editedCard.id, editedCard.links.links);
+      })
+    );
   };
+
   const removeCard = (idToDelete: UniqueId) => {
     setCards((baseState) =>
       produce(baseState, (draftState) => {
@@ -95,7 +113,13 @@ function App(): React.MixedElement {
         }
       })
     );
+    setDraftLinks((baseState) =>
+      produce(baseState, (draftState) => {
+        draftState.delete(idToDelete);
+      })
+    );
   };
+
   const addSimpleLink = (
     fromCard: AudioCardData | ClassifierCardData,
     to: UniqueId
@@ -148,6 +172,12 @@ function App(): React.MixedElement {
         draftState.set(editedCard.id, editedCard);
       });
     });
+
+    setDraftLinks((baseState) =>
+      produce(baseState, (draftState) => {
+        draftState.set(id, links);
+      })
+    );
   };
 
   const removeLink = (from: UniqueId, to: UniqueId) => {
@@ -218,9 +248,17 @@ function App(): React.MixedElement {
           addClassifierLink={addClassifierLink}
           addSimpleLink={addSimpleLink}
           cards={cards}
+          draftLinks={draftLinks}
           updateCard={updateCard}
           removeCard={removeCard}
           removeLink={removeLink}
+          setDraftLinks={(id, newDraftLinks) =>
+            setDraftLinks((baseState) =>
+              produce(baseState, (draftState) => {
+                draftState.set(id, newDraftLinks);
+              })
+            )
+          }
           updateClassifierLinks={updateClassifierLinks}
         />
       </div>

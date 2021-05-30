@@ -14,6 +14,7 @@ import type {
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import ClassifierCard from "./ClassifierCard";
+import ClassifierCardDialog from "./ClassifierCardDialog";
 import Draggables from "../constants/Draggables";
 import {
   DEFAULT_CARD_SIZE,
@@ -31,9 +32,11 @@ type Props = $ReadOnly<{
   addCard: (CardData) => void,
   addSimpleLink: (AudioCardData, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
+  draftLinks: Map<UniqueId, Array<ClassifierLink>>,
   updateCard: (CardData) => void,
   removeCard: (UniqueId) => void,
   removeLink: (UniqueId, UniqueId) => void,
+  setDraftLinks: (UniqueId, Array<DraftClassifierLink>) => void,
   updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
 }>;
 
@@ -41,9 +44,11 @@ function Canvas({
   addCard,
   addSimpleLink,
   cards,
+  draftLinks,
   updateCard,
   removeCard,
   removeLink,
+  setDraftLinks,
   updateClassifierLinks,
 }: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
@@ -135,13 +140,9 @@ function Canvas({
 
   const [isDrawingNewLinkFrom, setIsDrawingNewLinkFrom] =
     React.useState<?UniqueId>(null);
-  /* TODO: Each classifier card has its own dialog, and this state determines
-   * which (if any) should currently be open. Bad idea for performance, but
-   * it makes saving the user's work in the dialog trivial, which is nice. */
+  // classifier dialog is closed when this is null; open otherwise
   const [classifierDialogOpenId, setClassifierDialogOpenId] =
     React.useState<?UniqueId>(null);
-  const [newDraftClassifierLink, setNewDraftClassifierLink] =
-    React.useState<?DraftClassifierLink>(null);
 
   const canvasRef = React.useRef<?HTMLCanvasElement>(null);
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
@@ -234,7 +235,10 @@ function Canvas({
 
   const renderCard = (id, card) => {
     const canDeleteLinkTo =
-      existingEndsForNewLink != null && existingEndsForNewLink.includes(id);
+      existingEndsForNewLink != null &&
+      existingEndsForNewLink.includes(id) &&
+      isDrawingNewLinkFrom != null &&
+      cards.get(isDrawingNewLinkFrom).type === "audio_card";
     /* Render stop button if clicking the button represents a cancellation
      * or deletion */
     const linkButtonText =
@@ -242,39 +246,43 @@ function Canvas({
     const onFinishLink = (to) => {
       if (isDrawingNewLinkFrom != null) {
         if (isDrawingNewLinkFrom !== to) {
-          if (
-            existingEndsForNewLink != null &&
-            existingEndsForNewLink.includes(to)
-          ) {
-            removeLink(isDrawingNewLinkFrom, to);
-          } else {
-            const fromCard = cards.get(isDrawingNewLinkFrom);
-            if (fromCard == null) {
-              console.error(
-                // $FlowExpectedError coerce id for the sake of logging
-                `onFinishLink: could not find card with id: ${isDrawingNewLinkFrom}`
-              );
-              return;
-            }
-            switch (fromCard.type) {
-              case "audio_card":
+          const fromCard = cards.get(isDrawingNewLinkFrom);
+          if (fromCard == null) {
+            console.error(
+              // $FlowExpectedError coerce id for the sake of logging
+              `onFinishLink: could not find card with id: ${isDrawingNewLinkFrom}`
+            );
+            return;
+          }
+          switch (fromCard.type) {
+            case "audio_card":
+              if (
+                existingEndsForNewLink != null &&
+                existingEndsForNewLink.includes(to)
+              ) {
+                removeLink(isDrawingNewLinkFrom, to);
+              } else {
                 addSimpleLink(fromCard, to);
-                break;
-              case "classifier_card":
-                // if (newDraftClassifierLink == null) {
-                setNewDraftClassifierLink({
-                  next: to,
-                  label: null,
-                  threshold: DEFAULT_CLASSIFIER_THRESHOLD,
-                });
-                setClassifierDialogOpenId(isDrawingNewLinkFrom);
-                // }
-                break;
-              default:
-                throw new Error(
-                  `onFinishLink: unrecognized card type: ${fromCard.type}`
-                );
-            }
+              }
+              break;
+            case "classifier_card":
+              // TODO: this is copy and pasted from ClassifierCardDialog
+              setDraftLinks(
+                isDrawingNewLinkFrom,
+                produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
+                  draftState.push({
+                    next: to,
+                    label: null,
+                    threshold: DEFAULT_CLASSIFIER_THRESHOLD * 100,
+                  });
+                })
+              );
+              setClassifierDialogOpenId(isDrawingNewLinkFrom);
+              break;
+            default:
+              throw new Error(
+                `onFinishLink: unrecognized card type: ${fromCard.type}`
+              );
           }
         }
         setIsDrawingNewLinkFrom((_) => null);
@@ -312,11 +320,9 @@ function Canvas({
           <ClassifierCard
             canDeleteLinkTo={canDeleteLinkTo}
             id={id}
-            isDialogOpen={classifierDialogOpenId === id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={card.links.links}
             linkButtonText={linkButtonText}
-            newDraftClassifierLink={newDraftClassifierLink}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
@@ -324,8 +330,6 @@ function Canvas({
             setIsDialogOpen={(state) =>
               setClassifierDialogOpenId(state ? id : null)
             }
-            updateClassifierLinks={updateClassifierLinks}
-            validateClassifierLinks={validateClassifierLinks}
           />
         );
         break;
@@ -362,6 +366,20 @@ function Canvas({
         onMouseMove={saveMousePosition}
       />
       {Array.from(cards).map(([id, card]) => renderCard(id, card))}
+
+      {classifierDialogOpenId != null ? (
+        <ClassifierCardDialog
+          closeDialog={() => setClassifierDialogOpenId(null)}
+          draftLinks={draftLinks.get(classifierDialogOpenId)}
+          id={classifierDialogOpenId}
+          isOpen={classifierDialogOpenId != null}
+          setDraftLinks={(newDraftLinks) =>
+            setDraftLinks(classifierDialogOpenId, newDraftLinks)
+          }
+          updateClassifierLinks={updateClassifierLinks}
+          validateClassifierLinks={validateClassifierLinks}
+        />
+      ) : null}
     </div>
   );
 }

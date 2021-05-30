@@ -13,10 +13,10 @@ import { DEFAULT_CLASSIFIER_THRESHOLD } from "../constants/Constants";
 
 type Props = {
   closeDialog: () => void,
+  draftLinks: Array<DraftClassifierLink>,
   id: UniqueId,
   isOpen: boolean,
-  initialLinks: Array<ClassifierLink>,
-  newDraftClassifierLink: ?DraftClassifierLink,
+  setDraftLinks: (Array<DraftClassifierLink>) => void,
   updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
   validateClassifierLinks: (
     Array<DraftClassifierLink>
@@ -25,52 +25,23 @@ type Props = {
 
 export default function ClassifierCardDialog({
   closeDialog,
+  draftLinks,
   id,
   isOpen,
-  initialLinks,
-  newDraftClassifierLink,
+  setDraftLinks,
   updateClassifierLinks,
   validateClassifierLinks,
 }: Props): React.MixedElement {
-  const [draftLinks, setDraftLinks] =
-    // $FlowExpectedError safe type-cast
-    React.useState<Array<DraftClassifierLink>>(initialLinks);
-  // repopulate links if initialLinks is updated
+  // if no links, then put an empty one so the form isn't blank
   React.useEffect(() => {
-    if (initialLinks.length > 0) {
-      setDraftLinks(
-        produce(initialLinks, (draftState) => {
-          draftState.map((link) => ({
-            ...link,
-            // TODO: i would prefer not to do this conversion
-            threshold: link.threshold * 100,
-          }));
-          if (newDraftClassifierLink != null) {
-            draftState.push({
-              ...newDraftClassifierLink,
-              threshold: newDraftClassifierLink.threshold * 100,
-            });
-          }
-        })
-      );
-    } else if (newDraftClassifierLink != null) {
-      /* if no existing links but user triggered the dialog by starting a new
-       * link, then that new draft link should be the only classifier listed */
-      setDraftLinks([
-        {
-          ...newDraftClassifierLink,
-          threshold: newDraftClassifierLink.threshold * 100,
-        },
-      ]);
-    } else {
-      // if no links, then put an empty one so the form isn't blank
+    if (draftLinks.length === 0) {
       setDraftLinks([{ next: null, label: null, threshold: 50 }]);
     }
-  }, [setDraftLinks, initialLinks, newDraftClassifierLink]);
+  }, [draftLinks, setDraftLinks]);
 
   const addNewClassifier = () => {
-    setDraftLinks((baseState) =>
-      produce(baseState, (draftState) => {
+    setDraftLinks(
+      produce(draftLinks, (draftState) => {
         draftState.push({
           next: null,
           label: null,
@@ -81,15 +52,16 @@ export default function ClassifierCardDialog({
   };
 
   const removeClassifier = (linkToRemove) => {
-    setDraftLinks((baseState) =>
+    setDraftLinks(
       // $FlowFixMe fix types
-      baseState.filter((link) => link !== linkToRemove)
+      draftLinks.filter((link) => link !== linkToRemove)
     );
   };
 
   const updateDraftLink = (idx, updatedLink) => {
-    setDraftLinks((baseState) =>
-      produce(baseState, (draftState) => {
+    setDraftLinks(
+      produce(draftLinks, (draftState) => {
+        console.log(draftState);
         // eslint-disable-next-line no-param-reassign
         draftState[idx] = updatedLink;
       })
@@ -102,6 +74,8 @@ export default function ClassifierCardDialog({
       threshold: Math.max(Math.min(link.threshold + delta, 100), 0),
     });
   };
+
+  // console.log(draftLinks);
 
   const classifierRows = draftLinks.map((link, idx) => (
     <tr className="ClassifierCardDialog-classifierRow">
@@ -166,7 +140,7 @@ export default function ClassifierCardDialog({
         <button
           type="button"
           className="ClassifierCardDialog-selectDestinationButton"
-          onClick={() => adjustThreshold(idx, link, 10)}
+          // onClick={() => adjustThreshold(idx, link, 10)}
         >
           Select Dest.
         </button>
@@ -198,7 +172,8 @@ export default function ClassifierCardDialog({
     >
       <div className="ClassifierCardDialog-container">
         <div className="ClassifierCardDialog-headerContainer">
-          <h2>Classifier Options</h2>
+          {/* $FlowFixMe temp hack */}
+          <h2>Classifier Options (id: {id})</h2>
           <button
             type="button"
             className="ClassifierCardDialog-closeButton"
