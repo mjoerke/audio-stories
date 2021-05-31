@@ -196,7 +196,7 @@ export default function ClassifierCardDialog({
           className="ClassifierCardDialog-addClassifierButton"
           onClick={addNewClassifier}
         >
-          Add a label
+          Add another label
         </button>
         <button
           type="button"
@@ -209,6 +209,7 @@ export default function ClassifierCardDialog({
         >
           Save Classifiers
         </button>
+	<p>Once every line has a non-empty text label and destination id number, click <i>Save Classifiers</i> to confirm your changes.</p>
       </div>
     </Modal>
   );
