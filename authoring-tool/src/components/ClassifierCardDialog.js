@@ -136,8 +136,6 @@ export default function ClassifierCardDialog({
           }}
           value={link.next}
         />
-      </td>
-      <td>
         <button
           type="button"
           className="ClassifierCardDialog-selectDestinationButton"
@@ -154,7 +152,7 @@ export default function ClassifierCardDialog({
             onClick={() => removeClassifier(link)}
           >
             X
-	      </button>
+          </button>
         </td>
       ) : null}
     </tr>
@@ -207,9 +205,12 @@ export default function ClassifierCardDialog({
             closeDialog();
           }}
         >
-          Save Classifiers
+          Save classifiers
         </button>
-	<p>Once every line has a non-empty text label and destination id number, click <i>Save Classifiers</i> to confirm your changes.</p>
+        <p>
+          Once every line has a non-empty text label and destination id number,
+          click <i>Save Classifiers</i> to confirm your changes.
+        </p>
       </div>
     </Modal>
   );

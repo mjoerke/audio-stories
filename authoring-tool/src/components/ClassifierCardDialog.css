@@ -53,6 +53,11 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+.ClassifierCardDialog-destinationInput {
+  width: 4ch;
+  -moz-appearance: textfield;
+}
+
 .ClassifierCardDialog-selectDestinationButton {
 }
 

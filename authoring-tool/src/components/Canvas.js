@@ -32,7 +32,7 @@ type Props = $ReadOnly<{
   addCard: (CardData) => void,
   addSimpleLink: (AudioCardData, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
-  draftLinks: Map<UniqueId, Array<ClassifierLink>>,
+  draftLinks: Map<UniqueId, Array<DraftClassifierLink>>,
   updateCard: (CardData) => void,
   removeCard: (UniqueId) => void,
   removeLink: (UniqueId, UniqueId) => void,
@@ -143,6 +143,10 @@ function Canvas({
   // classifier dialog is closed when this is null; open otherwise
   const [classifierDialogOpenId, setClassifierDialogOpenId] =
     React.useState<?UniqueId>(null);
+  const draftLinksForDialog =
+    classifierDialogOpenId != null
+      ? draftLinks.get(classifierDialogOpenId)
+      : undefined;
   /* used to keep track of draft link state after selecting "select dest"
    * in the classifier dialog */
   const [currentDraftClassifierIdx, setCurrentDraftClassifierIdx] =
@@ -238,11 +242,14 @@ function Canvas({
       : null;
 
   const renderCard = (id, card) => {
+    const fromCard =
+      isDrawingNewLinkFrom != null ? cards.get(isDrawingNewLinkFrom) : null;
     const canDeleteLinkTo =
       existingEndsForNewLink != null &&
       existingEndsForNewLink.includes(id) &&
       isDrawingNewLinkFrom != null &&
-      cards.get(isDrawingNewLinkFrom).type === "audio_card";
+      fromCard != null &&
+      fromCard.type === "audio_card";
     /* Render stop button if clicking the button represents a cancellation
      * or deletion */
     const linkButtonText =
@@ -250,7 +257,6 @@ function Canvas({
     const onFinishLink = (to) => {
       if (isDrawingNewLinkFrom != null) {
         if (isDrawingNewLinkFrom !== to) {
-          const fromCard = cards.get(isDrawingNewLinkFrom);
           if (fromCard == null) {
             console.error(
               // $FlowExpectedError coerce id for the sake of logging
@@ -392,10 +398,10 @@ function Canvas({
       />
       {Array.from(cards).map(([id, card]) => renderCard(id, card))}
 
-      {classifierDialogOpenId != null ? (
+      {classifierDialogOpenId != null && draftLinksForDialog != null ? (
         <ClassifierCardDialog
           closeDialog={() => setClassifierDialogOpenId(null)}
-          draftLinks={draftLinks.get(classifierDialogOpenId)}
+          draftLinks={draftLinksForDialog}
           id={classifierDialogOpenId}
           isOpen={classifierDialogOpenId != null}
           onSelectDestinationClick={(idx) => {

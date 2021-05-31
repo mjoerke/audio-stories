@@ -47,7 +47,7 @@ export default function ClassifierCard({
         }
         type="button"
       >
-        Add transition
+        Edit classifiers
       </button>
     </BaseCard>
   );

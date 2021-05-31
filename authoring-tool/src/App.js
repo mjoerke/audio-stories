@@ -65,7 +65,13 @@ function App(): React.MixedElement {
 
     setDraftLinks((baseState) =>
       produce(baseState, (draftState) => {
-        draftState.set(editedCard.id, editedCard.links.links);
+        switch (editedCard.links.type) {
+          case "classifier_link":
+            draftState.set(editedCard.id, editedCard.links.links);
+            break;
+          default:
+            break;
+        }
       })
     );
   };
