@@ -256,62 +256,57 @@ function Canvas({
       isDrawingNewLinkFrom === id || canDeleteLinkTo ? "X" : "+";
     const onFinishLink = (to) => {
       if (isDrawingNewLinkFrom != null) {
-        if (isDrawingNewLinkFrom !== to) {
-          if (fromCard == null) {
-            console.error(
-              // $FlowExpectedError coerce id for the sake of logging
-              `onFinishLink: could not find card with id: ${isDrawingNewLinkFrom}`
-            );
-            return;
-          }
-          switch (fromCard.type) {
-            case "audio_card":
-              if (
-                existingEndsForNewLink != null &&
-                existingEndsForNewLink.includes(to)
-              ) {
-                removeLink(isDrawingNewLinkFrom, to);
-              } else {
-                addSimpleLink(fromCard, to);
-              }
-              break;
-            case "classifier_card":
-              /* If this link was triggered by pressing "select dest" in the
-               * classifier dialog, make sure to update the right classifier */
-              if (currentDraftClassifierIdx != null) {
-                setDraftLinks(
-                  isDrawingNewLinkFrom,
-                  produce(
-                    draftLinks.get(isDrawingNewLinkFrom),
-                    (draftState) => {
-                      // eslint-disable-next-line no-param-reassign
-                      draftState[currentDraftClassifierIdx].next = to;
-                    }
-                  )
-                );
-              } else {
-                // TODO: this is copy and pasted from ClassifierCardDialog
-                setDraftLinks(
-                  isDrawingNewLinkFrom,
-                  produce(
-                    draftLinks.get(isDrawingNewLinkFrom),
-                    (draftState) => {
-                      draftState.push({
-                        next: to,
-                        label: null,
-                        threshold: DEFAULT_CLASSIFIER_THRESHOLD,
-                      });
-                    }
-                  )
-                );
-              }
-              setClassifierDialogOpenId(isDrawingNewLinkFrom);
-              break;
-            default:
-              throw new Error(
-                `onFinishLink: unrecognized card type: ${fromCard.type}`
+        if (fromCard == null) {
+          console.error(
+            // $FlowExpectedError coerce id for the sake of logging
+            `onFinishLink: could not find card with id: ${isDrawingNewLinkFrom}`
+          );
+          return;
+        }
+        switch (fromCard.type) {
+          case "audio_card":
+            if (isDrawingNewLinkFrom === to) {
+              return;
+            }
+            if (
+              existingEndsForNewLink != null &&
+              existingEndsForNewLink.includes(to)
+            ) {
+              removeLink(isDrawingNewLinkFrom, to);
+            } else {
+              addSimpleLink(fromCard, to);
+            }
+            break;
+          case "classifier_card":
+            /* If this link was triggered by pressing "select dest" in the
+             * classifier dialog, make sure to update the right classifier */
+            if (currentDraftClassifierIdx != null) {
+              setDraftLinks(
+                isDrawingNewLinkFrom,
+                produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
+                  // eslint-disable-next-line no-param-reassign
+                  draftState[currentDraftClassifierIdx].next = to;
+                })
               );
-          }
+            } else {
+              // TODO: this is copy and pasted from ClassifierCardDialog
+              setDraftLinks(
+                isDrawingNewLinkFrom,
+                produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
+                  draftState.push({
+                    next: to,
+                    label: null,
+                    threshold: DEFAULT_CLASSIFIER_THRESHOLD,
+                  });
+                })
+              );
+            }
+            setClassifierDialogOpenId(isDrawingNewLinkFrom);
+            break;
+          default:
+            throw new Error(
+              `onFinishLink: unrecognized card type: ${fromCard.type}`
+            );
         }
         setIsDrawingNewLinkFrom((_) => null);
         setCurrentDraftClassifierIdx(null);

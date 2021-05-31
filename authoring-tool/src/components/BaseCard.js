@@ -27,6 +27,7 @@ export type ExposedProps = {
   type?: DraggableType,
   width?: number,
   children?: React.Node,
+  allowSelfLoops?: boolean,
 };
 
 type Props = {
@@ -49,6 +50,7 @@ export default function BaseCard({
   width = DEFAULT_CARD_SIZE,
   type,
   children = null,
+  allowSelfLoops = true,
 }: Props): React.MixedElement {
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -68,10 +70,9 @@ export default function BaseCard({
   } else {
     overlayClass += " BaseCard-canLinkOverlayConnect";
   }
+  const illegalSelfLoop = isDrawingNewLinkFrom === id && !allowSelfLoops;
   const overlay =
-    isDrawingNewLinkFrom != null &&
-    isDrawingNewLinkFrom !== id &&
-    isMouseOver ? (
+    isDrawingNewLinkFrom != null && !illegalSelfLoop && isMouseOver ? (
       <div className={overlayClass}>
         {canDeleteLinkTo ? "Disconnect" : "Connect"}
       </div>
