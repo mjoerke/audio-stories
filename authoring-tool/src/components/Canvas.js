@@ -259,6 +259,9 @@ function Canvas({
         }
         switch (fromCard.type) {
           case "audio_card":
+            if (isDrawingNewLinkFrom === to) {
+              return;
+            }
             if (
               existingEndsForNewLink != null &&
               existingEndsForNewLink.includes(to)

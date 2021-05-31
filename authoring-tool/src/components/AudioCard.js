@@ -19,7 +19,12 @@ export default function AudioCard({
 }: Props): React.MixedElement {
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <BaseCard title="Audio" type={Draggables.AUDIO_CARD} {...otherProps}>
+    <BaseCard
+      title="Audio"
+      type={Draggables.AUDIO_CARD}
+      allowSelfLoops={false}
+      {...otherProps}
+    >
       <textarea
         className="AudioCard-textarea"
         onChange={
