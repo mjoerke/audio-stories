@@ -4,6 +4,7 @@ import * as React from "react";
 
 import Draggables from "../constants/Draggables";
 import type { ClassifierLink } from "../model/CardData";
+import { getClassifierCardHeight } from "../util/LayoutUtils";
 import type { UniqueId } from "../util/UniqueId";
 import { uniqueIdAsString } from "../util/UniqueId";
 import type { ExposedProps as CardProps } from "./BaseCard";
@@ -38,7 +39,7 @@ export default function ClassifierCard({
         >
           <div className="ClassifierCard-classifierLabel">{link.label}</div>
           <div className="ClassifierCard-classifierDetails">
-            {`Threshold: ${link.threshold} to card ${uniqueIdAsString(
+            {`(Threshold: ${link.threshold}) → card ${uniqueIdAsString(
               link.next
             )}`}
           </div>

@@ -159,24 +159,11 @@ export function drawExistingLinks(
           // $FlowExpectedError coerce to string for error logging
           `No card found with id ${toCard.id} when trying to draw link to card!`
         );
-      } else if (toCard.id === fromCard.id) {
-        drawSelfLink(
-          ctx,
-          {
-            x: fromCard.x + fromCard.width - SIDE_PANEL_WIDTH,
-            y: fromCard.y + fromCard.height / 2,
-          },
-          {
-            x: toCard.x - SIDE_PANEL_WIDTH,
-            y: toCard.y + toCard.height / 2,
-          },
-          fromCard.id === highlightLinksForId ? "blue" : undefined,
-          fromCard.id === highlightLinksForId ? 3 : undefined
-        );
       } else {
+        const draw = toCard.id === fromCard.id ? drawSelfLink : drawLink;
         /* Card coords are absolute relative to window, so we need to
          * offset by the size of the side panel */
-        drawLink(
+        draw(
           ctx,
           {
             x: fromCard.x + fromCard.width - SIDE_PANEL_WIDTH,

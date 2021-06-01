@@ -15,10 +15,11 @@ import type {
 import type { UniqueId } from "./util/UniqueId";
 import Canvas from "./components/Canvas";
 import SidePanel from "./components/SidePanel";
-import { assertCardsValid } from "./util/Assert";
+import { assertCardsValid, validateClassifierLinks } from "./util/Assert";
 import { exportAsObject, validate } from "./util/Serializer";
 
 import "./App.css";
+import { getClassifierCardHeight } from "./util/LayoutUtils";
 
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
@@ -146,6 +147,7 @@ function App(): React.MixedElement {
           ...foundCard.links,
           links,
         },
+        height: getClassifierCardHeight(validateClassifierLinks(cards, links)),
       };
       return produce(baseState, (draftState) => {
         draftState.set(editedCard.id, editedCard);

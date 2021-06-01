@@ -1,10 +1,10 @@
+/* IMPORTANT: If you make changes to this file and the height of the classifier
+ * rows change, make sure to update CLASSIFIER_CARD_ROW_HEIGHT in Constants.js! */
+
 .ClassifierCard-classifierRow {
   padding: 4px 8px;
   margin: 0 -8px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.ClassifierCard-classifierLabel {
 }
 
 .ClassifierCard-classifierDetails {

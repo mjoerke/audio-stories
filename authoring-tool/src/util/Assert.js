@@ -1,6 +1,10 @@
 // @flow
 
-import type { CardData } from "../model/CardData";
+import type {
+  CardData,
+  ClassifierLink,
+  DraftClassifierLink,
+} from "../model/CardData";
 import type { UniqueId } from "./UniqueId";
 
 /* Checks to make sure that invariants aren't violated in our data.
@@ -55,3 +59,24 @@ export function assertCardsValid(
   });
   return cards;
 }
+
+export const validateClassifierLinks = (
+  cards: Map<UniqueId, CardData>,
+  links: Array<DraftClassifierLink | ClassifierLink>
+): Array<DraftClassifierLink | ClassifierLink> =>
+  links.map((link) => {
+    if (
+      link.next != null &&
+      cards.get(link.next) != null &&
+      link.label != null &&
+      link.label.length !== 0 /* &&
+      link.threshold != null &&
+      link.threshold.length !== 0 */
+    ) {
+      return {
+        ...link,
+        type: "complete_classifier_link",
+      };
+    }
+    return link;
+  });

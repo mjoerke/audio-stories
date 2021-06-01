@@ -11,6 +11,7 @@ import type {
   ClassifierLink,
   DraftClassifierLink,
 } from "../model/CardData";
+import { validateClassifierLinks } from "../util/Assert";
 import type { UniqueId } from "../util/UniqueId";
 import AudioCard from "./AudioCard";
 import ClassifierCard from "./ClassifierCard";
@@ -30,6 +31,7 @@ import makeUniqueId, { uniqueIdAsString } from "../util/UniqueId";
 import { drawExistingLinks, drawLink } from "./CanvasDrawHandler";
 
 import "./Canvas.css";
+import { getClassifierCardHeight } from "../util/LayoutUtils";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
@@ -204,25 +206,6 @@ function Canvas({
     };
   };
 
-  const validateClassifierLinks = (
-    links: Array<DraftClassifierLink | ClassifierLink>
-  ): Array<DraftClassifierLink | ClassifierLink> =>
-    links.map((link) => {
-      if (
-        link.next != null &&
-        cards.get(link.next) != null &&
-        link.label != null &&
-        link.label.length !== 0 /* &&
-        link.threshold != null &&
-        link.threshold.length !== 0 */
-      ) {
-        return {
-          ...link,
-          type: "complete_classifier_link",
-        };
-      }
-      return link;
-    });
   const startLinkFromCard = (id) => {
     if (id != null) {
       setIsDrawingNewLinkFrom((_) => id);
@@ -342,13 +325,15 @@ function Canvas({
           />
         );
         break;
-      case "classifier_card":
+      case "classifier_card": {
+        const links = filterClassifierLinks(card.links.links);
         cardComponent = (
           <ClassifierCard
+            height={card.height}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             isHovered={hoveredCardId === id}
-            links={filterClassifierLinks(card.links.links)}
+            links={links}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
@@ -360,7 +345,7 @@ function Canvas({
           />
         );
         break;
-
+      }
       default:
         throw new Error(`Unrecognized card type: ${card.type}`);
     }
@@ -408,7 +393,9 @@ function Canvas({
             setClassifierDialogOpenId(null);
           }}
           updateClassifierLinks={updateClassifierLinks}
-          validateClassifierLinks={validateClassifierLinks}
+          validateClassifierLinks={(links) =>
+            validateClassifierLinks(cards, links)
+          }
         />
       ) : null}
     </div>
