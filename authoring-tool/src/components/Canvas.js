@@ -317,6 +317,7 @@ function Canvas({
           <AudioCard
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+            isHovered={hoveredCardId === id}
             linkButtonType={card.links.next == null ? "add" : "close"}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
@@ -346,6 +347,7 @@ function Canvas({
           <ClassifierCard
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
+            isHovered={hoveredCardId === id}
             links={filterClassifierLinks(card.links.links)}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}

@@ -19,12 +19,14 @@ function SidePanel({ onUploadStart }: Props): React.MixedElement {
       <AudioCard
         canDeleteLinkTo={false}
         isDrawingNewLinkFrom={null}
+        isHovered={false}
         type={Draggables.NEW_AUDIO_CARD}
       />
       <ClassifierCard
         canDeleteLinkTo={false}
         isDrawingNewLinkFrom={null}
         isDialogOpen={false}
+        isHovered={false}
         links={[]}
         newDraftClassifierLink={null}
         type={Draggables.NEW_CLASSIFIER_CARD}

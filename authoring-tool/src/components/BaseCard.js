@@ -23,6 +23,7 @@ export type ExposedProps = {
   onFinishLink?: (UniqueId) => void,
   onMouseMove?: (MouseEvent) => void,
   height?: number,
+  isHovered: boolean,
   linkButtonType?: LinkButtonType,
   removeLink?: () => void,
   setHoveredCardId?: (?UniqueId) => void,
@@ -49,6 +50,7 @@ export default function BaseCard({
   onMouseMove,
   headerColor,
   height = DEFAULT_CARD_SIZE,
+  isHovered,
   linkButtonType = "add",
   removeLink,
   setHoveredCardId,
@@ -68,11 +70,10 @@ export default function BaseCard({
     }),
     [type]
   );
-  const [isMouseOver, setIsMouseOver] = React.useState(false);
 
   const illegalSelfLoop = isDrawingNewLinkFrom === id && !allowSelfLoops;
   const overlay =
-    isDrawingNewLinkFrom != null && !illegalSelfLoop && isMouseOver ? (
+    isDrawingNewLinkFrom != null && !illegalSelfLoop && isHovered ? (
       <div className="BaseCard-canLinkOverlay" />
     ) : null;
 
@@ -99,13 +100,11 @@ export default function BaseCard({
         if (setHoveredCardId) {
           setHoveredCardId(id);
         }
-        setIsMouseOver(true);
       }}
       onMouseLeave={(_) => {
         if (setHoveredCardId) {
           setHoveredCardId(null);
         }
-        setIsMouseOver(false);
       }}
       onMouseMove={onMouseMove}
       style={{
