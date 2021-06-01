@@ -13,8 +13,9 @@ import "css.gg/icons/css/close.css";
 import "css.gg/icons/css/close-o.css";
 import "./BaseCard.css";
 
+export type LinkButtonType = "add" | "close";
+
 export type ExposedProps = {
-  canDeleteLinkTo: boolean,
   id?: UniqueId,
   isDrawingNewLinkFrom: ?UniqueId,
   onCreateLink?: (UniqueId) => void,
@@ -22,7 +23,8 @@ export type ExposedProps = {
   onFinishLink?: (UniqueId) => void,
   onMouseMove?: (MouseEvent) => void,
   height?: number,
-  linkButtonText?: string,
+  linkButtonType?: LinkButtonType,
+  removeLink?: () => void,
   setHoveredCardId?: (?UniqueId) => void,
   title?: string,
   type?: DraggableType,
@@ -39,7 +41,6 @@ type Props = {
 };
 
 export default function BaseCard({
-  canDeleteLinkTo,
   id,
   isDrawingNewLinkFrom,
   onCreateLink,
@@ -48,7 +49,8 @@ export default function BaseCard({
   onMouseMove,
   headerColor,
   height = DEFAULT_CARD_SIZE,
-  linkButtonText = "+",
+  linkButtonType = "add",
+  removeLink,
   setHoveredCardId,
   title = "Card",
   width = DEFAULT_CARD_SIZE,
@@ -68,18 +70,10 @@ export default function BaseCard({
   );
   const [isMouseOver, setIsMouseOver] = React.useState(false);
 
-  let overlayClass = "BaseCard-canLinkOverlay";
-  if (canDeleteLinkTo) {
-    overlayClass += " BaseCard-canLinkOverlayDisconnect";
-  } else {
-    overlayClass += " BaseCard-canLinkOverlayConnect";
-  }
   const illegalSelfLoop = isDrawingNewLinkFrom === id && !allowSelfLoops;
   const overlay =
     isDrawingNewLinkFrom != null && !illegalSelfLoop && isMouseOver ? (
-      <div className={overlayClass}>
-        {canDeleteLinkTo ? "Disconnect" : "Connect"}
-      </div>
+      <div className="BaseCard-canLinkOverlay" />
     ) : null;
 
   let containerClass = "BaseCard-container";
@@ -128,18 +122,30 @@ export default function BaseCard({
         <button
           className="BaseCard-linkHandle"
           onClick={(_e) => {
-            if (isDrawingNewLinkFrom != null) {
-              onFinishLink(id);
-            } else {
-              onCreateLink(id);
+            switch (linkButtonType) {
+              case "add":
+                if (isDrawingNewLinkFrom != null) {
+                  onFinishLink(id);
+                } else {
+                  onCreateLink(id);
+                }
+                break;
+              case "close":
+                if (removeLink != null) {
+                  removeLink();
+                }
+                break;
+              default:
+                console.error(
+                  `link button onClick: unrecognized link button type ${linkButtonType}`
+                );
             }
           }}
           /* offset by half button height to center */
           style={{ top: height / 2 - 11 }}
           type="button"
         >
-          {/* TODO: hacky, should change */}
-          {linkButtonText === "+" ? (
+          {linkButtonType === "add" ? (
             <i className="gg-add" />
           ) : (
             <i className="gg-close-o" />

@@ -25,6 +25,7 @@
 
 .BaseCard-canLinkOverlay {
   align-items: center;
+  background-color: rgb(255, 255, 0, 0.1);
   /* match container */
   border-radius: 12px;
   box-sizing: border-box;
@@ -35,14 +36,6 @@
   position: absolute;
   top: 0;
   width: 100%;
-}
-
-.BaseCard-canLinkOverlayConnect {
-  background-color: rgb(255, 255, 0, 0.1);
-}
-
-.BaseCard-canLinkOverlayDisconnect {
-  background-color: rgb(255, 0, 0, 0.1);
 }
 
 .BaseCard-linkHandle {

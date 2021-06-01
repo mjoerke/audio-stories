@@ -19,17 +19,15 @@ export default function ClassifierCard({
   links,
   setIsDialogOpen,
   // base props
-  id,
   ...otherProps
 }: Props): React.MixedElement {
   return (
     <BaseCard
-      headerColor="#cbc8ff"
       title="Classifier"
       type={Draggables.CLASSIFIER_CARD}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...otherProps}
-      id={id}
+      headerColor="#cbc8ff"
     >
       {links.map((link) => {
         const description = `${link.label} > ${

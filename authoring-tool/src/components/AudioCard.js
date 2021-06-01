@@ -19,18 +19,19 @@ export default function AudioCard({
 }: Props): React.MixedElement {
   return (
     <BaseCard
-      headerColor="#c0ecfd"
       title="Audio"
       type={Draggables.AUDIO_CARD}
-      allowSelfLoops={false}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...otherProps}
+      allowSelfLoops={false}
+      headerColor="#c0ecfd"
     >
       <textarea
         className="AudioCard-textarea"
         onChange={
           onTextChange != null ? (e) => onTextChange(e.target.value) : undefined
         }
+        placeholder="Type..."
         readOnly={text == null || onTextChange == null}
         value={text}
       />

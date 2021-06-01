@@ -247,16 +247,6 @@ function Canvas({
   const renderCard = (id, card) => {
     const fromCard =
       isDrawingNewLinkFrom != null ? cards.get(isDrawingNewLinkFrom) : null;
-    const canDeleteLinkTo =
-      existingEndsForNewLink != null &&
-      existingEndsForNewLink.includes(id) &&
-      isDrawingNewLinkFrom != null &&
-      fromCard != null &&
-      fromCard.type === "audio_card";
-    /* Render stop button if clicking the button represents a cancellation
-     * or deletion */
-    const linkButtonText =
-      isDrawingNewLinkFrom === id || canDeleteLinkTo ? "X" : "+";
     const onFinishLink = (to) => {
       if (isDrawingNewLinkFrom != null) {
         if (fromCard == null) {
@@ -272,11 +262,9 @@ function Canvas({
               return;
             }
             if (
-              existingEndsForNewLink != null &&
-              existingEndsForNewLink.includes(to)
+              existingEndsForNewLink == null ||
+              !existingEndsForNewLink.includes(to)
             ) {
-              removeLink(isDrawingNewLinkFrom, to);
-            } else {
               addSimpleLink(fromCard, to);
             }
             break;
@@ -327,10 +315,9 @@ function Canvas({
       case "audio_card":
         cardComponent = (
           <AudioCard
-            canDeleteLinkTo={canDeleteLinkTo}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
-            linkButtonText={linkButtonText}
+            linkButtonType={card.links.next == null ? "add" : "close"}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
@@ -344,6 +331,11 @@ function Canvas({
                 })
               );
             }}
+            removeLink={() => {
+              if (card.links.next != null) {
+                removeLink(id, card.links.next);
+              }
+            }}
             setHoveredCardId={setHoveredCardId}
             text={card.text}
           />
@@ -352,11 +344,9 @@ function Canvas({
       case "classifier_card":
         cardComponent = (
           <ClassifierCard
-            canDeleteLinkTo={canDeleteLinkTo}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
             links={filterClassifierLinks(card.links.links)}
-            linkButtonText={linkButtonText}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
