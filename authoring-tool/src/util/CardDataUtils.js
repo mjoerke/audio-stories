@@ -1,9 +1,20 @@
 // @flow
 
-import type { CardData } from "../model/CardData";
+import type {
+  CardData,
+  ClassifierLink,
+  DraftClassifierLink,
+} from "../model/CardData";
 import type { UniqueId } from "./UniqueId";
 
-export default function getAdjacentCardIds(
+export function filterClassifierLinks(
+  links: Array<ClassifierLink | DraftClassifierLink>
+): Array<ClassifierLink> {
+  // $FlowExpectedError: flow doesn't understand this refinement
+  return links.filter((link) => link.type === "complete_classifier_link");
+}
+
+export function getAdjacentCardIds(
   cards: Map<UniqueId, CardData>,
   from: UniqueId
 ): Array<UniqueId> {
@@ -24,7 +35,9 @@ export default function getAdjacentCardIds(
       return [to];
     }
     case "classifier_links": {
-      return fromCard.links.links.map((link) => link.next);
+      return filterClassifierLinks(fromCard.links.links).map(
+        (link) => link.next
+      );
     }
     default:
       throw new Error(

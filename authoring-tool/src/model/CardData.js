@@ -11,6 +11,7 @@ export type ClassifierLink = $ReadOnly<{
   next: UniqueId,
   label: string,
   threshold: number,
+  type: "complete_classifier_link",
 }>;
 
 /* intermediate state representation for when the user is creating their
@@ -19,10 +20,11 @@ export type DraftClassifierLink = $ReadOnly<{
   next: ?UniqueId,
   label: ?string,
   threshold: number,
+  type: "incomplete_classifier_link",
 }>;
 
 export type ClassifierLinks = $ReadOnly<{
-  links: Array<ClassifierLink>,
+  links: Array<ClassifierLink | DraftClassifierLink>,
   type: "classifier_links",
 }>;
 

@@ -21,7 +21,10 @@ import {
   DEFAULT_CLASSIFIER_THRESHOLD,
   SIDE_PANEL_WIDTH,
 } from "../constants/Constants";
-import getAdjacentCardIds from "../util/CardDataUtils";
+import {
+  filterClassifierLinks,
+  getAdjacentCardIds,
+} from "../util/CardDataUtils";
 import { calculateDropPosition } from "../util/DropTargetMonitorHelper";
 import makeUniqueId, { uniqueIdAsString } from "../util/UniqueId";
 import { drawExistingLinks, drawLink } from "./CanvasDrawHandler";
@@ -32,23 +35,22 @@ type Props = $ReadOnly<{
   addCard: (CardData) => void,
   addSimpleLink: (AudioCardData, UniqueId) => void,
   cards: Map<UniqueId, CardData>,
-  draftLinks: Map<UniqueId, Array<DraftClassifierLink>>,
   updateCard: (CardData) => void,
   removeCard: (UniqueId) => void,
   removeLink: (UniqueId, UniqueId) => void,
-  setDraftLinks: (UniqueId, Array<DraftClassifierLink>) => void,
-  updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
+  updateClassifierLinks: (
+    UniqueId,
+    Array<ClassifierLink | DraftClassifierLink>
+  ) => void,
 }>;
 
 function Canvas({
   addCard,
   addSimpleLink,
   cards,
-  draftLinks,
   updateCard,
   removeCard,
   removeLink,
-  setDraftLinks,
   updateClassifierLinks,
 }: Props): React.MixedElement {
   const [{ isOver }, drop] = useDrop(
@@ -143,9 +145,9 @@ function Canvas({
   // classifier dialog is closed when this is null; open otherwise
   const [classifierDialogOpenId, setClassifierDialogOpenId] =
     React.useState<?UniqueId>(null);
-  const draftLinksForDialog =
+  const linksForDialog =
     classifierDialogOpenId != null
-      ? draftLinks.get(classifierDialogOpenId)
+      ? cards.get(classifierDialogOpenId).links.links
       : undefined;
   /* used to keep track of draft link state after selecting "select dest"
    * in the classifier dialog */
@@ -202,24 +204,24 @@ function Canvas({
   };
 
   const validateClassifierLinks = (
-    links: Array<DraftClassifierLink>
-  ): Array<ClassifierLink> => {
-    let result = true;
-    links.forEach((link) => {
-      if (link.next == null || cards.get(link.next) == null) {
-        result = false;
-      } else if (link.label == null || link.label.length === 0) {
-        result = false;
+    links: Array<DraftClassifierLink | ClassifierLink>
+  ): Array<DraftClassifierLink | ClassifierLink> =>
+    links.map((link) => {
+      if (
+        link.next != null &&
+        cards.get(link.next) != null &&
+        link.label != null &&
+        link.label.length !== 0 /* &&
+        link.threshold != null &&
+        link.threshold.length !== 0 */
+      ) {
+        return {
+          ...link,
+          type: "complete_classifier_link",
+        };
       }
-      // $FlowFixMe make type of threshold more clear
-      else if (link.threshold == null || link.threshold.length === 0) {
-        result = false;
-      }
+      return link;
     });
-    // $FlowExpectedError we've checked it dynamically
-    return result ? links : null;
-  };
-
   const startLinkFromCard = (id) => {
     if (id != null) {
       setIsDrawingNewLinkFrom((_) => id);
@@ -280,27 +282,27 @@ function Canvas({
           case "classifier_card":
             /* If this link was triggered by pressing "select dest" in the
              * classifier dialog, make sure to update the right classifier */
-            if (currentDraftClassifierIdx != null) {
-              setDraftLinks(
-                isDrawingNewLinkFrom,
-                produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
-                  // eslint-disable-next-line no-param-reassign
-                  draftState[currentDraftClassifierIdx].next = to;
-                })
-              );
-            } else {
-              // TODO: this is copy and pasted from ClassifierCardDialog
-              setDraftLinks(
-                isDrawingNewLinkFrom,
-                produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
-                  draftState.push({
-                    next: to,
-                    label: null,
-                    threshold: DEFAULT_CLASSIFIER_THRESHOLD,
-                  });
-                })
-              );
-            }
+            // if (currentDraftClassifierIdx != null) {
+            //   setDraftLinks(
+            //     isDrawingNewLinkFrom,
+            //     produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
+            //       // eslint-disable-next-line no-param-reassign
+            //       draftState[currentDraftClassifierIdx].next = to;
+            //     })
+            //   );
+            // } else {
+            //   // TODO: this is copy and pasted from ClassifierCardDialog
+            //   setDraftLinks(
+            //     isDrawingNewLinkFrom,
+            //     produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
+            //       draftState.push({
+            //         next: to,
+            //         label: null,
+            //         threshold: DEFAULT_CLASSIFIER_THRESHOLD,
+            //       });
+            //     })
+            //   );
+            // }
             setClassifierDialogOpenId(isDrawingNewLinkFrom);
             break;
           default:
@@ -340,12 +342,13 @@ function Canvas({
         );
         break;
       case "classifier_card":
+        console.log(card.links.links);
         cardComponent = (
           <ClassifierCard
             canDeleteLinkTo={canDeleteLinkTo}
             id={id}
             isDrawingNewLinkFrom={isDrawingNewLinkFrom}
-            links={card.links.links}
+            links={filterClassifierLinks(card.links.links)}
             linkButtonText={linkButtonText}
             onCreateLink={startLinkFromCard}
             onDelete={() => removeCard(id)}
@@ -393,20 +396,17 @@ function Canvas({
       />
       {Array.from(cards).map(([id, card]) => renderCard(id, card))}
 
-      {classifierDialogOpenId != null && draftLinksForDialog != null ? (
+      {classifierDialogOpenId != null && linksForDialog != null ? (
         <ClassifierCardDialog
           closeDialog={() => setClassifierDialogOpenId(null)}
-          draftLinks={draftLinksForDialog}
           id={classifierDialogOpenId}
           isOpen={classifierDialogOpenId != null}
+          links={linksForDialog}
           onSelectDestinationClick={(idx) => {
             startLinkFromCard(classifierDialogOpenId);
             setCurrentDraftClassifierIdx(idx);
             setClassifierDialogOpenId(null);
           }}
-          setDraftLinks={(newDraftLinks) =>
-            setDraftLinks(classifierDialogOpenId, newDraftLinks)
-          }
           updateClassifierLinks={updateClassifierLinks}
           validateClassifierLinks={validateClassifierLinks}
         />

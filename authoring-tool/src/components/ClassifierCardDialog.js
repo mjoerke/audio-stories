@@ -13,37 +13,46 @@ import { DEFAULT_CLASSIFIER_THRESHOLD } from "../constants/Constants";
 
 type Props = {
   closeDialog: () => void,
-  draftLinks: Array<DraftClassifierLink>,
   id: UniqueId,
   isOpen: boolean,
+  links: Array<ClassifierLink | DraftClassifierLink>,
   onSelectDestinationClick: (number) => void,
-  setDraftLinks: (Array<DraftClassifierLink>) => void,
-  updateClassifierLinks: (UniqueId, Array<ClassifierLink>) => void,
+  updateClassifierLinks: (
+    UniqueId,
+    Array<ClassifierLink | DraftClassifierLink>
+  ) => void,
   validateClassifierLinks: (
-    Array<DraftClassifierLink>
-  ) => Array<ClassifierLink>,
+    Array<DraftClassifierLink | ClassifierLink>
+  ) => Array<DraftClassifierLink | ClassifierLink>,
 };
 
 export default function ClassifierCardDialog({
   closeDialog,
-  draftLinks,
   id,
   isOpen,
+  links,
   onSelectDestinationClick,
-  setDraftLinks,
   updateClassifierLinks,
   validateClassifierLinks,
 }: Props): React.MixedElement {
   // if no links, then put an empty one so the form isn't blank
   React.useEffect(() => {
-    if (draftLinks.length === 0) {
-      setDraftLinks([{ next: null, label: null, threshold: 90 }]);
+    if (links.length === 0) {
+      updateClassifierLinks(id, [
+        {
+          next: null,
+          label: null,
+          threshold: 90,
+          type: "incomplete_classifier_link",
+        },
+      ]);
     }
-  }, [draftLinks, setDraftLinks]);
+  }, [links, updateClassifierLinks]);
 
   const addNewClassifier = () => {
-    setDraftLinks(
-      produce(draftLinks, (draftState) => {
+    updateClassifierLinks(
+      id,
+      produce(links, (draftState) => {
         draftState.push({
           next: null,
           label: null,
@@ -54,15 +63,17 @@ export default function ClassifierCardDialog({
   };
 
   const removeClassifier = (linkToRemove) => {
-    setDraftLinks(
+    updateClassifierLinks(
+      id,
       // $FlowFixMe fix types
-      draftLinks.filter((link) => link !== linkToRemove)
+      links.filter((link) => link !== linkToRemove)
     );
   };
 
   const updateDraftLink = (idx, updatedLink) => {
-    setDraftLinks(
-      produce(draftLinks, (draftState) => {
+    updateClassifierLinks(
+      id,
+      produce(links, (draftState) => {
         // eslint-disable-next-line no-param-reassign
         draftState[idx] = updatedLink;
       })
@@ -76,9 +87,7 @@ export default function ClassifierCardDialog({
     });
   };
 
-  // console.log(draftLinks);
-
-  const classifierRows = draftLinks.map((link, idx) => (
+  const classifierRows = links.map((link, idx) => (
     <tr className="ClassifierCardDialog-classifierRow">
       <td>
         <input
@@ -176,7 +185,11 @@ export default function ClassifierCardDialog({
           <button
             type="button"
             className="ClassifierCardDialog-closeButton"
-            onClick={closeDialog}
+            onClick={() => {
+              // commit all completed classifiers
+              updateClassifierLinks(id, validateClassifierLinks(links));
+              closeDialog();
+            }}
           >
             <i className="gg-close" />
           </button>
@@ -199,9 +212,9 @@ export default function ClassifierCardDialog({
         <button
           type="button"
           className="ClassifierCard-saveButton"
-          disabled={validateClassifierLinks(draftLinks) == null}
+          disabled={validateClassifierLinks(links) == null}
           onClick={() => {
-            updateClassifierLinks(id, validateClassifierLinks(draftLinks));
+            updateClassifierLinks(id, validateClassifierLinks(links));
             closeDialog();
           }}
         >

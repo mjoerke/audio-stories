@@ -23,11 +23,6 @@ import "./App.css";
 function App(): React.MixedElement {
   const [cards, setCards] = React.useState(() => new Map<UniqueId, CardData>());
 
-  // TODO: may need to initialize based on cards
-  const [draftLinks, setDraftLinks] = React.useState<
-    Map<UniqueId, Array<DraftClassifierLink>>
-  >(new Map());
-
   // On dev, validate state after every update
   React.useEffect(() => {
     // eslint-disable-next-line no-constant-condition
@@ -40,11 +35,6 @@ function App(): React.MixedElement {
     setCards((baseState) =>
       produce(baseState, (draftState) => {
         draftState.set(newCard.id, newCard);
-      })
-    );
-    setDraftLinks((baseState) =>
-      produce(baseState, (draftState) => {
-        draftState.set(newCard.id, []);
       })
     );
   };
@@ -62,18 +52,6 @@ function App(): React.MixedElement {
         draftState.set(editedCard.id, editedCard);
       });
     });
-
-    setDraftLinks((baseState) =>
-      produce(baseState, (draftState) => {
-        switch (editedCard.links.type) {
-          case "classifier_link":
-            draftState.set(editedCard.id, editedCard.links.links);
-            break;
-          default:
-            break;
-        }
-      })
-    );
   };
 
   const removeCard = (idToDelete: UniqueId) => {
@@ -119,11 +97,6 @@ function App(): React.MixedElement {
         }
       })
     );
-    setDraftLinks((baseState) =>
-      produce(baseState, (draftState) => {
-        draftState.delete(idToDelete);
-      })
-    );
   };
 
   const addSimpleLink = (
@@ -155,7 +128,7 @@ function App(): React.MixedElement {
 
   const updateClassifierLinks = (
     id: UniqueId,
-    links: Array<ClassifierLink>
+    links: Array<ClassifierLink | DraftClassifierLink>
   ) => {
     setCards((baseState) => {
       const foundCard = baseState.get(id);
@@ -178,12 +151,6 @@ function App(): React.MixedElement {
         draftState.set(editedCard.id, editedCard);
       });
     });
-
-    setDraftLinks((baseState) =>
-      produce(baseState, (draftState) => {
-        draftState.set(id, links);
-      })
-    );
   };
 
   const removeLink = (from: UniqueId, to: UniqueId) => {
@@ -254,17 +221,9 @@ function App(): React.MixedElement {
           addClassifierLink={addClassifierLink}
           addSimpleLink={addSimpleLink}
           cards={cards}
-          draftLinks={draftLinks}
           updateCard={updateCard}
           removeCard={removeCard}
           removeLink={removeLink}
-          setDraftLinks={(id, newDraftLinks) =>
-            setDraftLinks((baseState) =>
-              produce(baseState, (draftState) => {
-                draftState.set(id, newDraftLinks);
-              })
-            )
-          }
           updateClassifierLinks={updateClassifierLinks}
         />
       </div>

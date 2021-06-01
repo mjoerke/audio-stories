@@ -35,7 +35,10 @@ export function assertCardsValid(
       }
       case "classifier_links":
         card.links.links.forEach((link) => {
-          if (cards.get(link.next) == null) {
+          if (
+            link.type === "complete_classifier_link" &&
+            cards.get(link.next) == null
+          ) {
             throw new Error(
               // $FlowExpectedError coerce id to string for error logging
               `assertCardsValid: ClassifierLink destination id ${link.next} for card id ${id} does not exist`
