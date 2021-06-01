@@ -24,6 +24,7 @@ export default function ClassifierCard({
 }: Props): React.MixedElement {
   return (
     <BaseCard
+      headerColor="#cbc8ff"
       title="Classifier"
       type={Draggables.CLASSIFIER_CARD}
       // eslint-disable-next-line react/jsx-props-no-spreading

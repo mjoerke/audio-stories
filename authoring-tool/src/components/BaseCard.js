@@ -33,6 +33,7 @@ export type ExposedProps = {
 type Props = {
   ...ExposedProps,
   allowSelfLoops?: boolean,
+  headerColor: string,
   // Provided by the rendering card
   type: DraggableType,
 };
@@ -45,6 +46,7 @@ export default function BaseCard({
   onDelete,
   onFinishLink,
   onMouseMove,
+  headerColor,
   height = DEFAULT_CARD_SIZE,
   linkButtonText = "+",
   setHoveredCardId,
@@ -117,11 +119,11 @@ export default function BaseCard({
         width,
       }}
     >
-      <div>
+      <div className="BaseCard-header" style={{ backgroundColor: headerColor }}>
         {title}{" "}
         {id != null ? <span>{`(id: ${uniqueIdAsString(id)})`}</span> : null}
       </div>
-      {children}
+      <div className="BaseCard-content">{children}</div>
       {onCreateLink && onFinishLink && id != null ? (
         <button
           className="BaseCard-linkHandle"

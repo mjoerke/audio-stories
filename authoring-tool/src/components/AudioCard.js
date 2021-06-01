@@ -19,6 +19,7 @@ export default function AudioCard({
 }: Props): React.MixedElement {
   return (
     <BaseCard
+      headerColor="#c0ecfd"
       title="Audio"
       type={Draggables.AUDIO_CARD}
       allowSelfLoops={false}

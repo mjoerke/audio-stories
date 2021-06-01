@@ -3,15 +3,24 @@
   /* match canLinkOverlay */
   border-radius: 12px;
   box-shadow: 2px 2px 6px 0 rgb(0, 0, 0, 0.3);
-  /* need this to keep card size consistent for drawing arrows */
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 8px;
 }
 
 .BaseCard-containerBeingDragged {
   opacity: 0.5;
+}
+
+.BaseCard-header {
+  border-radius: 12px 12px 0 0;
+  padding: 8px;
+}
+
+.BaseCard-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 8px;
 }
 
 .BaseCard-canLinkOverlay {
