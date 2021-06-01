@@ -57,6 +57,7 @@ export default function ClassifierCardDialog({
           next: null,
           label: null,
           threshold: DEFAULT_CLASSIFIER_THRESHOLD,
+          type: "incomplete_classifier_link",
         });
       })
     );
@@ -75,7 +76,12 @@ export default function ClassifierCardDialog({
       id,
       produce(links, (draftState) => {
         // eslint-disable-next-line no-param-reassign
-        draftState[idx] = updatedLink;
+        draftState[idx] = {
+          ...updatedLink,
+          /* make sure to convert all edited links to draft links because they
+           * could now be invalid */
+          type: "incomplete_classifier_link",
+        };
       })
     );
   };
