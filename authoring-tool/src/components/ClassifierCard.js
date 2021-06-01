@@ -56,6 +56,20 @@ export default function ClassifierCard({
           }
         />
       ));
+      linkButtons.push(
+        <CardLinkButton
+          key="new-link-button"
+          id={otherProps.id}
+          isDrawingNewLinkFrom={otherProps.isDrawingNewLinkFrom}
+          linkButtonType="add"
+          onCreateLink={onCreateLink}
+          // removeLink={() => removeLink(idx)}
+          topOffset={
+            getClassifierCardRowLinkPosition(links.length) -
+            LINK_BUTTON_HEIGHT / 2
+          }
+        />
+      );
     }
   }
 
@@ -81,7 +95,16 @@ export default function ClassifierCard({
           </div>
         </div>
       ))}
+      {
+        /* placeholder for adding a new link */
+        links.length > 0 ? (
+          <div className="ClassifierCard-classifierRow">
+            Add new classifier →
+          </div>
+        ) : null
+      }
       <button
+        className="ClassifierCard-editClassifiersButton"
         disabled={setIsDialogOpen == null}
         onClick={
           setIsDialogOpen != null

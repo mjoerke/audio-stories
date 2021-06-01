@@ -17,3 +17,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.ClassifierCard-editClassifiersButton {
+  margin-top: 8px;
+}
