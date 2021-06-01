@@ -153,6 +153,7 @@ function Canvas({
    * in the classifier dialog */
   const [currentDraftClassifierIdx, setCurrentDraftClassifierIdx] =
     React.useState<?number>(null);
+  const [hoveredCardId, setHoveredCardId] = React.useState<?UniqueId>(null);
 
   const canvasRef = React.useRef<?HTMLCanvasElement>(null);
   const cardLinkStartCoords = React.useRef<?{ x: number, y: number }>(null);
@@ -170,7 +171,7 @@ function Canvas({
 
     const render = () => {
       _frameCount += 1;
-      drawExistingLinks(context, cards);
+      drawExistingLinks(context, cards, hoveredCardId);
       if (
         isDrawingNewLinkFrom != null &&
         cardLinkStartCoords.current != null &&
@@ -187,7 +188,7 @@ function Canvas({
       // eslint-disable-next-line no-undef
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, [isDrawingNewLinkFrom, cards]);
+  }, [isDrawingNewLinkFrom, cards, hoveredCardId]);
 
   const saveMousePosition = (e) => {
     const canvas = canvasRef.current;
@@ -343,12 +344,12 @@ function Canvas({
                 })
               );
             }}
+            setHoveredCardId={setHoveredCardId}
             text={card.text}
           />
         );
         break;
       case "classifier_card":
-        console.log(card.links.links);
         cardComponent = (
           <ClassifierCard
             canDeleteLinkTo={canDeleteLinkTo}
@@ -360,6 +361,7 @@ function Canvas({
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
             onMouseMove={saveMousePosition}
+            setHoveredCardId={setHoveredCardId}
             setIsDialogOpen={(state) =>
               setClassifierDialogOpenId(state ? id : null)
             }

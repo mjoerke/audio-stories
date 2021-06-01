@@ -23,15 +23,16 @@ export type ExposedProps = {
   onMouseMove?: (MouseEvent) => void,
   height?: number,
   linkButtonText?: string,
+  setHoveredCardId?: (?UniqueId) => void,
   title?: string,
   type?: DraggableType,
   width?: number,
   children?: React.Node,
-  allowSelfLoops?: boolean,
 };
 
 type Props = {
   ...ExposedProps,
+  allowSelfLoops?: boolean,
   // Provided by the rendering card
   type: DraggableType,
 };
@@ -46,6 +47,7 @@ export default function BaseCard({
   onMouseMove,
   height = DEFAULT_CARD_SIZE,
   linkButtonText = "+",
+  setHoveredCardId,
   title = "Card",
   width = DEFAULT_CARD_SIZE,
   type,
@@ -97,8 +99,18 @@ export default function BaseCard({
           onFinishLink(id);
         }
       }}
-      onMouseEnter={(_) => setIsMouseOver(true)}
-      onMouseLeave={(_) => setIsMouseOver(false)}
+      onMouseEnter={(_) => {
+        if (setHoveredCardId) {
+          setHoveredCardId(id);
+        }
+        setIsMouseOver(true);
+      }}
+      onMouseLeave={(_) => {
+        if (setHoveredCardId) {
+          setHoveredCardId(null);
+        }
+        setIsMouseOver(false);
+      }}
       onMouseMove={onMouseMove}
       style={{
         height,

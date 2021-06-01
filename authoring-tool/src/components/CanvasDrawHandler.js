@@ -10,8 +10,18 @@ const ARROWHEAD_LENGTH = 16;
 export function drawLink(
   ctx: CanvasRenderingContext2D,
   startCoords: { x: number, y: number },
-  endCoords: { x: number, y: number }
+  endCoords: { x: number, y: number },
+  color?: string,
+  lineWidth?: number
 ) {
+  const prevColor = ctx.strokeStyle;
+  if (color != null) {
+    ctx.strokeStyle = color;
+  }
+  const prevLineWidth = ctx.lineWidth;
+  if (lineWidth != null) {
+    ctx.lineWidth = lineWidth;
+  }
   let angle = 0;
   if (startCoords.x < endCoords.x) {
     angle = Math.atan2(
@@ -74,17 +84,25 @@ export function drawLink(
     endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle + Math.PI / 6)
   );
   ctx.stroke();
+  ctx.strokeStyle = prevColor;
+  ctx.lineWidth = prevLineWidth;
 }
 
 export function drawSelfLink(
   ctx: CanvasRenderingContext2D,
   startCoords: { x: number, y: number },
-  endCoords: { x: number, y: number }
+  endCoords: { x: number, y: number },
+  color?: string,
+  lineWidth?: number
 ) {
-  // const angle = Math.atan2(
-  //   endCoords.y - startCoords.y,
-  //   endCoords.x - startCoords.x
-  // );
+  const prevColor = ctx.strokeStyle;
+  if (color != null) {
+    ctx.strokeStyle = color;
+  }
+  const prevLineWidth = ctx.lineWidth;
+  if (lineWidth != null) {
+    ctx.lineWidth = lineWidth;
+  }
   const angle = 0;
   ctx.beginPath();
   ctx.moveTo(startCoords.x, startCoords.y);
@@ -117,11 +135,14 @@ export function drawSelfLink(
     endCoords.y - ARROWHEAD_LENGTH * Math.sin(angle + Math.PI / 6)
   );
   ctx.stroke();
+  ctx.strokeStyle = prevColor;
+  ctx.lineWidth = prevLineWidth;
 }
 
 export function drawExistingLinks(
   ctx: CanvasRenderingContext2D,
-  cards: Map<UniqueId, CardData>
+  cards: Map<UniqueId, CardData>,
+  highlightLinksForId: ?UniqueId
 ) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   // eslint-disable-next-line no-undef
@@ -148,7 +169,9 @@ export function drawExistingLinks(
           {
             x: toCard.x - SIDE_PANEL_WIDTH,
             y: toCard.y + toCard.height / 2,
-          }
+          },
+          fromCard.id === highlightLinksForId ? "blue" : undefined,
+          fromCard.id === highlightLinksForId ? 3 : undefined
         );
       } else {
         /* Card coords are absolute relative to window, so we need to
@@ -162,7 +185,9 @@ export function drawExistingLinks(
           {
             x: toCard.x - SIDE_PANEL_WIDTH,
             y: toCard.y + toCard.height / 2,
-          }
+          },
+          fromCard.id === highlightLinksForId ? "blue" : undefined,
+          fromCard.id === highlightLinksForId ? 3 : undefined
         );
       }
     });

@@ -90,7 +90,7 @@ function App(): React.MixedElement {
 
         const didDelete = draftState.delete(idToDelete);
         if (!didDelete) {
-          console.warn(
+          console.error(
             // $FlowExpectedError coerce id for the sake of logging
             `deleteCard called with unrecognized card id: ${idToDelete}`
           );
