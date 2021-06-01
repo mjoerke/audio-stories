@@ -1,3 +1,19 @@
-.ClassifierCard-container {
-   background-color: #CDCCE0;
+.ClassifierCard-classifierRow {
+  padding: 4px 8px;
+  margin: 0 -8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.ClassifierCard-classifierLabel {
+}
+
+.ClassifierCard-classifierDetails {
+  font-size: 0.8em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ClassifierCard-classifierLabel,
+.ClassifierCard-classifierRow {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

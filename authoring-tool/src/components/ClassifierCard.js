@@ -9,6 +9,8 @@ import { uniqueIdAsString } from "../util/UniqueId";
 import type { ExposedProps as CardProps } from "./BaseCard";
 import BaseCard from "./BaseCard";
 
+import "./ClassifierCard.css";
+
 type Props = {
   ...CardProps,
   links: Array<ClassifierLink>,
@@ -29,12 +31,19 @@ export default function ClassifierCard({
       {...otherProps}
       headerColor="#cbc8ff"
     >
-      {links.map((link) => {
-        const description = `${link.label} > ${
-          link.threshold
-        } ? go to ${uniqueIdAsString(link.next)}`;
-        return <div key={description}>{description}</div>;
-      })}
+      {links.map((link) => (
+        <div
+          key={link.label + link.threshold + link.next}
+          className="ClassifierCard-classifierRow"
+        >
+          <div className="ClassifierCard-classifierLabel">{link.label}</div>
+          <div className="ClassifierCard-classifierDetails">
+            {`Threshold: ${link.threshold} to card ${uniqueIdAsString(
+              link.next
+            )}`}
+          </div>
+        </div>
+      ))}
       <button
         disabled={setIsDialogOpen == null}
         onClick={
