@@ -66,7 +66,6 @@ export default function ClassifierCardDialog({
   const removeClassifier = (linkToRemove) => {
     updateClassifierLinks(
       id,
-      // $FlowFixMe fix types
       links.filter((link) => link !== linkToRemove)
     );
   };

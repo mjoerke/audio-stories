@@ -11,11 +11,15 @@
   opacity: 0.5;
 }
 
+/* WARNING: if you change this, make sure to sync the height with CARD_HEADER_HEIGHT
+ * in Constants.js! */
 .BaseCard-header {
   border-radius: 12px 12px 0 0;
   padding: 8px;
 }
 
+/* WARNING: if you change this, make sure to sync the padding/margin with 
+ * CARD_HEADER_MARGIN in Constants.js! */
 .BaseCard-content {
   display: flex;
   flex-direction: column;

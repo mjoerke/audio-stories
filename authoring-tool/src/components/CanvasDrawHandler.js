@@ -4,6 +4,7 @@ import type { CardData } from "../model/CardData";
 import type { UniqueId } from "../util/UniqueId";
 import { SIDE_PANEL_WIDTH } from "../constants/Constants";
 import { getAdjacentCardIds } from "../util/CardDataUtils";
+import { getClassifierCardRowLinkPosition } from "../util/LayoutUtils";
 
 const ARROWHEAD_LENGTH = 16;
 
@@ -152,7 +153,7 @@ export function drawExistingLinks(
   Array.from(cards).forEach(([from, fromCard]) => {
     ctx.beginPath();
     const tos = getAdjacentCardIds(cards, from);
-    tos.forEach((to) => {
+    tos.forEach((to, idx) => {
       const toCard = cards.get(to);
       if (toCard == null) {
         console.error(
@@ -161,13 +162,17 @@ export function drawExistingLinks(
         );
       } else {
         const draw = toCard.id === fromCard.id ? drawSelfLink : drawLink;
+        const startYOffset =
+          fromCard.type === "classifier_card"
+            ? getClassifierCardRowLinkPosition(idx)
+            : fromCard.height / 2;
         /* Card coords are absolute relative to window, so we need to
          * offset by the size of the side panel */
         draw(
           ctx,
           {
             x: fromCard.x + fromCard.width - SIDE_PANEL_WIDTH,
-            y: fromCard.y + fromCard.height / 2,
+            y: fromCard.y + startYOffset,
           },
           {
             x: toCard.x - SIDE_PANEL_WIDTH,

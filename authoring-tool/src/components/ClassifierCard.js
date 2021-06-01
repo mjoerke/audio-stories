@@ -1,14 +1,16 @@
 // @flow
 
 import * as React from "react";
+import { LINK_BUTTON_HEIGHT } from "../constants/Constants";
 
 import Draggables from "../constants/Draggables";
 import type { ClassifierLink } from "../model/CardData";
-import { getClassifierCardHeight } from "../util/LayoutUtils";
+import { getClassifierCardRowLinkPosition } from "../util/LayoutUtils";
 import type { UniqueId } from "../util/UniqueId";
 import { uniqueIdAsString } from "../util/UniqueId";
 import type { ExposedProps as CardProps } from "./BaseCard";
 import BaseCard from "./BaseCard";
+import CardLinkButton from "./CardLinkButton";
 
 import "./ClassifierCard.css";
 
@@ -20,10 +22,43 @@ type Props = {
 
 export default function ClassifierCard({
   links,
+  linkButtonType,
+  onCreateLink,
+  removeLink,
   setIsDialogOpen,
   // base props
   ...otherProps
 }: Props): React.MixedElement {
+  let linkButtons;
+  if (onCreateLink && otherProps.id != null) {
+    if (links.length === 0) {
+      linkButtons = (
+        <CardLinkButton
+          id={otherProps.id}
+          isDrawingNewLinkFrom={otherProps.isDrawingNewLinkFrom}
+          linkButtonType="add"
+          onCreateLink={onCreateLink}
+          removeLink={removeLink}
+          topOffset={otherProps.height / 2 - LINK_BUTTON_HEIGHT / 2}
+        />
+      );
+    } else {
+      linkButtons = links.map((link, idx) => (
+        <CardLinkButton
+          key={link.label + link.threshold + link.next}
+          id={otherProps.id}
+          isDrawingNewLinkFrom={otherProps.isDrawingNewLinkFrom}
+          linkButtonType="close"
+          onCreateLink={onCreateLink}
+          removeLink={() => removeLink(idx)}
+          topOffset={
+            getClassifierCardRowLinkPosition(idx) - LINK_BUTTON_HEIGHT / 2
+          }
+        />
+      ));
+    }
+  }
+
   return (
     <BaseCard
       title="Classifier"
@@ -31,6 +66,7 @@ export default function ClassifierCard({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...otherProps}
       headerColor="#cbc8ff"
+      linkButtons={linkButtons}
     >
       {links.map((link) => (
         <div

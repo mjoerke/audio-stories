@@ -231,6 +231,7 @@ function Canvas({
     const fromCard =
       isDrawingNewLinkFrom != null ? cards.get(isDrawingNewLinkFrom) : null;
     const onFinishLink = (to) => {
+      console.log("FINISH");
       if (isDrawingNewLinkFrom != null) {
         if (fromCard == null) {
           console.error(
@@ -338,6 +339,11 @@ function Canvas({
             onDelete={() => removeCard(id)}
             onFinishLink={onFinishLink}
             onMouseMove={saveMousePosition}
+            removeLink={(idx) => {
+              const spliced = [...card.links.links];
+              spliced.splice(idx, 1);
+              updateClassifierLinks(id, spliced);
+            }}
             setHoveredCardId={setHoveredCardId}
             setIsDialogOpen={(state) =>
               setClassifierDialogOpenId(state ? id : null)

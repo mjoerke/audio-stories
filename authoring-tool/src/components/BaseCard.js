@@ -25,6 +25,7 @@ export type ExposedProps = {
   height?: number,
   isHovered: boolean,
   linkButtonType?: LinkButtonType,
+  linkButtons?: React.Node,
   removeLink?: () => void,
   setHoveredCardId?: (?UniqueId) => void,
   title?: string,
@@ -51,6 +52,7 @@ export default function BaseCard({
   headerColor,
   height = DEFAULT_CARD_SIZE,
   isHovered,
+  linkButtons,
   linkButtonType = "add",
   removeLink,
   setHoveredCardId,
@@ -117,40 +119,7 @@ export default function BaseCard({
         {id != null ? <span>{`(id: ${uniqueIdAsString(id)})`}</span> : null}
       </div>
       <div className="BaseCard-content">{children}</div>
-      {onCreateLink && onFinishLink && id != null ? (
-        <button
-          className="BaseCard-linkHandle"
-          onClick={(_e) => {
-            switch (linkButtonType) {
-              case "add":
-                if (isDrawingNewLinkFrom != null) {
-                  onFinishLink(id);
-                } else {
-                  onCreateLink(id);
-                }
-                break;
-              case "close":
-                if (removeLink != null) {
-                  removeLink();
-                }
-                break;
-              default:
-                console.error(
-                  `link button onClick: unrecognized link button type ${linkButtonType}`
-                );
-            }
-          }}
-          /* offset by half button height to center */
-          style={{ top: height / 2 - 11 }}
-          type="button"
-        >
-          {linkButtonType === "add" ? (
-            <i className="gg-add" />
-          ) : (
-            <i className="gg-close-o" />
-          )}
-        </button>
-      ) : null}
+      {linkButtons}
       {onDelete && id != null ? (
         <button
           className="BaseCard-deleteButton"
