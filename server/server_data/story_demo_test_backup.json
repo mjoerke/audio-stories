@@ -1,0 +1,34 @@
+{
+    "nodes": {
+        "1": {
+            "audio_text": "There's been a murder in the mansion! As our agent in the field, it's your job to uncover clues to help solve the mystery of who is responsible. ",
+            "next": 2,
+            "type": "audio",
+            "audio_file": "/home/anelise/Insync-headless/anelise@stanford.edu/Google Drive/Backups/Dropbox (MIT)/lab (Selective Sync Conflict 1)/audio-stories/server/server_data/audio/story_demo_test_backup_1.mp3"
+        },
+        "2": {
+            "labels": {
+                "bathroom": 4,
+                "kitchen": 3
+            },
+            "thresholds": {
+                "bathroom": 0.9,
+                "kitchen": 0.9
+            },
+            "type": "classifier"
+        },
+        "3": {
+            "audio_text": "The knife could be a potential murder weapon...but there is no sign of a struggle in the kitchen. Where else could the murder have happened? ",
+            "next": null,
+            "type": "audio",
+            "audio_file": "/home/anelise/Insync-headless/anelise@stanford.edu/Google Drive/Backups/Dropbox (MIT)/lab (Selective Sync Conflict 1)/audio-stories/server/server_data/audio/story_demo_test_backup_3.mp3"
+        },
+        "4": {
+            "audio_text": "Is there any sign of DNA evidence in the bathroom? ",
+            "next": null,
+            "type": "audio",
+            "audio_file": "/home/anelise/Insync-headless/anelise@stanford.edu/Google Drive/Backups/Dropbox (MIT)/lab (Selective Sync Conflict 1)/audio-stories/server/server_data/audio/story_demo_test_backup_4.mp3"
+        }
+    },
+    "story_id": "story_demo_test_backup"
+}
