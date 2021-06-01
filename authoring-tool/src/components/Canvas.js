@@ -282,27 +282,33 @@ function Canvas({
           case "classifier_card":
             /* If this link was triggered by pressing "select dest" in the
              * classifier dialog, make sure to update the right classifier */
-            // if (currentDraftClassifierIdx != null) {
-            //   setDraftLinks(
-            //     isDrawingNewLinkFrom,
-            //     produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
-            //       // eslint-disable-next-line no-param-reassign
-            //       draftState[currentDraftClassifierIdx].next = to;
-            //     })
-            //   );
-            // } else {
-            //   // TODO: this is copy and pasted from ClassifierCardDialog
-            //   setDraftLinks(
-            //     isDrawingNewLinkFrom,
-            //     produce(draftLinks.get(isDrawingNewLinkFrom), (draftState) => {
-            //       draftState.push({
-            //         next: to,
-            //         label: null,
-            //         threshold: DEFAULT_CLASSIFIER_THRESHOLD,
-            //       });
-            //     })
-            //   );
-            // }
+            if (currentDraftClassifierIdx != null) {
+              updateClassifierLinks(
+                isDrawingNewLinkFrom,
+                produce(
+                  cards.get(isDrawingNewLinkFrom).links.links,
+                  (draftState) => {
+                    // eslint-disable-next-line no-param-reassign
+                    draftState[currentDraftClassifierIdx].next = to;
+                  }
+                )
+              );
+            } else {
+              // TODO: this is copy and pasted from ClassifierCardDialog
+              updateClassifierLinks(
+                isDrawingNewLinkFrom,
+                produce(
+                  cards.get(isDrawingNewLinkFrom).links.links,
+                  (draftState) => {
+                    draftState.push({
+                      next: to,
+                      label: null,
+                      threshold: DEFAULT_CLASSIFIER_THRESHOLD,
+                    });
+                  }
+                )
+              );
+            }
             setClassifierDialogOpenId(isDrawingNewLinkFrom);
             break;
           default:

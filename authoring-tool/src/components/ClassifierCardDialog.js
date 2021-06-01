@@ -172,6 +172,10 @@ export default function ClassifierCardDialog({
       ariaHideApp={false}
       contentLabel="Classifier Options"
       isOpen={isOpen}
+      onAfterClose={() =>
+        // commit all completed classifiers
+        updateClassifierLinks(id, validateClassifierLinks(links))
+      }
       style={{
         content: {
           inset: 100,
@@ -185,11 +189,7 @@ export default function ClassifierCardDialog({
           <button
             type="button"
             className="ClassifierCardDialog-closeButton"
-            onClick={() => {
-              // commit all completed classifiers
-              updateClassifierLinks(id, validateClassifierLinks(links));
-              closeDialog();
-            }}
+            onClick={closeDialog}
           >
             <i className="gg-close" />
           </button>
@@ -212,18 +212,13 @@ export default function ClassifierCardDialog({
         <button
           type="button"
           className="ClassifierCard-saveButton"
-          disabled={validateClassifierLinks(links) == null}
+          // disabled={validateClassifierLinks(links) == null}
           onClick={() => {
-            updateClassifierLinks(id, validateClassifierLinks(links));
             closeDialog();
           }}
         >
-          Save classifiers
+          Done
         </button>
-        <p>
-          Once every line has a non-empty text label and destination id number,
-          click <i>Save Classifiers</i> to confirm your changes.
-        </p>
       </div>
     </Modal>
   );
