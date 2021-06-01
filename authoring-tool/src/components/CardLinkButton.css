@@ -1,0 +1,17 @@
+.CardLinkButton-container {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  position: absolute;
+  right: -12px;
+}
+
+.CardLinkButton-closeButton {
+  color: slategray;
+}
+
+.CardLinkButton-closeButton:hover {
+  color: black;
+}

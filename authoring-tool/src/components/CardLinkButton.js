@@ -1,6 +1,9 @@
 // @flow
 
 import * as React from "react";
+import { LINK_BUTTON_HEIGHT } from "../constants/Constants";
+
+import "./CardLinkButton.css";
 
 type Props = {
   id: UniqueId,
@@ -21,12 +24,12 @@ export default function CardLinkButton({
 }: Props): React.MixedElement {
   return (
     <button
-      className="BaseCard-linkHandle"
+      className="CardLinkButton-container"
       onClick={(_e) => {
         switch (linkButtonType) {
           case "add":
             if (isDrawingNewLinkFrom == null) {
-              onCreateLink(id);
+              onCreateLink(id, topOffset + LINK_BUTTON_HEIGHT / 2);
             }
             break;
           case "close":
@@ -46,7 +49,7 @@ export default function CardLinkButton({
       {linkButtonType === "add" ? (
         <i className="gg-add" />
       ) : (
-        <i className="gg-close-o" />
+        <i className="gg-close-o CardLinkButton-closeButton" />
       )}
     </button>
   );

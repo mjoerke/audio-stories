@@ -42,17 +42,6 @@
   width: 100%;
 }
 
-.BaseCard-linkHandle {
-  background-color: white;
-  border: none;
-  border-radius: 50%;
-  /* height: 24px; */
-  padding: 0;
-  position: absolute;
-  right: -12px;
-  /* width: 24px; */
-}
-
 .BaseCard-deleteButton {
   background-color: transparent;
   border: none;

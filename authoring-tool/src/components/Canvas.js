@@ -31,7 +31,10 @@ import makeUniqueId, { uniqueIdAsString } from "../util/UniqueId";
 import { drawExistingLinks, drawLink } from "./CanvasDrawHandler";
 
 import "./Canvas.css";
-import { getClassifierCardHeight } from "../util/LayoutUtils";
+import {
+  getClassifierCardHeight,
+  getClassifierCardRowLinkPosition,
+} from "../util/LayoutUtils";
 
 type Props = $ReadOnly<{
   addCard: (CardData) => void,
@@ -206,7 +209,7 @@ function Canvas({
     };
   };
 
-  const startLinkFromCard = (id) => {
+  const startLinkFromCard = (id, yOffset) => {
     if (id != null) {
       setIsDrawingNewLinkFrom((_) => id);
       const card = cards.get(id);
@@ -216,7 +219,7 @@ function Canvas({
          * offset by the size of the side panel */
         cardLinkStartCoords.current = {
           x: card.x + card.width - SIDE_PANEL_WIDTH,
-          y: card.y + card.height / 2,
+          y: card.y + yOffset,
         };
       }
     }
@@ -394,7 +397,10 @@ function Canvas({
           isOpen={classifierDialogOpenId != null}
           links={linksForDialog}
           onSelectDestinationClick={(idx) => {
-            startLinkFromCard(classifierDialogOpenId);
+            startLinkFromCard(
+              classifierDialogOpenId,
+              getClassifierCardRowLinkPosition(idx)
+            );
             setCurrentDraftClassifierIdx(idx);
             setClassifierDialogOpenId(null);
           }}
