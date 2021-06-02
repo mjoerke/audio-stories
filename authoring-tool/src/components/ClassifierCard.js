@@ -99,7 +99,7 @@ export default function ClassifierCard({
         /* placeholder for adding a new link */
         links.length > 0 ? (
           <div className="ClassifierCard-classifierRow">
-            Add new classifier →
+            Add new label →
           </div>
         ) : null
       }
